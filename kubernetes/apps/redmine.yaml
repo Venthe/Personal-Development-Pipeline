@@ -1,0 +1,113 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redmine-secret
+  labels:
+    app: redmine
+data:
+  db_username: cG9zdGdyZXM=
+  db_password: QXNraXY0VmlSZkNVZGl3VA==
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: redmine
+  labels:
+    app: redmine
+spec:
+  type: NodePort
+  selector:
+    component: redmine
+  ports:
+    - port: 3000
+      nodePort: 33902
+      name: "web"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redmine
+  labels:
+    app: redmine
+spec:
+  serviceName: redmine
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redmine
+  template:
+    metadata:
+      labels:
+        app: redmine
+        component: redmine
+    spec:
+      containers:
+        - name: redmine-container
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          # https://hub.docker.com/_/redmine
+          image: redmine:4.1.0
+          env:
+            - name: REDMINE_DB_MYSQL
+              valueFrom:
+                secretKeyRef:
+                  name: redmine-secret
+                  key: db_username
+            - name: REDMINE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redmine-secret
+                  key: db_password
+# ---
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: redmine
+#   labels:
+#     app: redmine
+# spec:
+#   selector:
+#     component: redmine
+#   ports:
+#     - port: 3000
+#       targetPort: 33902
+#       name: "web"
+# ---
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: redmine
+#   labels:
+#     app: redmine
+# spec:
+#   serviceName: redmine
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: redmine
+#   template:
+#     metadata:
+#       labels:
+#         app: redmine
+#         component: redmine
+#     spec:
+#       containers:
+#         - name: redmine-container
+#           ports:
+#             - containerPort: 3000
+#               protocol: TCP
+#           # https://hub.docker.com/_/redmine
+#           image: redmine:4.1.0
+#           env:
+#             - name: REDMINE_DB_MYSQL
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: redmine-secret
+#                   key: db_username
+#             - name: REDMINE_DB_PASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: redmine-secret
+#                   key: db_password

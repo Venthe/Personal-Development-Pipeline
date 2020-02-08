@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  serviceName: "grafana-service"
+  selector:
+    matchLabels:
+      app: grafana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: "grafana-container"
+        app: grafana
+        k8s-app: grafana
+        metrics: "true"
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:6.6.1
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+          env:
+            - name: GF_INSTALL_PLUGINS
+              value: "grafana-clock-panel,grafana-simple-json-datasource,grafana-kubernetes-app"
+            - name: GF_SERVER_HTTP_PORT
+              value: "3000"
+              #FIXME
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "admin"
+  volumeClaimTemplates:
+    - metadata:
+        name: grafana-storage
+        labels:
+          app: grafana
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 512Mi

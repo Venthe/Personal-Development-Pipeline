@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+
+  # https://hub.docker.com/_/mongo
+  mongo:
+    container_name: "mongo"
+    image: mongo:4.2.1
+
+  # https://hub.docker.com/_/mongo-express
+  mongoexpress:
+    container_name: "mongoexpress"
+    image: mongo-express:0.49.0

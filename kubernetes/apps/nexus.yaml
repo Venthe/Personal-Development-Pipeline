@@ -1,0 +1,49 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nexus-service
+  labels:
+    app: nexus
+spec:
+  type: NodePort
+  selector:
+    component: "nexus-container"
+  ports:
+    - port: 8081
+      nodePort: 31010
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nexus-set
+  labels:
+    app: nexus
+spec:
+  serviceName: nexus-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus
+  template:
+    metadata:
+      labels:
+        app: nexus
+        component: nexus-container
+    spec:
+      containers:
+        - name: nexus-container
+          image: sonatype/nexus3:3.20.1
+          volumeMounts:
+            - name: nexus-data
+              mountPath: /nexus-data
+  volumeClaimTemplates:
+    - metadata:
+        name: nexus-data
+        labels:
+          app: nexus
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

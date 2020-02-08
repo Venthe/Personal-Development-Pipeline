@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+
+  # https://github.com/GerritCodeReview/docker-gerrit
+  gerrit:
+    container_name: "gerrit"
+    image: gerritcodereview/gerrit:3.0.3
+    restart: always
+    # volumes:
+    #   - git-volume:/var/gerrit/git
+    #   - index-volume:/var/gerrit/index
+    #   - cache-volume:/var/gerrit/cache
+    #   - db-volume:/var/gerrit/db
+    #   - etc-volume:/var/gerrit/etc
+    ports:
+      # API
+      - "16010:29418"
+      # UI
+      - "16080:8080"
+    # environment:
+    #   - CANONICAL_WEB_URL=http://localhost
+
+# volumes:
+#   git-volume:
+#   index-volume:
+#   cache-volume:
+#   db-volume:
+#   etc-volume:
+
+networks:
+  default:
+    name: source-repository
+  external:
+    name: internal

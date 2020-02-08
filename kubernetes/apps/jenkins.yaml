@@ -1,0 +1,53 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins
+  labels:
+    app: jenkins
+spec:
+  type: NodePort
+  selector:
+    component: "jenkins"
+  ports:
+    - port: 8080
+      nodePort: 31900
+      name: "web"
+    - port: 50000
+      nodePort: 31901
+      name: "backend"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jenkins
+  labels:
+    app: jenkins
+spec:
+  serviceName: "jenkins"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+        component: jenkins
+    spec:
+      containers:
+        - name: jenkins-container
+          image: jenkins/jenkins:2.219-centos
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+  volumeClaimTemplates:
+    - metadata:
+        name: jenkins-home
+        labels:
+          app: jenkins
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
