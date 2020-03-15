@@ -1,6 +1,70 @@
+# https://hub.docker.com/_/xwiki
+# xwiki:
+#   container_name: xwiki
+#   image: xwiki:12.0.0
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xwiki-database
+  labels:
+    app: xwiki
+spec:
+  type: NodePort
+  selector:
+    component: xwiki-database
+  ports:
+    - port: 3306
+      nodePort: 31252
+      name: db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: xwiki-database
+  labels:
+    app: xwiki
+spec:
+  serviceName: xwiki-database
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xwiki
+  template:
+    metadata:
+      labels:
+        app: xwiki
+        component: xwiki-database
+    spec:
+      containers:
+        - name: xwiki
+          ports:
+            - containerPort: 3001
+              protocol: TCP
+          image: mariadb:10.4.12
+          volumeMounts:
+            - name: xwiki-database-data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: xwiki-database-data
+        labels:
+          app: xwiki
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 512Mi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: xwiki-secret
+  labels:
+    app: xwiki
+data:
+  PGADMIN_DEFAULT_EMAIL: YWRtaW5AbG9jYWxob3N0
+  PGADMIN_DEFAULT_PASSWORD: YWRtaW4=-
+---
 
-  # https://hub.docker.com/_/xwiki
-  # xwiki:
-  #   container_name: xwiki
-  #   image: xwiki:11.9-postgres-tomcat

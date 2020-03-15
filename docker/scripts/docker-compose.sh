@@ -25,11 +25,10 @@ clean() {
     print_header "Cleaning compose file. path=${path}"
     cd "${path}" || exit 1
     # Remove named volumes declared in the `volumes` section of the Compose file and anonymous volumes attached to containers.
-    # Remove all images used by any service
+    # -rmi all Remove all images used by any service
     # --remove-orphans Remove containers for services not defined in the Compose file
     docker-compose down \
-    --volumes \
-    --rmi all
+    --volumes
     cd -  > /dev/null || exit 1
 }
 

@@ -17,6 +17,19 @@ spec:
         k8s-app: grafana
         metrics: "true"
     spec:
+      volumes:
+        - name: grafana-dashboards-kubernetes
+          configMap:
+            name: grafana-dashboards-kubernetes
+        - name: grafana-dashboards-prometheus
+          configMap:
+            name: grafana-dashboards-prometheus
+        - name: grafana-dashboards-general
+          configMap:
+            name: grafana-dashboards-general
+        - name: grafana-provisioning
+          configMap:
+            name: grafana-provisioning
       containers:
         - name: grafana
           image: grafana/grafana:6.6.1
@@ -26,6 +39,24 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-storage
+            - mountPath: /var/lib/grafana/dashboards/prometheus
+              name: grafana-dashboards-prometheus
+            - mountPath: /var/lib/grafana/dashboards/general
+              name: grafana-dashboards-general
+            - mountPath: /var/lib/grafana/dashboards/kubernetes
+              name: grafana-dashboards-kubernetes
+            - mountPath: /etc/grafana/provisioning/dashboards/kubernetes-dashboards.yaml
+              subPath: kubernetes-dashboards.yaml
+              name: grafana-provisioning
+            - mountPath: /etc/grafana/provisioning/dashboards/prometheus-dashboards.yaml
+              subPath: prometheus-dashboards.yaml
+              name: grafana-provisioning
+            - mountPath: /etc/grafana/provisioning/dashboards/general-dashboards.yaml
+              subPath: general-dashboards.yaml
+              name: grafana-provisioning
+            - mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+              subPath: datasources.yaml
+              name: grafana-provisioning
           env:
             - name: GF_INSTALL_PLUGINS
               value: "grafana-clock-panel,grafana-simple-json-datasource,grafana-kubernetes-app"

@@ -42,6 +42,7 @@ spec:
             - containerPort: 636
               protocol: TCP
           image: osixia/openldap:1.3.0
+          # https://github.com/osixia/docker-openldap
           env:
             - name: LDAP_ADMIN_PASSWORD
               value: "secret"

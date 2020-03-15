@@ -37,6 +37,7 @@ spec:
     spec:
       containers:
         - name: jenkins-container
+        # https://hub.docker.com/r/jenkins/jenkins
           image: jenkins/jenkins:2.219-centos
           volumeMounts:
             - name: jenkins-home

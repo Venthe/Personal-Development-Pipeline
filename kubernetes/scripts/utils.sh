@@ -47,3 +47,14 @@ get_dashboard_bearer_token() {
         --output=jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.data.token}{'\n'}{end}" |
         awk '{system("echo "$1"; echo -n "$2" | base64 --decode")}'
 }
+
+generate_kube_certificates() {
+    print_header "Getting certificates form Kube"
+    local tempPath="$1"
+    mkdir $tempPath
+    cd $tempPath
+    cat ~/.kube/config |
+        grep -E certificate\|client |
+        awk '{system("echo -n "$2" | base64 --decode >> $(echo -n "$1" | sed -r 's/://g').crt")}'
+    cd -
+}
