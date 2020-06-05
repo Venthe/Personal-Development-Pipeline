@@ -31,6 +31,13 @@ Tested on microk8s in VM on Ubuntu Server 20.04.
 
 ```
 
+## Usage
+
+To create all test deployments
+```bash
+bash ./bootstrap.sh
+```
+
 ## Authors
 
 * **Jacek Lipiec** - *Initial work* - [Venthe](https://github.com/Venthe)
