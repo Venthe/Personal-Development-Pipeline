@@ -1,6 +1,6 @@
 # Personal Development Pipeline
 
-Learn-along excercise in creating enterpise-grade infrastructure.
+Learn-along excercise in creating enterprise-grade infrastructure.
 
 ## Notes
 
@@ -17,9 +17,19 @@ Tested on Docker for Windows.
 
 ```
 
-## Versioning
+```
+Tested on microk8s in VM on Ubuntu Server 20.04.
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/Venthe/PersonalDevelopmentPipeline/tags). 
+- You need to install Docker
+- You need to install microk8s
+- Perform following commands:
+  sudo swapoff -a
+  sudo sysctl -w vm.max_map_count=262144
+  echo "vm.max_map_count=262144" | sudo tee --append /etc/sysctl.conf
+  sudo usermod -a -G microk8s <username>
+  microk8s enable dns
+
+```
 
 ## Authors
 

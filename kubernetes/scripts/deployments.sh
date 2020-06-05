@@ -13,7 +13,5 @@ deploy_app() {
     local path="$1"
     local appName="$2"
     print_header "Creating app. appName=$appName, path=$path"
-    cd "$path" || exit 1
-    kubectl apply --filename "./$appName.yaml"
-    cd - >/dev/null || exit 1
+    kubectl apply --filename "./$path/$appName"
 }

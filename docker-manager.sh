@@ -30,19 +30,23 @@ menu() {
     logs)
         local project_directory="$2"
         local path="${DOCKER_DIRECTORY}/${project_directory}"
-        show_logs "$path"         ;;
+        show_logs "$path"         
+        ;;
     stop)
         local project_directory="$2"
         local path="${DOCKER_DIRECTORY}/${project_directory}"
-        stop "$path"         ;;
+        stop "$path"
+        ;;
     clean)
         local project_directory="$2"
         local path="${DOCKER_DIRECTORY}/${project_directory}"
-        clean "$path"         ;;
+        clean "$path"
+        ;;
     up)
         local project_directory="$2"
         local path="${DOCKER_DIRECTORY}/${project_directory}"
-        up "$path"         ;;
+        up "$path"
+        ;;
     restart)
         local project_directory="$2"
         main_executor stop "$project_directory"
