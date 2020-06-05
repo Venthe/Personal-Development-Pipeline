@@ -38,14 +38,17 @@ start_proxy() {
 }
 
 get_dashboard_bearer_token() {
-    kubectl get secret $(kubectl get secret --namespace=kubernetes-dashboard | grep admin-user | awk '{print $1}') \
-        --namespace=kubernetes-dashboard \
+    local namespace="$1"
+    print_header "Getting token $namespace"
+    kubectl get secret $(kubectl get secret --namespace="$namespace" | grep admin-user | awk '{print $1}') \
+        --namespace="$namespace" \
         --output=jsonpath="{.metadata.name}{'\t'}{.data.token}{'\n'}" |
         awk '{system("echo "$1"; echo -n "$2" | base64 --decode")}'
-    kubectl get secret $(kubectl get secret --namespace=kubernetes-dashboard | grep admin-user | awk '{print $1}') \
-        --namespace=kubernetes-dashboard \
+    kubectl get secret $(kubectl get secret --namespace="$namespace" | grep admin-user | awk '{print $1}') \
+        --namespace="$namespace" \
         --output=jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.data.token}{'\n'}{end}" |
         awk '{system("echo "$1"; echo -n "$2" | base64 --decode")}'
+        echo
 }
 
 generate_kube_certificates() {

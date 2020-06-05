@@ -8,7 +8,7 @@ print_help() {
     help_description "Manages kubernetes in Docker for Windows"
     help_options
     help_parameter "help" "Prints this message"
-    help_parameter "dashboard [OPTION]" "install\ndelete\nreinstall"
+    help_parameter "dashboard [OPTION]" " create\n wipe\n recreate"
     help_parameter "proxy" "starts kubernetes proxy"
     execution_parameters_help
     echo ""
@@ -72,58 +72,55 @@ menu() {
     pgadmin)
         standard_menu_entry "$2" "$path" "pgadmin"
         ;;
+    xwiki)
+        standard_menu_entry "$2" "$path" "xwiki"
+        ;;
+    redmine)
+        standard_menu_entry "$2" "$path" "redmine"
+        ;;
+    ghost)
+        standard_menu_entry "$2" "$path" "ghost"
+        ;;
     metrics)
-        local app_name="metrics"
+        local app_name="monitoring"
         local grafana_temp="$temp_path/$app_name"
         case "$2" in
+        create)
+            menu "$app_name" "generateCertificates"
+            deploy_app "$path" "$app_name"
+            ;;
+        wipe)
+            menu "$app_name" "wipeCertificates"
+            delete_namespace "$app_name"
+            ;;
+        recreate)
+            menu "$app_name" "wipe"
+            menu "$app_name" "create"
+            ;;
         generateCertificates)
             generate_kube_certificates "$grafana_temp"
             ;;
         wipeCertificates)
             rm -rf "$grafana_temp"
             ;;
-        create)
-            menu "$app_name" "generateCertificates"
-            deploy_app "$path/monitoring" "monitoring-namespace"
-            deploy_app "$path/monitoring" "prometheus-rbac"
-            deploy_app "$path/monitoring" "prometheus-config"
-            deploy_app "$path/monitoring" "prometheus-service"
-            deploy_app "$path/monitoring" "prometheus-deployment"
-            deploy_app "$path/monitoring" "grafana-dashboards"
-            deploy_app "$path/monitoring" "grafana-provisioning"
-            deploy_app "$path/monitoring" "grafana-service"
-            deploy_app "$path/monitoring" "grafana-deployment"
-            deploy_app "$path/monitoring" "node-exporter"
-            deploy_app "$path/monitoring" "state-metrics-deployment"
-            deploy_app "$path/monitoring" "state-metrics-rbac"
-            ;;
-        wipe)
-            menu "$app_name" "wipeCertificates"
-            delete_namespace "monitoring"
-            ;;
-        recreate)
-            menu "$app_name" "wipe"
-            menu "$app_name" "create"
-            ;;
         esac
         ;;
     dashboard)
         local app_name="dashboard"
+        local namespace="dashboard-namespace"
         case "$2" in
         create)
-            deploy_app "$path/dashboard" "dashboard-recommended"
-            deploy_app "$path/dashboard" "dashboard-accounts"
-            deploy_app "$path/dashboard" "dashboard-configuration"
+            deploy_app "$path" "$app_name"
             ;;
         wipe)
-            delete_namespace "kubernetes-dashboard"
-            ;;
-        token)
-            get_dashboard_bearer_token
+            delete_namespace "$namespace"
             ;;
         recreate)
             menu "$app_name" "wipe"
             menu "$app_name" "create"
+            ;;
+        token)
+            get_dashboard_bearer_token "$namespace"
             ;;
         esac
         ;;

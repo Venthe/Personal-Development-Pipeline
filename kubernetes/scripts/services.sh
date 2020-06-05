@@ -20,7 +20,6 @@ create_service() {
 
   cd "$services_path/$service_name" || exit 1
   create_namespace "$namespace_prefix" "$service_name"
-  # shellcheck source=/dev/null
   . "$script_name".sh \
     "$namespace_prefix" \
     "$namespace_full_name" \

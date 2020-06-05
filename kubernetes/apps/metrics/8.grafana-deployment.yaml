@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana-statefulset
+  namespace: monitoring
+spec:
+  serviceName: "grafana-service"
+  selector:
+    matchLabels:
+      app: grafana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: "grafana-container"
+        app: grafana
+        k8s-app: grafana
+        metrics: "true"
+    spec:
+      volumes:
+        - name: grafana-dashboards-kubernetes
+          configMap:
+            name: grafana-dashboards-kubernetes
+        - name: grafana-dashboards-prometheus
+          configMap:
+            name: grafana-dashboards-prometheus
+        - name: grafana-dashboards-general
+          configMap:
+            name: grafana-dashboards-general
+        - name: grafana-provisioning
+          configMap:
+            name: grafana-provisioning
+      containers:
+        - name: grafana
+          image: grafana/grafana:6.6.1
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /var/lib/grafana/dashboards/prometheus
+              name: grafana-dashboards-prometheus
+            - mountPath: /var/lib/grafana/dashboards/general
+              name: grafana-dashboards-general
+            - mountPath: /var/lib/grafana/dashboards/kubernetes
+              name: grafana-dashboards-kubernetes
+            - mountPath: /etc/grafana/provisioning/dashboards/kubernetes-dashboards.yaml
+              subPath: kubernetes-dashboards.yaml
+              name: grafana-provisioning
+            - mountPath: /etc/grafana/provisioning/dashboards/prometheus-dashboards.yaml
+              subPath: prometheus-dashboards.yaml
+              name: grafana-provisioning
+            - mountPath: /etc/grafana/provisioning/dashboards/general-dashboards.yaml
+              subPath: general-dashboards.yaml
+              name: grafana-provisioning
+            - mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+              subPath: datasources.yaml
+              name: grafana-provisioning
+          env:
+            - name: GF_INSTALL_PLUGINS
+              value: "grafana-clock-panel,grafana-simple-json-datasource,grafana-kubernetes-app"
+            - name: GF_SERVER_HTTP_PORT
+              value: "3000"
+              #FIXME
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "admin"
+  volumeClaimTemplates:
+    - metadata:
+        name: grafana-storage
+        labels:
+          app: grafana
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 512Mi
