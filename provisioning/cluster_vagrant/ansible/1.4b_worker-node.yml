@@ -1,0 +1,17 @@
+---
+- name: Set up worker node
+  gather_facts: false
+  become: false
+  hosts: all
+  tasks:
+  - name: Copy the join command to server location
+    become: true
+    copy:
+      src: join-command
+      dest: /tmp/join-command.sh
+      mode: 0777
+  # Run only as needed
+  - name: Join the node to cluster
+    become: true
+    command: sh /tmp/join-command.sh
+...

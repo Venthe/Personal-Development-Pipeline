@@ -1,0 +1,55 @@
+---
+
+- name: Install metallb
+  gather_facts: false
+  hosts: all
+  vars:
+    bits_in_secret: 512
+    metallb_version: v0.9.5
+    address_range:
+      from: 192.168.4.1
+      to: 192.168.5.254
+  tasks:
+
+    # If you’re using kube-proxy in IPVS mode, since Kubernetes v1.14.2 you have to enable strict ARP mode.
+    - name: Enable strict ARP
+      shell:
+        cmd: |
+          kubectl get configmap kube-proxy --namespace kube-system -o yaml \
+          | sed --expression "s/strictARP: false/strictARP: true/" \
+          | kubectl apply --namespace kube-system -f -
+
+      # TODO: Use helm
+    - name: Apply kubectl manifests
+      command: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb_version }}/{{ item }}"
+      with_items:
+        - manifests/namespace.yaml
+        - manifests/metallb.yaml
+    - name: Configure metallb
+      shell:
+        cmd: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            namespace: metallb-system
+            name: config
+          data:
+            config: |
+              address-pools:
+              - name: default
+                protocol: layer2
+                addresses:
+                - {{ address_range.from }}-{{ address_range.to }}
+          EOF
+    - name: Check if secret exists
+      shell:
+       cmd: kubectl get secret --namespace metallb-system memberlist -o name | wc -l
+      register: secret_exists
+    - name: Generate metallb secret key
+      command: openssl rand -base64 {{ bits_in_secret }}
+      register: secret_key
+      when: secret_exists.stdout == "0"
+    - name: Create metallb secret key
+      command: kubectl create secret generic --namespace metallb-system memberlist --from-literal=secretkey="{{ secret_key.stdout }}"
+      when: secret_exists.stdout == "0"

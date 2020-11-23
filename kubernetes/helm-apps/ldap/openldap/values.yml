@@ -1,5 +1,0 @@
-adminPassword: "secret"
-env:
-  LDAP_DOMAIN: "my-company.com"
-  LDAP_ORGANISATION: "My Company"
-  LDAP_READONLY_USER: "true"

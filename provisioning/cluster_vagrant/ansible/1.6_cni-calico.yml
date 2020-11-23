@@ -1,0 +1,10 @@
+---
+- name: "Install CNI: calico"
+  gather_facts: false
+  become: false
+  hosts: all
+  tasks:
+    # Fixme: Run this only when necessary
+    - name: Install calico pod network
+      command: kubectl create -f https://docs.projectcalico.org/manifests/calico.yaml
+...

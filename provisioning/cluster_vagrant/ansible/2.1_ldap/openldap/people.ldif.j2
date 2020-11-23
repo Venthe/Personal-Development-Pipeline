@@ -1,0 +1,35 @@
+version: 1
+
+# Entry
+dn: cn=Jack July,ou=people,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+# Required, common name(s) for which the entity is known by
+cn: Jack July
+# Required, last (family) name(s) for which the entity is known by
+sn: July
+# first name(s) for which the entity is known by
+givenName: Jack
+# user identifier
+uid: jjuly
+# password of user
+userPassword: {CRYPT}{{ admin_password|hash('sha512') }}
+mail: jjuly@{{ LDAP_DOMAIN }}
+
+# Entry
+dn: cn=Administrator,ou=people,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+cn: Administrator
+sn: Administrator
+uid: admin
+uid: administrator
+userPassword: {SSHA}1RvhXTkIkYJYjUVoLnqr0LFfJnNFg75b
+mail: administrator@{{ LDAP_DOMAIN }}
+
+# Entry
+dn: cn=Jenkins,ou=people,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+cn: Jenkins
+sn: jenkins
+uid: jenkins
+userPassword: {CRYPT}{{ jenkins_password|default('jenkins')|hash('sha512') }}
+mail: jenkins@{{ LDAP_DOMAIN }}
