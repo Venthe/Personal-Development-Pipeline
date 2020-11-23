@@ -1,4 +1,0 @@
-controller:
-  service:
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: "my-domain.local,my-domain.internal"

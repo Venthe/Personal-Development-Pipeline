@@ -1,0 +1,183 @@
+---
+- name: Install rook
+  gather_facts: false
+  hosts: all
+  vars_prompt:
+    - name: rook_version
+      default: release-1.5
+      private: false
+    - name: reset
+      default: false
+      private: false
+    - name: namespace
+      default: rook-ceph
+      private: false
+  vars:
+    debug: false
+  tasks:
+    - name: "Delete {{ namespace }} namespace"
+      command: "kubectl delete namespace {{ namespace }}"
+      when: reset == true
+    - name: Add Rook repository to helm
+      command: helm repo add rook-release https://charts.rook.io/release
+      notify: Update helm repository
+    - name: Install Rook/Ceph manifests
+      shell:
+        cmd: |
+          helm upgrade \
+            --install \
+            --create-namespace \
+            --namespace={{ namespace }} \
+            rook-ceph \
+            rook-release/rook-ceph
+      # TODO: Add kustomize with namespace
+    - name: Deploy Rook/Ceph cluster
+      command: "kubectl apply -f https://raw.githubusercontent.com/rook/rook/{{ rook_version }}/cluster/examples/kubernetes/ceph/cluster.yaml"
+      # TODO: Add kustomize with namespace
+    - name: Deploy Ceph dashboard
+      command: "kubectl apply -f https://raw.githubusercontent.com/rook/rook/{{ rook_version }}/cluster/examples/kubernetes/ceph/dashboard-loadbalancer.yaml"
+      # https://rook-ceph-dashboard.local:8443/#/login
+    - name: Add external DNS marker to dashboard service
+      shell:
+        cmd: |
+          kubectl annotate service rook-ceph-mgr-dashboard-loadbalancer \
+            --namespace={{ namespace }} \
+            --overwrite \
+            external-dns.alpha.kubernetes.io/hostname="ceph-dashboard.local"
+    - name: Create block manifest
+      copy:
+        dest: "/tmp/rook-ceph-block.yml"
+        content: |
+          apiVersion: ceph.rook.io/v1
+          kind: CephBlockPool
+          metadata:
+            name: replicapool
+            namespace: {{ namespace }}
+          spec:
+            failureDomain: host
+            replicated:
+              size: 3
+          ---
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: rook-ceph-block
+          # Change "rook-ceph" provisioner prefix to match the operator namespace if needed
+          provisioner: rook-ceph.rbd.csi.ceph.com
+          parameters:
+              # clusterID is the namespace where the rook cluster is running
+              clusterID: rook-ceph
+              # Ceph pool into which the RBD image shall be created
+              pool: replicapool
+
+              # RBD image format. Defaults to "2".
+              imageFormat: "2"
+
+              # RBD image features. Available for imageFormat: "2". CSI RBD currently supports only "layering" feature.
+              imageFeatures: layering
+
+              # The secrets contain Ceph admin credentials.
+              csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+              csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+              csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+              csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+              csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+              csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+              # Specify the filesystem type of the volume. If not specified, csi-provisioner
+              # will set default as "ext4". Note that "xfs" is not recommended due to potential deadlock
+              # in hyperconverged settings where the volume is mounted on the same node as the osds.
+              csi.storage.k8s.io/fstype: ext4
+
+          # Delete the rbd volume when a PVC is deleted
+          reclaimPolicy: Delete
+    - name: Annotate Block storageclass as default
+      command: "{{item}}"
+      with_items:
+        - kubectl apply -f /tmp/rook-ceph-block.yml
+        - "kubectl annotate StorageClass rook-ceph-block --namespace={{ namespace }} --overwrite storageclass.kubernetes.io/is-default-class=\"true\""
+    - name: Create shared manifest
+      copy:
+        dest: "/tmp/rook-ceph-shared-filesystem.yml"
+        content: |
+          apiVersion: ceph.rook.io/v1
+          kind: CephFilesystem
+          metadata:
+            name: myfs
+            namespace: {{ namespace }}
+            annotations:
+              storageclass.kubernetes.io/is-default-class: "false"
+          spec:
+            metadataPool:
+              replicated:
+                size: 3
+            dataPools:
+              - replicated:
+                  size: 3
+            preservePoolsOnDelete: true
+            metadataServer:
+              activeCount: 1
+              activeStandby: true
+          ---
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: rook-cephfs
+          # Change "rook-ceph" provisioner prefix to match the operator namespace if needed
+          provisioner: rook-ceph.cephfs.csi.ceph.com
+          parameters:
+            # clusterID is the namespace where operator is deployed.
+            clusterID: rook-ceph
+
+            # CephFS filesystem name into which the volume shall be created
+            fsName: myfs
+
+            # Ceph pool into which the volume shall be created
+            # Required for provisionVolume: "true"
+            pool: myfs-data0
+
+            # Root path of an existing CephFS volume
+            # Required for provisionVolume: "false"
+            # rootPath: /absolute/path
+
+            # The secrets contain Ceph admin credentials. These are generated automatically by the operator
+            # in the same namespace as the cluster.
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+            csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+          reclaimPolicy: Delete
+    - name: Add Shared storageclass
+      command: "{{item}}"
+      with_items:
+        - kubectl apply -f /tmp/rook-ceph-shared-filesystem.yml
+        - "kubectl annotate StorageClass rook-cephfs --namespace={{ namespace }} --overwrite storageclass.kubernetes.io/is-default-class=\"false\""
+    - name: Create pod with tools
+      command: "kubectl apply -f https://raw.githubusercontent.com/rook/rook/{{ rook_version }}/cluster/examples/kubernetes/ceph/toolbox.yaml"
+      when: debug == true
+    - name: Get dashboard password
+      shell:
+        cmd: >
+          kubectl -n {{ namespace }} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+      register: dashboard_password
+      when: debug == true
+    - name: Tools results
+      shell:
+        cmd: >
+          kubectl -n {{ namespace }} exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- ceph status
+      register: ceph_status
+      when: debug == true
+    - name: Show debug info
+      when: debug == true
+      debug:
+        msg: "{{ item }}"
+      with_items:
+        - "{{dashboard_password.stdout}}"
+        - "{{ceph_status.stdout}}"
+
+  handlers:
+    - name: Update helm repository
+      include_tasks: _update_helm_repositories.yml

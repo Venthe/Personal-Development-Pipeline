@@ -1,0 +1,50 @@
+version: 1
+
+# Entry
+dn: ou=groups,{{ LDAP_BASE_DN }}
+objectclass: organizationalUnit
+objectclass: top
+ou: groups
+
+# Entry
+dn: cn=Administrators,ou=groups,{{ LDAP_BASE_DN }}
+cn: admins
+cn: Administrators
+gidNumber: 500
+memberUid: jjuly
+memberUid: admin
+objectclass: posixGroup
+objectclass: top
+
+# Entry
+dn: cn=Developers,ou=groups,{{ LDAP_BASE_DN }}
+cn: Developers
+gidNumber: 501
+memberUid: jjuly
+objectclass: posixGroup
+objectclass: top
+
+# Entry
+dn: cn=Non Interactive Users,ou=groups,{{ LDAP_BASE_DN }}
+cn: noninteractive
+cn: Non Interactive Users
+cn: Non-Interactive Users
+gidNumber: 502
+memberUid: jenkins
+objectclass: posixGroup
+objectclass: top
+
+# Entry
+dn: cn=Integrators,ou=groups,{{ LDAP_BASE_DN }}
+cn: integrators
+cn: Integrators
+gidNumber: 502
+memberUid: jjuly
+objectclass: posixGroup
+objectclass: top
+
+# Entry
+dn: ou=people,{{ LDAP_BASE_DN }}
+objectclass: organizationalUnit
+objectclass: top
+ou: people

@@ -8,22 +8,6 @@ This is an evergreen exercise, it SHOULD NOT be used in production; Moreover lic
 
 ### Prerequisites
 
-Tested on VirtualBox on Windows (@SL2)
-
-#### WSL2
-
-Prepare WSL to work with VirtualBox
-
-```bash
-sudo apt install vagrant python python3-pip --assume-yes
-pip3 install ansible --user
-# Add to bashrc
-echo 'PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-echo 'export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/mnt/z"' >> ~/.bashrc
-echo 'export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"' >> ~/.bashrc
-echo 'export VAGRANT_DEFAULT_PROVIDER=hyperv' >> ~/.bashrc
-```
-
 ## Usage
 
 To create all test deployments

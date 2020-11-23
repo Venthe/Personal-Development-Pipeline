@@ -1,0 +1,4 @@
+.vagrant/
+.vagrant.d/
+join-command
+test.sh

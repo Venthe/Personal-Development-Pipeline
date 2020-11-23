@@ -1,0 +1,3 @@
+---
+- command: helm repo update
+...

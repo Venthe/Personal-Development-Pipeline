@@ -1,6 +1,0 @@
-service:
-  type: "LoadBalancer"
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: "ldap-admin.local"
-env:
-  PHPLDAPADMIN_LDAP_HOSTS: "openldap"

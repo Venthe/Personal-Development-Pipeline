@@ -7,8 +7,6 @@
 
 ## To do
 
-- TODO-001 Distributed persistent volumes
-- TODO-003 Load Balancer/Ingress instead of PortNode
 - TODO-004 Add waiting for host being present
 - TODO-005 Review security
 - Security Certificates/RBAC per container
@@ -17,7 +15,5 @@
 - Enable https-only transport protocols
 - Backup management
 - Proxying
-- Load balancing
 - Service monitoring
 - Move PGAdmin to separate initialization
-- Consider using HELM
