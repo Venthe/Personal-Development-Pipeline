@@ -1,0 +1,11 @@
+nexus:
+  service:
+    type: LoadBalancer
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "nexus.local"
+ingress:
+  enabled: true
+nexusProxy:
+  env:
+    nexusDockerHost: docker.nexus.local
+    nexusHttpHost: nexus.local

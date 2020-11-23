@@ -1,0 +1,4 @@
+service:
+  type: "LoadBalancer"
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "dashboard.local"

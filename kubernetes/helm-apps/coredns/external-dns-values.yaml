@@ -1,0 +1,10 @@
+provider: coredns
+policy: sync
+coredns:
+  etcdEndpoints: "https://cilium-etcd-client.external-dns.svc:2379"
+  etcdTLS:
+    enabled: true
+    secretName: "cilium-etcd-client-tls"
+    caFilename: "etcd-client-ca.crt"
+    certFilename: "etcd-client.crt"
+    keyFilename: "etcd-client.key"
