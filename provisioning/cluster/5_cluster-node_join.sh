@@ -8,6 +8,8 @@ set -o xtrace
 # Root check
 if [[ $EUID -ne 0 ]]; then echo "Run this as the root user"; exit 1; fi
 
+# kubeadm token create --print-join-command
+
 # From kubeadm init
 kubeadm join 192.168.1.36:6443 \
   --token niwmbf.skcqj73084uoornk \

@@ -31,10 +31,7 @@ curl --fail \
   | apt-key add -
 
 # Add the Docker apt repository:
-add-apt-repository \
-  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-  $(RELEASE_NAME) \
-  stable"
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${RELEASE_NAME} stable"
 
 # Install Docker CE
 apt-get update \
