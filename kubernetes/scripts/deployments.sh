@@ -6,12 +6,15 @@ get_statefulsets() {
 
 wipe_app() {
     print_header "Wiping $1."
-    kubectl delete Service,StatefulSet,ConfigMap,PersistentVolumeClaim,Deployment,Secret -l app="$1"
+    kubectl delete --all-namespaces Service,StatefulSet,DaemonSet,ReplicaSet,ConfigMap,PersistentVolumeClaim,Deployment,Secret,Namespace -l ventheAppIdentifier="$1"
 }
 
 deploy_app() {
     local path="$1"
     local appName="$2"
     print_header "Creating app. appName=$appName, path=$path"
-    kubectl apply --filename "./$path/$appName"
+    cd "./$path/$appName"
+      bash bootstrap.sh || true
+    cd - > /dev/null
+    kubectl kustomize "./$path/$appName" | kubectl apply -f -
 }

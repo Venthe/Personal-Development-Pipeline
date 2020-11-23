@@ -36,6 +36,7 @@ standard_menu_entry() {
     case "$choice" in
     create)
         deploy_app "$path" "$app_name"
+        exit
         ;;
     wipe)
         wipe_app "$app_name"
@@ -54,75 +55,56 @@ standard_menu_entry() {
 menu() {
     local path="$KUBERNETES_DIRECTORY/$APPS_DIRECTORY"
     case "$1" in
-    sonarqube)
-        standard_menu_entry "$2" "$path" "sonarqube"
-        ;;
-    nexus)
-        standard_menu_entry "$2" "$path" "nexus"
-        ;;
-    jenkins)
-        standard_menu_entry "$2" "$path" "jenkins"
+    dashboard)
+        local app_name="dashboard"
+        local namespace="kubernetes-dashboard"
+        case "$2" in
+        token)
+            get_dashboard_bearer_token "$namespace"
+            ;;
+        *)
+            standard_menu_entry "$2" "$path" "dashboard"
+            ;;
+        esac
         ;;
     gerrit)
         standard_menu_entry "$2" "$path" "gerrit"
         ;;
-    openldap)
-        standard_menu_entry "$2" "$path" "openldap"
+    ghost)
+        standard_menu_entry "$2" "$path" "ghost"
+        ;;
+    jenkins)
+        standard_menu_entry "$2" "$path" "jenkins"
+        ;;
+    kube-system)
+        standard_menu_entry "$2" "$path" "kube-system"
+        ;;
+    ldap)
+        standard_menu_entry "$2" "$path" "ldap"
+        ;;
+    monitoring)
+        standard_menu_entry "$2" "$path" "monitoring"
+        ;;
+    nexus)
+        standard_menu_entry "$2" "$path" "nexus"
         ;;
     pgadmin)
         standard_menu_entry "$2" "$path" "pgadmin"
         ;;
-    xwiki)
-        standard_menu_entry "$2" "$path" "xwiki"
+    phpmyadmin)
+        standard_menu_entry "$2" "$path" "phpmyadmin"
+        ;;
+    plantuml)
+        standard_menu_entry "$2" "$path" "plantuml"
         ;;
     redmine)
         standard_menu_entry "$2" "$path" "redmine"
         ;;
-    ghost)
-        standard_menu_entry "$2" "$path" "ghost"
+    sonarqube)
+        standard_menu_entry "$2" "$path" "sonarqube"
         ;;
-    metrics)
-        local app_name="monitoring"
-        local grafana_temp="$temp_path/$app_name"
-        case "$2" in
-        create)
-            menu "$app_name" "generateCertificates"
-            deploy_app "$path" "$app_name"
-            ;;
-        wipe)
-            menu "$app_name" "wipeCertificates"
-            delete_namespace "$app_name"
-            ;;
-        recreate)
-            menu "$app_name" "wipe"
-            menu "$app_name" "create"
-            ;;
-        generateCertificates)
-            generate_kube_certificates "$grafana_temp"
-            ;;
-        wipeCertificates)
-            rm -rf "$grafana_temp"
-            ;;
-        esac
-        ;;
-    dashboard)
-        local app_name="dashboard"
-        local namespace="dashboard-namespace"
-        case "$2" in
-        create)
-            deploy_app "$path" "$app_name"
-            ;;
-        wipe)
-            delete_namespace "$namespace"
-            ;;
-        recreate)
-            menu "$app_name" "wipe"
-            menu "$app_name" "create"
-            ;;
-        token)
-            get_dashboard_bearer_token "$namespace"
-            ;;
-        esac
+    xwiki)
+        standard_menu_entry "$2" "$path" "xwiki"
         ;;
     help)
         print_help
@@ -136,6 +118,9 @@ menu() {
         ;;
     proxy)
         start_proxy
+        ;;
+    metallb)
+        reset_metallb
         ;;
     *)
         print_help

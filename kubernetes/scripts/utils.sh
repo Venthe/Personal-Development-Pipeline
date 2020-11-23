@@ -26,6 +26,8 @@ get_node_ports() {
     kubectl --output=jsonpath="{range .items[?(.spec.type=='NodePort')]}{.metadata.name}{'\n'}{range .spec.ports[*]}{' * ['}{.name}{'] http://'}{'${host_name}'}:{.nodePort}/{'\n'}{end}{'\n'}{end}" \
         get services \
         --all-namespaces
+
+    kubectl get services --all-namespaces
 }
 
 start_proxy() {
@@ -44,11 +46,6 @@ get_dashboard_bearer_token() {
         --namespace="$namespace" \
         --output=jsonpath="{.metadata.name}{'\t'}{.data.token}{'\n'}" |
         awk '{system("echo "$1"; echo -n "$2" | base64 --decode")}'
-    kubectl get secret $(kubectl get secret --namespace="$namespace" | grep admin-user | awk '{print $1}') \
-        --namespace="$namespace" \
-        --output=jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.data.token}{'\n'}{end}" |
-        awk '{system("echo "$1"; echo -n "$2" | base64 --decode")}'
-        echo
 }
 
 generate_kube_certificates() {
@@ -60,4 +57,9 @@ generate_kube_certificates() {
         grep -E certificate\|client |
         awk '{system("echo -n "$2" | base64 --decode >> $(echo -n "$1" | sed -r 's/://g').crt")}'
     cd -
+}
+
+reset_metallb() {
+    print_header "Resetting metallb"
+    kubectl delete po -n metallb-system --all
 }

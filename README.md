@@ -1,41 +1,35 @@
 # Personal Development Pipeline
 
-Learn-along excercise in creating enterprise-grade infrastructure.
+Learn-along exercise in creating enterprise-grade infrastructure.
 
 ## Notes
 
-This is an evergreen excercise, it SHOULD NOT be used in production; Moreover licenses for specific software shold be followed.
+This is an evergreen exercise, it SHOULD NOT be used in production; Moreover licenses for specific software should be followed.
 
 ### Prerequisites
 
-```
-Tested on Docker for Windows.
+Tested on VirtualBox on Windows (@SL2)
 
-- You need to enable Kubernetes
-- You need to share drive C: on Kubernetes
-- You need to enable docker daemon exposing of TCP
+#### WSL2
 
-```
+Prepare WSL to work with VirtualBox
 
-```
-Tested on microk8s in VM on Ubuntu Server 20.04.
-
-- You need to install Docker
-- You need to install microk8s
-- Perform following commands:
-  sudo swapoff -a
-  sudo sysctl -w vm.max_map_count=262144
-  echo "vm.max_map_count=262144" | sudo tee --append /etc/sysctl.conf
-  sudo usermod -a -G microk8s <username>
-  microk8s enable dns
-
+```bash
+sudo apt install vagrant python python3-pip --assume-yes
+pip3 install ansible --user
+# Add to bashrc
+echo 'PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+echo 'export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/mnt/z"' >> ~/.bashrc
+echo 'export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"' >> ~/.bashrc
+echo 'export VAGRANT_DEFAULT_PROVIDER=hyperv' >> ~/.bashrc
 ```
 
 ## Usage
 
 To create all test deployments
 ```bash
-bash ./bootstrap.sh
+cd provisioning/cluster_vagrant
+vagrant up
 ```
 
 ## Authors
