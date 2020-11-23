@@ -1,0 +1,155 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gerrit-service
+  labels:
+    app: gerrit
+spec:
+  type: LoadBalancer
+  selector:
+    component: gerrit
+    app: gerrit
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: "http"
+    - port: 29418
+      name: "git"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gerrit-deployment
+  labels:
+    app: gerrit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gerrit
+  template:
+    metadata:
+      labels:
+        app: gerrit
+        component: gerrit
+    spec:
+      # FIXME: FIX-004 Add waiting for host being present
+      # FIXME: FIX-006 Add init to gerrit
+      # FIXME: FIX-005 Add reindex to gerrit
+      containers:
+        - name: gerrit-container
+          image: gerritcodereview/gerrit:3.2.3
+          # command: ["/bin/sh", "-ec", "sleep 1000"]
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - |
+              ln -sf /k8s/configmap/gerrit.config /var/gerrit/etc/gerrit.config
+              ln -sf /k8s/secret/secure.config /var/gerrit/etc/secure.config
+              
+              java -jar /var/gerrit/bin/gerrit.war init \
+                  --batch \
+                  --install-plugin replication \
+                  --install-plugin commit-message-length-validator \
+                  --install-plugin download-commands \
+                  --install-plugin reviewnotes \
+                  -d /var/gerrit
+              java -jar /var/gerrit/bin/gerrit.war reindex \
+                  -d /var/gerrit
+              /var/gerrit/bin/gerrit.sh start
+              tail -F -n +1 /var/gerrit/logs/{error,httpd,sshd}_log
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "400m"
+            limits:
+              memory: "512Mi"
+              cpu: "400m"
+          volumeMounts:
+            - name: gerrit-secret
+              mountPath: "/k8s/secret"
+            - name: gerrit-configmap
+              mountPath: "/k8s/configmap"
+            - name: gerrit-git-persistentvolumeclaim
+              mountPath: /var/gerrit/git
+            - name: gerrit-index-persistentvolumeclaim
+              mountPath: /var/gerrit/index
+            - name: gerrit-cache-persistentvolumeclaim
+              mountPath: /var/gerrit/cache
+            - name: gerrit-etc-persistentvolumeclaim
+              mountPath: /var/gerrit/etc
+            - name: gerrit-tmp-volume
+              mountPath: /var/gerrit/tmp
+      volumes:
+        - name: gerrit-tmp-volume
+          emptyDir:
+            medium: Memory
+        - name: gerrit-configmap
+          configMap:
+            name: gerrit-configmap
+        - name: gerrit-secret
+          secret:
+            secretName: gerrit-secret
+        - name: gerrit-git-persistentvolumeclaim
+          persistentVolumeClaim:
+            claimName: gerrit-git-persistentvolumeclaim
+        - name: gerrit-index-persistentvolumeclaim
+          persistentVolumeClaim:
+            claimName: gerrit-index-persistentvolumeclaim
+        - name: gerrit-cache-persistentvolumeclaim
+          persistentVolumeClaim:
+            claimName: gerrit-cache-persistentvolumeclaim
+        - name: gerrit-etc-persistentvolumeclaim
+          persistentVolumeClaim:
+            claimName: gerrit-etc-persistentvolumeclaim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gerrit-git-persistentvolumeclaim
+  labels:
+    app: gerrit
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gerrit-index-persistentvolumeclaim
+  labels:
+    app: gerrit
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gerrit-cache-persistentvolumeclaim
+  labels:
+    app: gerrit
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 64Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gerrit-etc-persistentvolumeclaim
+  labels:
+    app: gerrit
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 64Mi

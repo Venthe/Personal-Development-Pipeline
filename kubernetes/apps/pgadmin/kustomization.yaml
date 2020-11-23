@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pgadmin-namespace
+
+commonLabels:
+  ventheAppIdentifier: pgadmin
+
+configMapGenerator:
+  - name: pgadmin-servers-json
+    files:
+      - configMaps/servers.json
+
+secretGenerator:
+  - name: pgadmin-secret
+    type: Opaque
+    env: secrets/database-secret.txt
+
+patchesJson6902:
+- target:
+    version: v1
+    kind: Service
+    name: pgadmin-service
+  path: pgadmin-service-patch.yaml
+
+images:
+  - name: dpage/pgadmin4
+    newTag: "4.26"
+
+resources:
+  - manifests/namespace.yaml
+  - manifests/pgadmin.yaml

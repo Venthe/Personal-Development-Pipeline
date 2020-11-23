@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-service
+  labels:
+    app: phpmyadmin
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: phpmyadmin.local
+spec:
+  type: LoadBalancer
+  selector:
+    component: phpmyadmin
+    app: phpmyadmin
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-deployment
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+        component: phpmyadmin
+    spec:
+      containers:
+        # https://hub.docker.com/r/phpmyadmin/phpmyadmin
+        - name: phpmyadmin-container
+          image: phpmyadmin/phpmyadmin:5.0.2
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          env:
+            - name: PMA_ARBITRARY
+              value: "1"

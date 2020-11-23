@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  ventheAppIdentifier: ldap
+
+namespace: ldap-namespace
+
+secretGenerator:
+  - name: ldap-secret
+    type: Opaque
+    env: secrets/ldap.txt
+
+configMapGenerator:
+  - name: ldap-bootstrap
+    files:
+      - configMaps/export.ldif
+  - name: ldap-config
+    literals:
+      - LDAP_DOMAIN=my-company.com
+      - LDAP_ORGANISATION=My Company
+      - LDAP_READONLY_USER=true
+
+images:
+  - name: osixia/phpldapadmin
+    newTag: 0.9.0
+  - name: osixia/openldap
+    newTag: 1.4.0
+
+patchesJson6902:
+- target:
+    version: v1
+    kind: Service
+    name: ldapadmin-service
+  path: ldap-admin-service-patch.yaml
+
+resources:
+  - manifests/namespace.yaml
+  - manifests/openldap.yaml
+  - manifests/ldap-admin.yaml

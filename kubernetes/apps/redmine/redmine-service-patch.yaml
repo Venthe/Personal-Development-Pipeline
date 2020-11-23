@@ -1,0 +1,3 @@
+- op: add
+  path: "/metadata/annotations"
+  value: {"external-dns.alpha.kubernetes.io/hostname": "redmine.local"}
