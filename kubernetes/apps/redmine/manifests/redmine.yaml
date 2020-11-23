@@ -1,0 +1,70 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redmine-service
+  labels:
+    app: redmine
+spec:
+  type: LoadBalancer
+  selector:
+    component: redmine
+  ports:
+    - port: 80
+      targetPort: 3000
+      name: "http"
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redmine-statefulset
+  labels:
+    app: redmine
+spec:
+  serviceName: redmine-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redmine
+  template:
+    metadata:
+      labels:
+        app: redmine
+        component: redmine
+    spec:
+      containers:
+        - name: redmine-container
+          # https://hub.docker.com/_/redmine
+          image: redmine:4.1.1
+          env:
+            - name: REDMINE_DB_POSTGRES
+              value: redmine-database-service
+            - name: REDMINE_DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: redmine-secret
+                  key: db_username
+            - name: REDMINE_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: redmine-secret
+                  key: db_username
+            - name: REDMINE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redmine-secret
+                  key: db_password
+          volumeMounts:
+            - name: redmine-usr-src-redmine-files-persistentvolumeclaim
+              mountPath: /usr/src/redmine/files
+  volumeClaimTemplates:
+    - metadata:
+        name: redmine-usr-src-redmine-files-persistentvolumeclaim
+        labels:
+          app: redmine
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 256Mi

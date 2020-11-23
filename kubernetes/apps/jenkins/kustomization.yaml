@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  ventheAppIdentifier: jenkins
+
+namespace: jenkins-namespace
+
+configMapGenerator:
+  - name: jenkins-config
+    files:
+      - configMaps/casc.yml
+      - configMaps/jenkins.sh
+      - configMaps/plugins.txt
+
+images:
+  - name: jenkins/jenkins
+    newTag: "2.258"
+
+patchesJson6902:
+- target:
+    version: v1
+    kind: Service
+    name: jenkins-service
+  path: jenkins-service-patch.yaml
+
+resources:
+  - manifests/namespace.yaml
+  - manifests/jenkins.yaml

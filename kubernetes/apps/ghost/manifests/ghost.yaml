@@ -1,0 +1,60 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ghost-service
+  labels:
+    app: ghost
+spec:
+  type: LoadBalancer
+  selector:
+    component: ghost
+    app: ghost
+  ports:
+    - port: 80
+      targetPort: 2368
+      name: http
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ghost-statefulset
+  labels:
+    app: ghost
+spec:
+  serviceName: ghost-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+        component: ghost
+    spec:
+      containers:
+        - name: ghost-container
+          env:
+            - name: url
+              value: http://ghost.local
+          ports:
+            - containerPort: 2368
+              protocol: TCP
+          # https://hub.docker.com/_/ghost
+          image: ghost:3.33.0
+          volumeMounts:
+            - name: ghost-content-persistentvolumeclaim
+              mountPath: /var/lib/ghost/content
+  volumeClaimTemplates:
+    - metadata:
+        name: ghost-content-persistentvolumeclaim
+        labels:
+          app: ghost
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 128Mi

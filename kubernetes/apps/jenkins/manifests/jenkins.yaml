@@ -1,0 +1,72 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins-service
+  labels:
+    app: jenkins
+spec:
+  type: LoadBalancer
+  selector:
+    component: jenkins
+    app: jenkins
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: "http"
+    - port: 50000
+      name: "jnlp"
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jenkins-statefulset
+  labels:
+    app: jenkins
+spec:
+  serviceName: jenkins-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+        component: jenkins
+    spec:
+      volumes:
+        - name: jenkins-config
+          configMap:
+            name: jenkins-config
+      containers:
+        # https://hub.docker.com/r/jenkins/jenkins
+        - name: jenkins-container
+          image: jenkins/jenkins:2.257
+          env:
+              - name: CASC_JENKINS_CONFIG
+                value: /var/jenkins_home/casc_configs
+          volumeMounts:
+            - name: jenkins-config
+              mountPath: /var/jenkins_home/casc_configs/casc.yml
+              subPath: casc.yml
+            - name: jenkins-config
+              mountPath: /usr/share/jenkins/ref/plugins.txt
+              subPath: plugins.txt
+            - name: jenkins-config
+              mountPath: /usr/local/bin/jenkins.sh
+              subPath: jenkins.sh
+            - name: jenkins-home-persistentvolumeclaim
+              mountPath: /var/jenkins_home
+  volumeClaimTemplates:
+    - metadata:
+        name: jenkins-home-persistentvolumeclaim
+        labels:
+          app: jenkins
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi

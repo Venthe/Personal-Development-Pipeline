@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: prometheus-server
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        component: prometheus-server
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "400m"
+            limits:
+              memory: "512Mi"
+              cpu: "400m"
+          image: prom/prometheus:v2.21.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          volumeMounts:
+            - mountPath: "/etc/prometheus"
+              name: config-prometheus
+      volumes:
+        - name: config-prometheus
+          configMap:
+            name: prometheus-config

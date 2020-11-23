@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: grafana-service
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  type: LoadBalancer
+  selector:
+    component: "grafana-container"
+  ports:
+    - port: 80
+      targetPort: 3000
+      name: http

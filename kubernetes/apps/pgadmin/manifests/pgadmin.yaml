@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin-service
+  labels:
+    app: pgadmin
+spec:
+  type: LoadBalancer
+  selector:
+    component: pgadmin
+    app: pgadmin
+  ports:
+    - port: 80
+      name: http
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin-deployment
+  labels:
+    app: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+        component: pgadmin
+    spec:
+      volumes:
+        - name: pgadmin-servers-volume
+          configMap:
+            name: pgadmin-servers-json
+      containers:
+        # https://hub.docker.com/r/dpage/pgadmin4
+        - name: pgadmin-container
+          image: dpage/pgadmin4:4.22
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: pgadmin-servers-volume
+              mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: pgadmin-secret
+                  key: PGADMIN_DEFAULT_EMAIL
+            - name: PGADMIN_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgadmin-secret
+                  key: PGADMIN_DEFAULT_PASSWORD
