@@ -9,9 +9,12 @@
 #
 
 # Auto detect text files and perform LF normalization
-*       text=auto
+*       text=auto eol=lf
 
 # Shell scripts require LF
 *.sh    text eol=lf
+*.ldif    text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
 # Batch scripts require CRLF
 *.bat   text eol=crlf
