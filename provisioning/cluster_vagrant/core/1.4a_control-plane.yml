@@ -16,12 +16,14 @@
       default: 1
       private: false
   tasks:
-    - shell: |
-        hostname -I | xargs -n1 echo | cat | sed -n "{{adapter_id}}p"
+    # Do this step in gather facts
+    - name: "Get IP of adatper {{ adapter_id }}"
+      shell: |
+        set -o pipefail && hostname -I | xargs -n1 echo | cat | sed -n "{{ adapter_id }}p"
       register: ips
     - name: Create a directory if it does not exist
       file:
-        mode: '0664'
+        mode: 0774
         owner: 'root'
         path: "{{ item }}"
         state: directory
@@ -73,8 +75,8 @@
         cmd: |
           kubeadm init \
             --node-name {{ node }} \
-            --apiserver-advertise-address="{{ips.stdout}}" \
-            --apiserver-cert-extra-sans="{{ips.stdout}}"
+            --apiserver-advertise-address="{{ ips.stdout }}" \
+            --apiserver-cert-extra-sans="{{ ips.stdout }}"
     - name: Create .kube directory for vagrant user
       become: true
       file:

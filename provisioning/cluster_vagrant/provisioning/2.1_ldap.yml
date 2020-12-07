@@ -48,7 +48,7 @@
         owner: vagrant
         mode: '0777'
       with_items:
-        - groups 
+        - groups
         - people
     - name: Register people file
       command: cat /tmp/ldap/openldap/people.ldif
@@ -81,13 +81,11 @@
     - name: Deploy helm charts
       shell:
         cmd: |
-          helm upgrade \
+          helm upgrade --install \
+            --namespace={{ namespace }} --create-namespace \
+            --values={{ item.value }} \
             {{ item.release_name }} \
-            {{ item.chart }} \
-            --install \
-            --namespace={{ namespace }} \
-            --create-namespace \
-            --values={{ item.value }}
+            {{ item.chart }}
       with_items:
         - release_name: phpldapadmin
           chart: cetic/phpldapadmin
@@ -103,12 +101,12 @@
           kind: Ingress
           metadata:
             name: phpldapadmin-ingress
-            namespace: {{namespace}}
+            namespace: {{ namespace }}
             annotations:
               kubernetes.io/ingress.class: "nginx"
           spec:
             rules:
-            - host: ldap-admin.{{ldap_domain}}
+            - host: ldap-admin.{{ ldap_domain }}
               http:
                 paths:
                 - backend:

@@ -13,7 +13,8 @@
           overlay
           br_netfilter
       notify: Restart system.d kernel modules
-    # As a requirement for your Linux Node's iptables to correctly see bridged traffic
+    # As a requirement for your Linux Node's iptables to
+    # correctly see bridged traffic
     - name: Set required CRI settings
       copy:
         mode: '0644'
@@ -25,7 +26,7 @@
           net.bridge.bridge-nf-call-ip6tables = 1
       notify: reload systemd
   handlers:
-    - name: Restart system.d kernel modules 
+    - name: Restart system.d kernel modules
       service:
         name: systemd-modules-load
         state: restarted
@@ -33,7 +34,7 @@
     # VERIFY: This potentially does not work, next handler works for sure
     - name: Reload system.d kernel parameters
       systemd:
-        daemon_reload: yes
+        daemon_reload: true
       listen: reload systemd
     - name: Reload all values from all system directories
       command: sysctl --system
@@ -69,12 +70,12 @@
       register: release_name
     - name: Add apt repository for Docker
       apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ release_name.stdout }} stable
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ release_name.stdout }} stable"
         state: present
         filename: docker
     - name: Install containerd
       apt:
-        name: containerd.io={{containerd_version}}
+        name: "containerd.io={{ containerd_version }}"
         state: present
         update_cache: true
     - name: Create directory for containerd configuration

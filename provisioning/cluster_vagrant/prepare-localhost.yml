@@ -1,21 +1,23 @@
+---
 - name: Install local dependencies
   hosts: 127.0.0.1
   connection: local
   gather_facts: false
   tasks:
     - name: Install ansible galaxy modules
-      command: "{{item}}"
+      command: "ansible-galaxy collection install {{ item }}"
       with_items:
-        - ansible-galaxy collection install ansible.posix
-        - ansible-galaxy collection install community.general
+        - ansible.posix
+        - community.general
     - name: Intall Python packages
-      command: pip3 install "{{item}}"
+      command: "pip3 install {{ item }}"
       with_items:
         - "ansible-lint"
     - name: Install APT packages
       become: true
       apt:
-        name: "{{item}}"
+        name: "{{ item }}"
         update_cache: yes
       with_items:
         - yamllint
+...

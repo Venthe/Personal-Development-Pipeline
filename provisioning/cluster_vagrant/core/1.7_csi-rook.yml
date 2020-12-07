@@ -17,7 +17,7 @@
   tasks:
     - name: "Delete {{ namespace }} namespace"
       command: "kubectl delete namespace {{ namespace }}"
-      when: reset == true
+      when: reset|bool
     - name: Add Rook repository to helm
       command: helm repo add rook-release https://charts.rook.io/release
       notify: Update helm repository
@@ -92,7 +92,7 @@
           # Delete the rbd volume when a PVC is deleted
           reclaimPolicy: Delete
     - name: Annotate Block storageclass as default
-      command: "{{item}}"
+      command: "{{ item }}"
       with_items:
         - kubectl apply -f /tmp/rook-ceph-block.yml
         - "kubectl annotate StorageClass rook-ceph-block --namespace={{ namespace }} --overwrite storageclass.kubernetes.io/is-default-class=\"true\""
@@ -151,19 +151,19 @@
 
           reclaimPolicy: Delete
     - name: Add Shared storageclass
-      command: "{{item}}"
+      command: "{{ item }}"
       with_items:
         - kubectl apply -f /tmp/rook-ceph-shared-filesystem.yml
         - "kubectl annotate StorageClass rook-cephfs --namespace={{ namespace }} --overwrite storageclass.kubernetes.io/is-default-class=\"false\""
     - name: Create pod with tools
       command: "kubectl apply -f https://raw.githubusercontent.com/rook/rook/{{ rook_version }}/cluster/examples/kubernetes/ceph/toolbox.yaml"
-      when: debug == true
+      when: debug|bool
     - name: Get dashboard password
       shell:
         cmd: >
           kubectl -n {{ namespace }} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
       register: dashboard_password
-      when: debug == true
+      when: debug|bool
     - name: Tools results
       shell:
         cmd: >
@@ -171,12 +171,12 @@
       register: ceph_status
       when: debug == true
     - name: Show debug info
-      when: debug == true
+      when: debug|bool
       debug:
         msg: "{{ item }}"
       with_items:
-        - "{{dashboard_password.stdout}}"
-        - "{{ceph_status.stdout}}"
+        - "{{ dashboard_password.stdout }}"
+        - "{{ ceph_status.stdout }}"
 
   handlers:
     - name: Update helm repository

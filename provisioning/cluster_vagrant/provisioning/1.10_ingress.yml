@@ -24,6 +24,7 @@
     - name: Prepare Helm dashboard value customization
       copy:
         dest: "/tmp/values.yml"
+        mode: 0777
         content: |
           controller:
             service:
