@@ -13,7 +13,7 @@ curl -O https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb 
 echo 'export VAGRANT_EXPERIMENTAL="disks"' >> ~/.bashrc
 
 # WSL2 Only
-echo 'export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/mnt/DRIVE"' >> ~/.bashrc
+echo 'export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/mnt/f"' >> ~/.bashrc
 echo 'export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"' >> ~/.bashrc
 # echo 'export VAGRANT_DEFAULT_PROVIDER=hyperv' >> ~/.bashrc
 

@@ -1,28 +1,53 @@
-# kubectl delete namespace gerrit
+#!/bin/env bash
 
-# git clone https://github.com/GerritCodeReview/k8s-gerrit.git
-ORIGINAL_PWD=$(pwd)
-cd k8s-gerrit
+HOSTNAME="gerrit.example.org"
+HTTPD_LISTEN_URL="proxy-http://*:8080/"
+CANONICAL_WEB_URL="http://${HOSTNAME}/"
+CANONICAL_GIT_URL="git://${HOSTNAME}/"
+NAMESPACE="gerrit"
+RELEASE_NAME="gerrit"
 
-cd $(git rev-parse --show-toplevel)/helm-charts/gerrit
-"/d/Tools/helm/helm-v3.3.4-windows-amd64/helm.exe" upgrade \
-  --install \
-  --create-namespace \
-  --values="${ORIGINAL_PWD}/values.yaml" \
-  --namespace=gerrit \
-  gerrit \
-  .
+helm repo add venthe https://raw.githubusercontent.com/Venthe/k8s-gerrit/various-updates/chart-repository/
+helm repo update
 
-cd "${ORIGINAL_PWD}"
-kubectl annotate service gerrit-gerrit-service \
-  --namespace=gerrit \
-  --overwrite \
-  external-dns.alpha.kubernetes.io/hostname="gerrit.local"
+function compileValuesFile() {
+  function prepareVariables() {
+    docker run --rm --interactive \
+      imega/jq --null-input \
+      --arg HTTPD_LISTEN_URL "${HTTPD_LISTEN_URL}" \
+      --arg CANONICAL_WEB_URL "${CANONICAL_WEB_URL}" \
+      --arg CANONICAL_GIT_URL "${CANONICAL_GIT_URL}" \
+      --arg HOSTNAME "${HOSTNAME}" \
+      '
+      {}
+      |.httpd.listenUrl |= $HTTPD_LISTEN_URL
+      |.gerrit.canonicalWebUrl |= $CANONICAL_WEB_URL
+      |.gerrit.canonicalGitUrl |= $CANONICAL_GIT_URL
+      |.gerrit.ingress.host |= $HOSTNAME
+      ' \
+      > "./tmp/variables.json"
+  }
+  prepareVariables
 
-# cd $(git rev-parse --show-toplevel)/helm-charts/gerrit-replica
-# helm dependency update
-# helm install \
-#   --values=./values.yaml \
-#   --namespace=gerrit
-#   --name=gerrit-replica \
-#   .
+  docker run --interactive --rm \
+    --volume="$(pwd)/template:/templates" \
+    --volume="$(pwd)/tmp/:/variables" \
+    dinutac/jinja2docker:latest --format=yaml \
+    /templates/values.yaml.j2 /variables/variables.json \
+    > ./tmp/values.yaml
+}
+
+function installChart() {
+  helm upgrade --install \
+    --namespace="${NAMESPACE}" --create-namespace \
+    --values="$(pwd)/tmp/values.yaml" \
+    "${RELEASE_NAME}" \
+    venthe/gerrit
+}
+
+function install() {
+  compileValuesFile
+  installChart
+}
+
+install

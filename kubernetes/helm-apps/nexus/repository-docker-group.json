@@ -1,0 +1,15 @@
+{
+  "name": "docker-group",
+  "storage": {
+    "blobStoreName": "docker-group",
+    "strictContentTypeValidation": true,
+    "writePolicy": "allow_once"
+  },
+  "online": true,
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": false,
+    "httpPort": 5001
+  },
+  "group": { "memberNames": ["dockerhub-proxy", "docker-hosted"] }
+}

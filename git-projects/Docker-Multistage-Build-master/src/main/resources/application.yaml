@@ -1,0 +1,44 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    jmx:
+      exposure:
+        include: '*'
+    enabled-by-default: true
+  endpoint:
+    auditevents.enabled: true
+    beans.enabled: true
+    caches.enabled: true
+    conditions.enabled: true
+    configprops.enabled: true
+    env.enabled: true
+    flyway.enabled: true
+    heapdump.enabled: true
+    httptrace.enabled: true
+    info.enabled: true
+    integrationgraph.enabled: true
+    jolokia.enabled: true
+    logfile.enabled: true
+    loggers.enabled: true
+    liquibase.enabled: true
+    metrics.enabled: true
+    mappings.enabled: true
+    prometheus.enabled: true
+    scheduledtasks.enabled: true
+    sessions.enabled: true
+    shutdown.enabled: false
+    threaddump.enabled: true
+    health:
+      enabled: true
+      show-details: always
+      # For k8s
+      probes:
+        enabled: true
+      diskspace:
+        enabled: true
+      mongo:
+        enabled: true
+      ping:
+        enabled: true

@@ -1,0 +1,6 @@
+redmineUsername: admin
+redminePassword: password
+mariadb:
+  auth:
+    rootPassword: secretpassword
+    password: secret

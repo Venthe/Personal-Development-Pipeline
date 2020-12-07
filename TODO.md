@@ -1,10 +1,5 @@
 # TODO
 
-## Fixes
-
-- FIX-005 Add reindexing to gerrit
-- FIX-006 Add init to gerrit
-
 ## To do
 
 - TODO-004 Add waiting for host being present
@@ -15,5 +10,8 @@
 - Enable https-only transport protocols
 - Backup management
 - Proxying
-- Service monitoring
-- Move PGAdmin to separate initialization
+- Gerrit
+    - LoadBalancer instead of ingress to address multiple ports on hostname
+    - Groups from LDAP
+- Dashboard
+    - Hostname

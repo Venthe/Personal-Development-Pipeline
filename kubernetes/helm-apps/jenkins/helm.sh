@@ -1,12 +1,11 @@
 # kubectl delete namespace jenkins
 
-# helm repo add jenkins https://charts.jenkins.io
+helm repo add jenkins https://charts.jenkins.io
+helm repo update
 # helm pull jenkins/jenkins
-helm upgrade \
-  --create-namespace \
-  --namespace=jenkins \
+helm upgrade --install \
+  --create-namespace --namespace=jenkins \
   --values=./values.yaml \
-  --install \
   jenkins \
   jenkins/jenkins
 

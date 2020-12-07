@@ -1,0 +1,147 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.0-M4'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id "java"
+    // id "maven-publish"
+    // id "checkstyle"
+    // id "jacoco"
+    // id "org.sonarqube" version "3.0"
+    // id "com.gorylenko.gradle-git-properties" version "2.2.2"  // Git information in actuator/info endpoint
+    id "io.freefair.lombok" version "5.2.1"
+    // id "com.dorongold.task-tree" version "1.5"
+}
+
+group='eu.venthe'
+version='0.0.1-SNAPSHOT'
+sourceCompatibility='11'
+
+ext {
+    appJar = System.getProperty("appJar", null);
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+
+dependencies {
+    // Lombok
+    annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.projectlombok:lombok"
+
+    // Web
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    }
+    implementation "org.springframework.boot:spring-boot-starter-undertow"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-hateoas"
+    implementation "io.springfox:springfox-boot-starter:3.0.0" // Swagger documentation
+
+    // Observability
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "net.logstash.logback:logstash-logback-encoder:6.4"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "io.prometheus:simpleclient_pushgateway"
+
+    // Spring Data common
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Spring Data SQL
+    // runtimeOnly "io.r2dbc:r2dbc-postgresql"
+    runtimeOnly "org.postgresql:postgresql"
+    // implementation "org.liquibase:liquibase-core"
+    // implementation "org.springframework.boot:spring-boot-starter-data-r2dbc"
+    // implementation "org.springframework.boot:spring-boot-starter-jooq"
+    // implementation "org.springframework.boot:spring-boot-starter-data-jdbc"
+
+    // Spring Data NoSQL
+    implementation "org.springframework.boot:spring-boot-starter-data-mongodb"
+    // implementation "org.springframework.boot:spring-boot-starter-data-mongodb-reactive"
+
+    // Security
+    // implementation "org.springframework.boot:spring-boot-starter-security"
+    // implementation "org.springframework.cloud:spring-cloud-starter-vault-config"
+    // testImplementation "org.springframework.security:spring-security-test"
+
+    // Miscellaneous
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
+    implementation "org.springframework.boot:spring-boot-starter-integration"
+    // testImplementation "org.springframework.integration:spring-integration-test"
+    // implementation "org.springframework.boot:spring-boot-starter-groovy-templates"
+    implementation("com.google.guava:guava:30.0-jre")
+
+    // Kafka
+    implementation "org.apache.kafka:kafka-streams"
+    implementation "org.springframework.kafka:spring-kafka"
+    testImplementation "org.springframework.kafka:spring-kafka-test"
+
+    // Reactor
+    // implementation "io.projectreactor:reactor-core:3.4.0-RC2"
+    // testImplementation "io.projectreactor:reactor-test:3.4.0-RC2"
+
+    // Test common
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+    }
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation "org.mock-server:mockserver-junit-jupiter:5.8.0"
+}
+
+test {
+    useJUnitPlatform {
+        includeEngines "junit-jupiter"
+        excludeEngines "junit-vintage"
+    }
+
+    onlyIf {
+        !project.hasProperty("skipTests")
+    }
+
+    // finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+bootJar {
+    def string = project.getProperty("appJar") ?: "${archiveBaseName.get()}-${archiveVersion.get()}"
+    archiveFileName = "${string}.${archiveExtension.get()}"
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+springBoot {
+    buildInfo() // For info endpoint
+}
+
+//publishing {
+//    publications {
+//        maven(MavenPublication).from(components.java)
+//    }
+//}
+
+//checkstyle {
+//    toolVersion = "8.36.2"
+//}
+
+//checkstyle {
+//    showViolations = true
+//    ignoreFailures = false
+//}
+
+tasks.withType(JavaCompile) {
+    //enable compilation in a separate daemon process
+    options.fork = true
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.encoding = "UTF-8"
+}

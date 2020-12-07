@@ -1,175 +1,84 @@
-master:
-  serviceType: LoadBalancer
-  installPlugins:
-    - kubernetes:1.27.5
-    - workflow-job:2.40
-    - workflow-aggregator:2.6
-    - credentials-binding:1.24
-    - git:4.4.5
-    - configuration-as-code:1.46
+controller:
+  ingress:
+    enabled: true
+    # Override for the default paths that map requests to the backend
+    paths: []
+    # - backend:
+    #     serviceName: ssl-redirect
+    #     servicePort: use-annotation
+    # - backend:
+    #     serviceName: >-
+    #       {{ template "jenkins.fullname" . }}
+    #     # Don't use string here, use only integer value!
+    #     servicePort: 8080
+    # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
+    apiVersion: "extensions/v1beta1"
+    labels: {}
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
+    # path: "/jenkins"
+    # configures the hostname e.g. jenkins.example.com
+    hostName: jenkins.example.org
+    # tls:
+    # - secretName: jenkins.cluster.local
+    #   hosts:
+    #     - jenkins.cluster.local
   additionalPlugins:
     - timestamper:1.11.8
-    - pipeline-graph-analysis:1.10
-    - antisamy-markup-formatter:2.1
-    - checks-api:1.1.0
-    - jsch:0.1.55.2
-    - snakeyaml-api:1.27.0
-    - credentials:2.3.13
-    - mailer:1.32.1
-    - lockable-resources:2.10
-    - workflow-basic-steps:2.23
-    - ant:1.11
-    - kubernetes-client-api:4.11.1
-    - workflow-step-api:2.23
-    - apache-httpcomponents-client-4-api:4.5.10-2.0
-    - run-condition:1.3
-    - jdk-tool:1.4
-    - branch-api:2.6.1
-    - docker-commons:1.17
-    - bouncycastle-api:2.18
-    - workflow-cps-global-lib:2.17
-    - git-client:3.5.1
-    - pipeline-model-api:1.7.2
-    - matrix-project:1.18
-    - conditional-buildstep:1.3.6
-    - token-macro:2.12
-    - ace-editor:1.1
-    - ssh-agent:1.20
-    - scm-api:2.6.4
-    - jackson2-api:2.11.3
-    - durable-task:1.35
-    - job-dsl:1.77
-    - jenkins-multijob-plugin:1.33
-    - workflow-cps:2.84
-    - pipeline-model-extensions:1.7.2
-    - matrix-auth:2.6.4
-    - pipeline-rest-api:2.18
-    - view-job-filters:2.3
-    - pipeline-model-definition:1.7.2
-    - kubernetes-credentials:0.7.0
-    - pipeline-stage-step:2.5
-    - variant:1.3
-    - built-on-column:1.1
-    - envinject:2.3.0
-    - plugin-util-api:1.4.0
-    - popper-api:1.16.0-7
-    - pipeline-milestone-step:1.3.1
-    - handlebars:1.1.1
-    - workflow-multibranch:2.22
-    - maven-plugin:3.8
-    - momentjs:1.1.1
-    - docker-workflow:1.24
-    - envinject-api:1.7
-    - cloudbees-folder:6.14
-    - display-url-api:2.3.3
-    - ssh-credentials:1.18.1
-    - gerrit-code-review:0.4.4
-    - pipeline-stage-view:2.18
-    - trilead-api:1.0.12
-    - workflow-support:3.6
-    - workflow-durable-task-step:2.36
-    - pipeline-stage-tags-metadata:1.7.2
-    - jquery3-api:3.5.1-2
-    - jquery:1.12.4-1
-    - command-launcher:1.5
-    - external-monitor-job:1.7
-    - windows-slaves:1.7
-    - authentication-tokens:1.4
-    - workflow-scm-step:2.11
-    - git-server:1.9
-    - pam-auth:1.6
-    - pipeline-input-step:2.12
     - ldap:1.26
-    - workflow-api:2.40
-    - build-pipeline-plugin:1.5.8
-    - echarts-api:4.9.0-2
-    - pipeline-build-step:2.13
-    - javadoc:1.6
-    - plain-credentials:1.7
-    - bootstrap4-api:4.5.3-1
-    - jquery-detached:1.2.1
-    - gerrit-trigger:2.30.5
-    - font-awesome-api:5.15.1-1
-    - script-security:1.75
-    - parameterized-trigger:2.39
-    - structs:1.20
-    - junit:1.43
+    - gerrit-trigger:2.121.1
   prometheus.enabled: true
   servicePort: 80
-  jenkinsUrl: http://jenkins.local/
-  initializeOnce: true
-  serviceAnnotations:
-    external-dns.alpha.kubernetes.io/hostname: "jenkins.local"
+  jenkinsUrl: http://jenkins.example.org/
+  initializeOnce: false
   JCasC:
     configScripts:
       security: |
         jenkins:
-          securityRealm:
-            ldap:
-              configurations:
-              - displayNameAttributeName: "cn"
-                groupMembershipStrategy:
-                  fromGroupSearch:
-                    filter: "memberUid={1}"
-                groupSearchBase: "ou=groups"
-                groupSearchFilter: "(& (cn={0}) (| (objectclass=groupOfNames) (objectclass=groupOfUniqueNames)\
-                  \ (objectclass=posixGroup)))"
-                inhibitInferRootDN: false
-                managerDN: "cn=readonly,dc=my-company,dc=com"
-                managerPasswordSecret: "{AQAAABAAAAAQ3WLS3of0AnP3v2p2nUkAfmdkjuFrlN9h7r19HZ1Vslc=}"
-                rootDN: "dc=my-company,dc=com"
-                server: "openldap.ldap"
-                userSearchBase: "ou=people"
-              disableMailAddressResolver: false
-              disableRolePrefixing: true
-              groupIdStrategy: "caseInsensitive"
-              userIdStrategy: "caseInsensitive"
-        security:
-          envInject:
-            enableLoadingFromMaster: false
-            enablePermissions: false
-            hideInjectedVars: false
-          globalJobDslSecurityConfiguration:
-            useScriptSecurity: false
-          sSHD:
-            port: -1
-
-      unsorted: |
-        jenkins:
           agentProtocols:
-          - "JNLP4-connect"
-          - "Ping"
+            - JNLP4-connect
+            - Ping
           authorizationStrategy:
-            loggedInUsersCanDoAnything:
-              allowAnonymousRead: false
+            loggedInUsersCanDoAnything
           labelAtoms:
-          - name: "master"
-          myViewsTabBar: "standard"
+            - name: master
+          myViewsTabBar: standard
           primaryView:
             all:
-              name: "all"
+              name: all
           quietPeriod: 5
           scmCheckoutRetryCount: 0
           slaveAgentPort: 50000
           updateCenter:
             sites:
-            - id: "default"
-              url: "https://updates.jenkins.io/update-center.json"
+              - id: default
+                url: 'https://updates.jenkins.io/update-center.json'
           views:
-          - all:
-              name: "all"
-          viewsTabBar: "standard"
+            - all:
+                name: all
+          viewsTabBar: standard
+          securityRealm:
+            ldap:
+              configurations:
+                - displayNameAttributeName: cn
+                  inhibitInferRootDN: false
+                  managerDN: 'cn=readonly,dc=example,dc=org'
+                  managerPasswordSecret: '{AQAAABAAAAAQd9JDgVMOkS8Kd7Xvzu97byGo5vRGA8iuqN+GT35Lofw=}'
+                  rootDN: 'dc=example,dc=org'
+                  server: openldap.ldap
+              disableMailAddressResolver: false
+              disableRolePrefixing: true
+              groupIdStrategy: caseInsensitive
+              userIdStrategy: caseInsensitive
         unclassified:
           buildDiscarders:
             configuredBuildDiscarders:
-            - "jobBuildDiscarder"
-          defaultFolderConfiguration:
-            healthMetrics:
-            - worstChildHealthMetric:
-                recursive: true
+              - jobBuildDiscarder
           fingerprints:
             fingerprintCleanupDisabled: false
-            storage: "file"
+            storage: file
           gitSCM:
             allowSecondFetch: false
             createAccountBasedOnEmail: false
@@ -178,17 +87,20 @@ master:
             showEntireCommitSummaryInChanges: false
             useExistingAccountWithSameEmail: false
           junitTestResultStorage:
-            storage: "file"
+            storage: file
           mailer:
-            charset: "UTF-8"
+            charset: UTF-8
             useSsl: false
             useTls: false
-          mavenModuleSet:
-            localRepository: "default"
           pollSCM:
             pollingThreadCount: 10
+          timestamper:
+            allPipelines: false
+            elapsedTimeFormat: '''<b>''HH:mm:ss.S''</b> '''
+            systemTimeFormat: '''<b>''HH:mm:ss''</b> '''
         tool:
           git:
             installations:
-            - home: "git"
-              name: "Default"
+              - home: git
+                name: Default
+

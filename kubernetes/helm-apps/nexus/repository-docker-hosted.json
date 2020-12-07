@@ -1,0 +1,14 @@
+{
+    "name" : "docker-hosted",
+    "storage": {
+      "blobStoreName": "docker-hosted",
+      "strictContentTypeValidation": true,
+      "writePolicy": "allow_once"
+    },
+    "online": true,
+    "docker": {
+      "v1Enabled": false,
+      "forceBasicAuth": false,
+      "httpPort": 5000
+    }
+}

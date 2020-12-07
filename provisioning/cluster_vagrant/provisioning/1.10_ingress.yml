@@ -1,0 +1,59 @@
+---
+- name: Install nginx ingress
+  gather_facts: false
+  hosts: all
+  vars_prompt:
+    - name: namespace
+      default: nginx
+      private: false
+    - name: tld_hostname
+      default: example.org
+      private: false
+    - name: delete_namespace
+      default: false
+      private: false
+  vars:
+    debug: false
+  tasks:
+    - name: "Delete {{ namespace }} namespace"
+      command: "kubectl delete namespace {{ namespace }}"
+      when: "delete_namespace|bool"
+    - name: copy manifests
+      become: true
+      copy:
+        src: ./1.10_ingress/
+        dest: /tmp/
+        directory_mode: yes
+        mode: 0777
+        owner: vagrant
+    - name: Add helm repository
+      command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      notify: Update helm repository
+    - name: Prepare Helm dashboard value customization
+      copy:
+        dest: "/tmp/values.yml"
+        mode: 0777
+        content: |
+          controller:
+            service:
+              annotations:
+                external-dns.alpha.kubernetes.io/hostname: "{{tld_hostname}}"
+    - name: Install manifest
+      shell:
+        cmd: |
+          helm upgrade \
+            --install \
+            --create-namespace \
+            --namespace={{ namespace }} \
+            --values=/tmp/values.yml \
+            ingress-nginx \
+            ingress-nginx/ingress-nginx
+    - name: Instructions
+      debug:
+        msg: "To use, add the 'kubernetes.io/ingress.class: nginx' annotation to ingress"
+    # - name: Deploy test ingress
+    #   command: "kubectl apply -f /tmp/test-ingress.yml"
+
+  handlers:
+    - name: Update helm repository
+      include_tasks: _update_helm_repositories.yml

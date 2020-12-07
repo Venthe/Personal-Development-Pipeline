@@ -1,0 +1,15 @@
+---
+- name: Provision Developer Workstation
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Install via APT
+      become: true
+      apt: 
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      with_items:
+        - jq
+...

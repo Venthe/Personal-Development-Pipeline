@@ -1,0 +1,4 @@
+---
+- name: Update helm repositories
+  command: helm repo update
+...

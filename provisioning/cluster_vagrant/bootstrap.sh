@@ -1,7 +1,12 @@
 #!/usr/bin/bash
 
-PROVIDER=${1:-hyperv}
+set -e
 
-ansible-playbook prepare-localhost.yml
+PROVIDER=${2:-hyperv}
+
+echo "Provider: ${PROVIDER}"
+
+# ansible-playbook prepare-localhost.yml
 vagrant destroy --force
-vagrant up --provider="${PROVIDER}"
+VAGRANT_EXPERIMENTAL="disks" vagrant up --provider="${PROVIDER}"
+./provision.sh "${PROVIDER}"
