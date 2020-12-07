@@ -5,7 +5,6 @@
   vars:
     LDAP_BASE_DN: "{{'{{ LDAP_BASE_DN }}'}}"
     LDAP_DOMAIN: "{{'{{ LDAP_DOMAIN }}'}}"
-
   vars_prompt:
     - name: namespace
       prompt: Namespace for LDAP

@@ -98,4 +98,4 @@
     #   command: systemctl restart system-networkd
   handlers:
     - name: Update helm repository
-      command: helm repo update
+      include_tasks: _update_helm_repositories.yml
