@@ -40,26 +40,29 @@
       with_items:
         - /tmp/ldap/openldap
         - /tmp/ldap/phpldapadmin
-    - name: Template LDIF
+    - name: Copy LDIF
       become: true
-      template:
-        src: "./2.1_ldap/openldap/{{item}}.ldif.j2"
-        dest: "/tmp/ldap/openldap/{{item}}.ldif"
+      copy:
+        src: ./2.1_ldap/openldap
+        dest: /tmp/ldap/openldap/
+        directory: true
+        mode: 0777
         owner: vagrant
-        mode: '0777'
-      with_items:
-        - groups
-        - people
-    - name: Register people file
-      command: cat /tmp/ldap/openldap/people.ldif
-      register: ldap_users
-    - name: Register group file
-      command: cat /tmp/ldap/openldap/groups.ldif
-      register: ldap_groups
+    # - name: Template LDIF
+    #   become: true
+    #   template:
+    #     src: "./2.1_ldap/openldap/{{item}}.ldif.j2"
+    #     dest: "/tmp/ldap/openldap/{{item}}.ldif"
+    #     owner: vagrant
+    #     mode: '0777'
+    #   with_items:
+    #     - export
+    #     - people
+    - name: Register LDIF file
+      command: cat /tmp/ldap/openldap/export.ldif
+      register: ldap_export
     - set_fact:
-        ldap_groups: "{{ldap_groups.stdout}}"
-    - set_fact:
-        ldap_users: "{{ldap_users.stdout}}"
+        ldap_export: "{{ ldap_export.stdout }}"
     - name: Template files
       become: true
       template:
