@@ -45,7 +45,7 @@ dn: cn=Administrators,ou=Groups,{{ LDAP_BASE_DN }}
 cn: Administrators
 gidnumber: 500
 memberuid: jjuly
-memberuid: admin
+memberuid: Administrator
 objectclass: posixGroup
 objectclass: top
 
@@ -82,6 +82,7 @@ ou: People
 # Entry 10: cn=Administrator,ou=People,{{ LDAP_BASE_DN }}
 dn: cn=Administrator,ou=People,{{ LDAP_BASE_DN }}
 cn: Administrator
+cn: administrator
 mail: administrator@{{ LDAP_DOMAIN }}
 objectclass: inetOrgPerson
 objectclass: top

@@ -13,14 +13,10 @@
     - name: Add helm repository
       command: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
       notify: Update helm repository
-    - name: Prepare Helm dashboard value customization
-      copy:
-        dest: "/tmp/values.yaml"
-        content: |
-          service:
-            type: "LoadBalancer"
-            annotations:
-              external-dns.alpha.kubernetes.io/hostname: "dashboard.example.org"
+    # - name: Prepare Helm dashboard value customization
+    #   copy:
+    #     dest: "/tmp/values.yaml"
+    #     content: |
     - name: Install dashboard manifest
       shell:
         cmd: |
@@ -53,9 +49,31 @@
             - kind: ServiceAccount
               name: admin-user
               namespace: dashboard
+    - name: Prepare manifests 2
+      copy:
+        dest: "/tmp/ingress.yml"
+        content: |
+          apiVersion: networking.k8s.io/v1beta1
+          kind: Ingress
+          metadata:
+            name: nginx
+            namespace: {{ namespace }}
+            annotations:
+              kubernetes.io/ingress.class: "nginx"
+          spec:
+            rules:
+            - host: dashboard.example.org
+              http:
+                paths:
+                - backend:
+                    serviceName: dashboard-kubernetes-dashboard
+                    servicePort: 80
       # TODO: Add kustomize with namespace
-    - name: Deploy Rook/Ceph cluster
-      command: "kubectl apply -f /tmp/user.yml"
+    - name: Deploy user for dashboard
+      command: "kubectl apply -f /tmp/{{ item }}"
+      with_items:
+        - user.yml
+        - ingress.yml
       # TODO: Add kustomize with namespace
     - name: Password to dashboard
       shell:
@@ -65,9 +83,9 @@
                   --output=jsonpath="{.data.token}" |
                   awk '{system("echo -n "$1" | base64 --decode")}'
       register: dashboard_password
-      when: debug == true
+      when: debug|bool
     - name: Show debug info
-      when: debug == true
+      when: debug|bool
       debug:
         msg: "{{dashboard_password.stdout}}"
 

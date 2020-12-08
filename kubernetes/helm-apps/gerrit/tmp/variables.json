@@ -1,0 +1,12 @@
+{
+  "httpd": {
+    "listenUrl": "proxy-http://*:8080/"
+  },
+  "gerrit": {
+    "canonicalWebUrl": "http://gerrit.example.org/",
+    "canonicalGitUrl": "git://gerrit.example.org/",
+    "ingress": {
+      "host": "gerrit.example.org"
+    }
+  }
+}

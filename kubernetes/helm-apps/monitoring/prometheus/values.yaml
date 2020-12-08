@@ -1,5 +1,0 @@
-server:
-  service:
-    type: "LoadBalancer"
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: "prometheus.local"
