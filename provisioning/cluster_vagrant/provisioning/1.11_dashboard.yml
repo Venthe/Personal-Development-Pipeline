@@ -75,6 +75,7 @@
         - user.yml
         - ingress.yml
       # TODO: Add kustomize with namespace
+      # kubectl get secret $(kubectl get secret --namespace=dashboard --output=jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep admin-user) --namespace=dashboard --output=jsonpath="{.data.token}" | awk '{system("echo -n "$1" | base64 --decode")}'
     - name: Password to dashboard
       shell:
         cmd: |
