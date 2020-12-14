@@ -1,6 +1,7 @@
 # kubectl delete namespace nexus
 
-# helm repo add oteemocharts https://oteemo.github.io/charts
+helm repo add oteemocharts https://oteemo.github.io/charts
+helm repo update
 # helm pull oteemocharts/sonatype-nexus
 helm upgrade \
   --create-namespace \
