@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+  jenkins:
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - "jenkins-home:/var/jenkins_home"
+    image: "jenkins/jenkins:lts"
+  gerrit:
+    ports:
+      - "8082:8080"
+      - "29418:29418"
+    volumes:
+      - gerrit-git-volume:/var/gerrit/git
+      - gerrit-index-volume:/var/gerrit/index
+      - gerrit-cache-volume:/var/gerrit/cache
+    image: gerritcodereview/gerrit:latest
+    environment:
+      - CANONICAL_WEB_URL=http://192.168.99.100
+  sonarqube:
+    ports:
+      - "9000:9000"
+    image: "sonarqube:latest"
+    volumes:
+      - sonar-conf-volume:/opt/sonarqube/conf
+      - sonar-data-volume:/opt/sonarqube/data
+      - sonar-logs-volume:/opt/sonarqube/logs
+      - sonar-extensions-volume:/opt/sonarqube/extensions
+  nexus3:
+    ports:
+      - "8081:8081"
+    image: sonatype/nexus3:latest
+    volumes:
+      - nexus-data:/nexus-data
+
+volumes:
+  jenkins-home:
+  gerrit-git-volume:
+  gerrit-index-volume:
+  gerrit-cache-volume:
+  sonar-conf-volume:
+  sonar-data-volume:
+  sonar-logs-volume:
+  sonar-extensions-volume:
+  nexus-data:

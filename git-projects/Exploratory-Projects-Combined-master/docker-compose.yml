@@ -1,0 +1,131 @@
+version: '3.8'
+services:
+
+  app:
+    build: .
+    environment:
+      SERVER_PORT: 81
+      SPRING_DATA_MONGODB_HOST: "mongo"
+      SPRING_DATA_KAFKA_BOOTSTRAP-SERVERS: "kafka"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/postgres?reWriteBatchedInserts=true"
+      SPRING_ACTIVE_PROFILES: "production"
+    ports:
+      - 81:81
+      - 5005:5005
+    depends_on:
+      - kafka
+      - mongo
+      - postgres
+    command: [ "-Xdebug","-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005" ]
+
+  mongo:
+    image: library/mongo:4.2.10
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "example"
+      MONGO_INITDB_DATABASE: "test_db"
+
+  mockServer:
+    image: mockserver/mockserver:mockserver-5.11.1
+    ports:
+      - 1080:1080
+    environment:
+      MOCKSERVER_MAX_EXPECTATIONS: 100
+      MOCKSERVER_MAX_HEADER_SIZE: 8192
+
+  postgres:
+    image: library/postgres:12.4
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+
+  prometheus:
+    image: prom/prometheus:v2.22.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  plantuml-server:
+    ports:
+      - 8082:8080
+    image: plantuml/plantuml-server:jetty-v1.2020.19
+
+  sonarqube:
+    image: library/sonarqube:8.5.1-community
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - 9000:9000
+
+  grafana:
+    depends_on:
+      - prometheus
+    image: grafana/grafana:7.2.1
+    volumes:
+      - ./infrastructure/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./infrastructure/grafana/dashboards/:/etc/dashboards/
+      - ./infrastructure/grafana/dashboards.yml/:/etc/grafana/provisioning/dashboards/dashboards.yml
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    ports:
+      - 3000:3000
+
+  mongo-express:
+    depends_on:
+      - mongo
+    image: mongo-express:0.54.0
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "example"
+
+  kafka-manager:
+    image: kafkamanager/kafka-manager:3.0.0.4
+    depends_on:
+      - kafka
+    restart: always
+    ports:
+      - 9093:9000
+    environment:
+      ZK_HOSTS: "zookeeper"
+      KAFKA_MANAGER_USERNAME: "root"
+      KAFKA_MANAGER_PASSWORD: "example"
+
+  pgadmin:
+    image: dpage/pgadmin4:4.27
+    privileged: true
+    depends_on:
+      - postgres
+    ports:
+      - 82:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@localhost"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+
+  zookeeper-service:
+    image: library/zookeeper:3.6.2
+    ports:
+      - 2181:2181
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.6.0
+    ports:
+      - 9092:9092
+    depends_on:
+      - zookeeper-service
+    environment:
+      KAFKA_LISTENERS: "PLAINTEXT://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+      KAFKA_ADVERTISED_HOST_NAME: "localhost"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-service:2181"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: docker
+      image: docker:stable-dind
+      tty: true
+      privileged: true
+      command:
+        - dockerd &
+...

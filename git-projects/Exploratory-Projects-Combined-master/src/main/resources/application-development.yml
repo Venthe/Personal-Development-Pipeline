@@ -1,0 +1,8 @@
+#spring:
+#  main.lazy-initialization: true
+#  mvc.log-request-details: true
+
+#logging.level:
+#    org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener: debug
+
+logstash.log-file-clean-history-on-start: true

@@ -1,0 +1,13 @@
+.gradle/
+.idea/
+documentation/
+gradle/
+infrastructure/
+miscellaneous/
+.gitignore
+docker-compose.yml
+gradlew
+gradlew.bat
+Dockerfile
+.env
+.run/

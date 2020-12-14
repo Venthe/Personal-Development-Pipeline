@@ -1,0 +1,65 @@
+###
+
+GET {{uri}}/customer-manager
+
+###
+
+GET {{uri}}/customer-manager/customers
+
+###
+
+GET {{uri}}/customer-manager/customers/test
+
+###
+
+GET {{uri}}/actuator
+
+###
+
+GET {{uri}}/actuator/prometheus
+
+###
+
+GET {{uri}}/actuator/metrics
+
+###
+
+GET {{uri}}/actuator/info
+
+###
+
+GET {{uri}}/actuator/health
+
+###
+GET {{uri}}/microservice/get-information/test2
+
+###
+GET {{microserviceHost}}/hello-world/test
+
+###
+POST {{uri}}/kafka/send/test1
+
+###
+GET {{uri}}/hateoas-manager/employees
+
+###
+GET {{uri}}/exception-manager/error
+Accept-Language: pl-PL
+
+###
+GET {{uri}}/reactive-manager/single/1
+
+###
+GET {{uri}}/reactive-manager/many
+Content-Type: application/json
+Accept: application/json
+
+[1,4,26]
+
+###
+GET {{uri}}/reactive-manager/many
+Content-Type: application/json
+Connection: Upgrade
+Upgrade: websocket
+
+[1,4,26]

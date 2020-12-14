@@ -1,0 +1,1 @@
+/C=PL/ST=Mazovia/L=Warsaw/O=Jacek Lipiec Business Consulting/CN=www.my-domain.com, emailAddress=jacek.lipiec.bc@gmail.com
