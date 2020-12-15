@@ -31,9 +31,9 @@ servers:
       - name: reload
       - name: loadbalance
       - name: etcd
-        parameters: example.org
+        parameters: {{ tld_hostname }}
         configBlock: |-
           stubzones
           path /skydns
-          endpoint https://cilium-etcd-client.external-dns.svc:2379
+          endpoint https://cilium-etcd-client.{{ namespace }}.svc:2379
           tls /etc/coredns/tls/etcd/etcd-client.crt /etc/coredns/tls/etcd/etcd-client.key /etc/coredns/tls/etcd/etcd-client-ca.crt

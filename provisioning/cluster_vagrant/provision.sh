@@ -2,8 +2,8 @@
 
 set -e
 
-MACHINE_NAME=${1:-test-k8s-main-node-1}
-PROVIDER=${2:-hyperv}
+MACHINE_NAME=${MACHINE_NAME:-kubernetes-main-node-1}
+PROVIDER=${PROVIDER:-hyperv}
 INVENTORY=$(vagrant ssh-config ${MACHINE_NAME} | grep HostName | awk '{print $2}')
 
 echo "Provider: ${PROVIDER}"
@@ -16,16 +16,20 @@ function provision() {
     ansible-playbook ./$PLAYBOOK_PATH --key-file ./.vagrant/machines/$MACHINE_NAME/$PROVIDER/private_key --user vagrant --inventory $INVENTORY, $@
 }
 
-provision ./provisioning/1.8_loadbalancer.yml
-provision ./provisioning/1.9b_externaldns-coredns.yml
-provision ./provisioning/1.10_ingress.yml
-provision ./provisioning/1.11_dashboard.yml
-provision ./provisioning/2.1_ldap.yml --extra-vars '
-{
-    "namespace": "ldap",
-    "admin_password": "secret",
-    "ldap_domain": "example.org",
-    "ldap_organisation": "My Company",
-    "should_clear": false
-}
-'
+if [[ "$#" -ne 0 ]]; then
+    provision "$@"
+else
+    provision ./provisioning/1.8_loadbalancer.yml
+    provision ./provisioning/1.9b_externaldns-coredns.yml
+    provision ./provisioning/1.10_ingress.yml
+    provision ./provisioning/1.11_dashboard.yml
+    provision ./provisioning/2.1_ldap.yml --extra-vars '
+    {
+        "namespace": "ldap",
+        "admin_password": "secret",
+        "ldap_domain": "example.org",
+        "ldap_organisation": "My Company",
+        "should_clear": false
+    }
+    '
+fi

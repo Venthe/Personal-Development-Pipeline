@@ -1,20 +1,17 @@
-DEFAULT_CONTAINER_NAME=nexus
+#!/bin/env bash
 
-function get_default_password() {
-    local CONTAINER_NAME="${1:-$DEFAULT_CONTAINER_NAME}"
-    docker exec "${CONTAINER_NAME}" cat //nexus-data//admin.password 2>/dev/null
-}
+. .env
 
-NEXUS_ADMIN_PASSWORD=admin
-NEXUS_DEFAULT_ADMIN_PASSWORD=$(get_default_password)
+DEFAULT_CONTAINER_NAME=${DEFAULT_CONTAINER_NAME:=nexus}
 NEXUS_USERNAME=admin
-NEXUS_PASSWORD="${NEXUS_DEFAULT_ADMIN_PASSWORD:-$NEXUS_ADMIN_PASSWORD}"
-NEXUS_URL=localhost:8081/service/rest
+NEXUS_PASSWORD="${NEXUS_PASSWORD:=admin123}"
+NEXUS_URL="${BASE_URL:=localhost:8081}/service/rest"
 
 function call() {
     local METHOD=$1
     curl --user "${NEXUS_USERNAME}:${NEXUS_PASSWORD}" \
          --request "${METHOD}" \
+         --insecure \
          "${NEXUS_URL}${@:2}"
 }
 
@@ -94,10 +91,11 @@ function PUT_security_realms_active() {
 }
 
 function wait_for_nexus() {
-    until $(call GET /v1/blobstores --output /dev/null --silent --head --fail); do
-    printf '.'
-    sleep 5
+    until [[ $(call GET /v1/blobstores --output /dev/null --silent --head --fail; echo $?) == 0 ]]; do
+        printf '.'
+        sleep 5
     done
+    printf '\n'
 }
 
 if declare -f "$1" > /dev/null

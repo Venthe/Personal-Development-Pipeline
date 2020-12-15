@@ -15,11 +15,15 @@
     - name: adapter_id
       default: 1
       private: false
+    - name: cluster_domain
+      default: cluster.internal
+      private: false
   tasks:
     # Do this step in gather facts
     - name: "Get IP of adatper {{ adapter_id }}"
-      shell: |
-        set -o pipefail && hostname -I | xargs -n1 echo | cat | sed -n "{{ adapter_id }}p"
+      shell: set -o pipefail && hostname -I | xargs -n1 echo | cat | sed -n "{{ adapter_id }}p"
+      args:
+        executable: "/bin/bash"
       register: ips
     - name: Create a directory if it does not exist
       file:
@@ -40,7 +44,6 @@
         create: true
         dest: /var/lib/kubelet/config.yaml
         block: |
-          ---
           apiVersion: kubelet.config.k8s.io/v1beta1
           kind: KubeletConfiguration
           cgroupDriver: systemd
@@ -63,6 +66,8 @@
       # --apiserver-advertise-address="192.168.50.10"
       #  The IP address the API Server will advertise it's listening on.
       #  If not set the default network interface will be used
+      # --contorl-plane-endpoint
+      #  Specify a stable IP address or DNS name for the control plane.
       # --apiserver-cert-extra-sans="192.168.50.10"
       #  Optional extra Subject Alternative Names (SANs) to use for the API
       #  Server serving certificate. Can be both IP addresses and DNS names.
@@ -74,9 +79,13 @@
       shell:
         cmd: |
           kubeadm init \
-            --node-name {{ node }} \
-            --apiserver-advertise-address="{{ ips.stdout }}" \
-            --apiserver-cert-extra-sans="{{ ips.stdout }}"
+              --node-name={{ node }} \
+              --apiserver-advertise-address={{ ips.stdout }} \
+              --apiserver-cert-extra-sans={{ ips.stdout }} \
+              --pod-network-cidr=10.0.0.0/16 \
+              --service-cidr=10.196.0.0/16 \
+              --service-dns-domain="{{ cluster_domain }}" \
+              --skip-token-print
     - name: Create .kube directory for vagrant user
       become: true
       file:

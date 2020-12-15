@@ -2,13 +2,23 @@
 - name: Install coreDNS
   gather_facts: false
   hosts: all
-  vars:
-    delete_namespace: false
-    namespace: external-dns
+  vars_prompt:
+    - name: cluster_domain
+      default: cluster.internal
+      private: false
+    - name: namespace
+      default: external-dns
+      private: false
+    - name: tld_hostname
+      default: example.org
+      private: false
+    - name: delete_namespace
+      default: false
+      private: false
   tasks:
     - name: Delete namespace
       command: "kubectl delete namespace {{ namespace }}"
-      when: delete_namespace == true
+      when: "delete_namespace|bool"
     - name: copy manifests
       become: true
       copy:
@@ -17,6 +27,18 @@
         directory_mode: yes
         mode: 0777
         owner: vagrant
+    - name: Template manifests
+      become: true
+      template:
+        src: "./1.9b_externaldns-coredns/{{ item }}"
+        dest: "/tmp/{{ item }}"
+        owner: vagrant
+        mode: '0777'
+      with_items:
+        - cilium-etcd-operator.yaml
+        - coredns-values.yml
+        - external-dns-values.yaml
+        - load-balancer.yml
     - name: Add helm repository
       command: "helm repo add {{ item.name }} {{ item.url }}"
       with_items:

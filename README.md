@@ -6,16 +6,6 @@ Learn-along exercise in creating enterprise-grade infrastructure.
 
 This is an evergreen exercise, it SHOULD NOT be used in production; Moreover licenses for specific software should be followed.
 
-### Prerequisites
-
-## Usage
-
-To create all test deployments
-```bash
-cd provisioning/cluster_vagrant
-vagrant up
-```
-
 ## Authors
 
 * **Jacek Lipiec** - *Initial work* - [Venthe](https://github.com/Venthe)

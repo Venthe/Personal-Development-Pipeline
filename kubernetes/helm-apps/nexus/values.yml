@@ -1,11 +1,21 @@
 nexus:
+  dockerPort: 5000
   service:
     type: LoadBalancer
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: "nexus.local"
+    external-dns.alpha.kubernetes.io/hostname: "nexus.example.org"
 ingress:
   enabled: true
+ingressDocker:
+  enabled: true
 nexusProxy:
+  svcName: nexus
+  enabled: false
   env:
-    nexusDockerHost: docker.nexus.local
-    nexusHttpHost: nexus.local
+    nexusDockerHost: docker.nexus.example.org
+    nexusHttpHost: nexus.example.org
+#initAdminPassword:
+#enabled: true
+  # Set this in the instance where default admin password is different
+  #defaultPasswordOverride: true
+  #password: "admin123"

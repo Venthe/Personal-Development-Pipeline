@@ -6,7 +6,7 @@ metadata:
     io.cilium/app: etcd-operator
     name: cilium-etcd-operator
   name: cilium-etcd-operator
-  namespace: external-dns
+  namespace: {{ namespace }}
 spec:
   replicas: 1
   selector:
@@ -31,7 +31,7 @@ spec:
             - /usr/bin/cilium-etcd-operator
           env:
             - name: CILIUM_ETCD_OPERATOR_CLUSTER_DOMAIN
-              value: "cluster.local"
+              value: "{{ cluster_domain }}"
             - name: CILIUM_ETCD_OPERATOR_ETCD_CLUSTER_SIZE
               value: "3"
             - name: CILIUM_ETCD_OPERATOR_NAMESPACE
@@ -68,7 +68,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cilium-etcd-operator
-  namespace: external-dns
+  namespace: {{ namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -153,13 +153,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: cilium-etcd-operator
-    namespace: external-dns
+    namespace: {{ namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cilium-etcd-sa
-  namespace: external-dns
+  namespace: {{ namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -225,4 +225,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: cilium-etcd-sa
-    namespace: external-dns
+    namespace: {{ namespace }}
