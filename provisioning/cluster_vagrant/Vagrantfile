@@ -94,6 +94,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                     }
                 end
             end
+            
+            mainNode.vm.provision "helm", type: "jq" do |ansible|
+                ansible.playbook = "core/1.8_jq.yml"
+            end
         end
     end
 

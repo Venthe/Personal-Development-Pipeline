@@ -51,24 +51,12 @@
         owner: vagrant
         mode: '0777'
       with_items:
-        - filename: export.ldif
-          path: openldap
         - filename: values.yml
           path: phpldapadmin
         - filename: ingress.yml
           path: phpldapadmin
-    - name: Register LDIF file to variable
-      command: "cat {{ TEMP_PATH }}/openldap/export.ldif"
-      register: ldif
-    - set_fact:
-        ldif: "{{ ldif.stdout }}"
-    - name: Second templating pass
-      become: true
-      template:
-        src: "./openldap/values.yml.j2"
-        dest: "{{ TEMP_PATH }}/openldap/values.yml"
-        owner: vagrant
-        mode: '0777'
+        - filename: values.yml
+          path: openldap
     - name: Add helm repository
       command: "helm repo add {{ item.name }} {{ item.url }}"
       with_items:

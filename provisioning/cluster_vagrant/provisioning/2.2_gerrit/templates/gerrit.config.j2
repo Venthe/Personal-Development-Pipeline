@@ -6,8 +6,8 @@
     # LoadBalancer's external IP. This can only be done manually after installing
     # the chart, when you know the external IP the LoadBalancer got from the
     # cluster.
-    canonicalWebUrl = {{ gerrit.canonicalWebUrl }}
-    canonicalGitUrl = {{ gerrit.canonicalGitUrl }}
+    canonicalWebUrl = http://{{ release_name }}.{{ domain }}/
+    canonicalGitUrl = git://{{ release_name }}.{{ domain }}/
     disableReverseDnsLookup = true
     ui = POLYGERRIT
 [index]
@@ -16,7 +16,7 @@
 [auth]
     type = LDAP
 [ldap]
-    server = ldap://openldap.ldap
+    server = {{ LDAP_SERVER }}
 
     accountBase = ou=people,dc=example,dc=org
     accountPattern = (&(objectClass=inetOrgPerson)(uid=${username}))
@@ -27,16 +27,16 @@
     groupMemberPattern = (&(objectClass=posixGroup)(memberUid=${username}))
 [httpd]
     # If using an ingress use proxy-http or proxy-https
-    listenUrl = {{ httpd.listenUrl }}
+    listenUrl = {{ HTTPD_LISTEN_URL }}
     requestLog = true
 [sshd]
     listenAddress = *:29418
-    advertisedAddress = {{ gerrit.ingress.host }}:29418
+    advertisedAddress = {{ release_name }}.{{ domain }}:29418
 [transfer]
     timeout = 120 s
 [user]
     name = Gerrit Code Review
-    email = gerrit@my-company.com
+    email = gerrit@{{ domain }}
     anonymousCoward = Unnamed User
 [cache]
     directory = cache

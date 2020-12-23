@@ -1,0 +1,66 @@
+---
+- name: Deploy LDAP
+  gather_facts: false
+  hosts: all
+  vars:
+    HTTPD_LISTEN_URL: "proxy-http://*:8080/"
+    TEMP_DIRECTORY: "/tmp/gerrit"
+    LDAP_SERVER: "ldap://openldap.ldap"
+  vars_prompt:
+    - name: should_clean
+      prompt: Should clean before install
+      default: false
+      private: no
+    - name: namespace
+      prompt: Namespace
+      default: "gerrit"
+      private: no
+    - name: release_name
+      prompt: Release name
+      default: "gerrit"
+      private: no
+    - name: domain
+      default: "example.org"
+      prompt: Domain
+      private: no
+  tasks:
+    - name: Delete old releases
+      command: "helm uninstall --namespace={{ namespace }} {{ release_name }}"
+      when: "should_clean|bool"
+    - name: Delete namespace
+      command: "kubectl delete namespace {{ namespace }}"
+      when: "should_clean|bool"
+    - name: Create temporary directories
+      become: true
+      file:
+        path: "{{ TEMP_DIRECTORY }}"
+        state: directory
+    - name: Templating pass
+      become: true
+      template:
+        src: "./values.yaml.j2"
+        dest: "{{ TEMP_DIRECTORY }}/values.yaml"
+        owner: vagrant
+        mode: '0777'
+    - name: Add helm repository
+      command: helm repo add venthe https://raw.githubusercontent.com/Venthe/k8s-gerrit/various-updates/chart-repository/
+      notify: Update helm repository
+    - name: Deploy helm charts
+      shell:
+        cmd: |
+          helm upgrade --install \
+            --namespace={{ namespace }} --create-namespace \
+            --values={{TEMP_DIRECTORY}}/values.yaml \
+            {{ release_name }} \
+            venthe/gerrit
+    - name: Annotate Block storageclass as default
+      command: "kubectl annotate Service {{deployment_name}}-gerrit-service --namespace={{ namespace }} --overwrite external-dns.alpha.kubernetes.io/hostname=\"{{release_name}}.{{domain}}\""
+    - name: Clean temp path
+      become: true
+      file:
+        state: absent
+        path: "{{ TEMP_DIRECTORY }}"
+
+  handlers:
+    - name: Update helm repository
+      command: helm repo update

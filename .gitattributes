@@ -9,12 +9,18 @@
 #
 
 # Auto detect text files and perform LF normalization
-*       text=auto eol=lf
+*       text=auto
 
 # Shell scripts require LF
 *.sh    text eol=lf
+*.j2    text eol=lf
 *.ldif    text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
+.env text eol=lf
+*key text eol=lf
+*key.pub text eol=lf
+*.gitignore text eol=lf
+*.gitattributes text eol=lf
 # Batch scripts require CRLF
 *.bat   text eol=crlf
