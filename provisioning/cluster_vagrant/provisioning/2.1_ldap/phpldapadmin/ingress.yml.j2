@@ -1,0 +1,16 @@
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: phpldapadmin-ingress
+  namespace: {{ namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: ldap-admin.{{ ldap_domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: phpldapadmin
+          servicePort: 80

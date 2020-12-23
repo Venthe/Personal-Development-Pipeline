@@ -1,11 +1,8 @@
 adminPassword: {{ admin_password }}
-image:
-  tag: 1.4.0
-logLevel: trace
 env:
   LDAP_DOMAIN: {{ ldap_domain }}
   LDAP_ORGANISATION: {{ ldap_organisation }}
   LDAP_READONLY_USER: "true"
 customLdifFiles:
   export.ldif: |-
-    {{ export_ldif | indent(width=4) }}
+    {{ ldif | indent(width=4) }}
