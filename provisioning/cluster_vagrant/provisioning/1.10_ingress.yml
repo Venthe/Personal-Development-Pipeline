@@ -18,14 +18,6 @@
     - name: "Delete {{ namespace }} namespace"
       command: "kubectl delete namespace {{ namespace }}"
       when: "delete_namespace|bool"
-    - name: copy manifests
-      become: true
-      copy:
-        src: ./1.10_ingress/
-        dest: /tmp/
-        directory_mode: yes
-        mode: 0777
-        owner: vagrant
     - name: Add helm repository
       command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
       notify: Update helm repository
@@ -51,8 +43,6 @@
     - name: Instructions
       debug:
         msg: "To use, add the 'kubernetes.io/ingress.class: nginx' annotation to ingress"
-    # - name: Deploy test ingress
-    #   command: "kubectl apply -f /tmp/test-ingress.yml"
 
   handlers:
     - name: Update helm repository

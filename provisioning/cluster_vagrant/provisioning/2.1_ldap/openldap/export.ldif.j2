@@ -1,0 +1,75 @@
+version: 1
+
+dn: ou=Groups,{{ LDAP_BASE_DN }}
+objectclass: organizationalUnit
+objectclass: top
+ou: Groups
+
+dn: cn=Administrators,ou=Groups,{{ LDAP_BASE_DN }}
+cn: Administrators
+gidnumber: 500
+memberuid: jjuly
+memberuid: Administrator
+objectclass: posixGroup
+objectclass: top
+
+dn: cn=Developers,ou=Groups,{{ LDAP_BASE_DN }}
+cn: Developers
+gidnumber: 501
+memberuid: jjuly
+objectclass: posixGroup
+objectclass: top
+
+dn: cn=Integrators,ou=Groups,{{ LDAP_BASE_DN }}
+cn: Integrators
+gidnumber: 502
+memberuid: jjuly
+objectclass: posixGroup
+objectclass: top
+
+dn: cn=Non-Interactive Users,ou=Groups,{{ LDAP_BASE_DN }}
+cn: Non-Interactive Users
+gidnumber: 502
+memberuid: jenkins
+objectclass: posixGroup
+objectclass: top
+
+dn: ou=People,{{ LDAP_BASE_DN }}
+objectclass: organizationalUnit
+objectclass: top
+ou: People
+
+dn: cn=Administrator,ou=People,{{ LDAP_BASE_DN }}
+cn: Administrator
+mail: administrator@{{ LDAP_DOMAIN }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: Administrator
+uid: admin
+uid: administrator
+userpassword: {SSHA}CbwUta8nMTBiGZxpzvf/DflOxeTw3Z7A
+
+dn: cn=Admin,ou=People,{{ LDAP_BASE_DN }}
+objectclass: alias
+objectclass: extensibleobject
+cn: Admin
+aliasedobjectname: cn=Administrator,ou=People,{{ LDAP_BASE_DN }}
+
+dn: cn=Jack July,ou=People,{{ LDAP_BASE_DN }}
+cn: Jack July
+givenname: Jack
+mail: jjuly@{{ LDAP_DOMAIN }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: July
+uid: jjuly
+userpassword: {SSHA}CbwUta8nMTBiGZxpzvf/DflOxeTw3Z7A
+
+dn: cn=Jenkins,ou=People,{{ LDAP_BASE_DN }}
+cn: Jenkins
+mail: jenkins@{{ LDAP_DOMAIN }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: jenkins
+uid: jenkins
+userpassword: {SSHA}HzKpcVqFfreZhyuBOSEVRU/k1vgwuGw0
