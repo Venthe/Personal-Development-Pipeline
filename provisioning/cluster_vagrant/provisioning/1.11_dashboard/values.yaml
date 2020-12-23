@@ -5,4 +5,4 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - {{ deployment_name }}.{{ tld_hostname }}
+    - "{{ deployment_name }}.{{ tld_hostname }}"

@@ -1,27 +1,20 @@
 images:
   version: 3.3.0
-
 gitGC:
   image: venthe/git-gc
-
 gerrit:
   images:
     gerritInit: venthe/gerrit-init
     gerrit: venthe/gerrit
-
   livenessProbe:
     initialDelaySeconds: 30
-
   readinessProbe:
     initialDelaySeconds: 30
-
   startupProbe:
     initialDelaySeconds: 60
-
   sshd:
     enabled: true
     port: 29418
-
   plugins:
     packaged:
     - "commit-message-length-validator"
@@ -34,41 +27,55 @@ gerrit:
     - "plugin-manager" 
     - "delete-project"
     - "codemirror-editor"
-#  service:
-#    type: "LoadBalancer"
   ingress:
-    host: "{{ gerrit.ingress.host }}"
+    host: "{{ release_name }}.{{ domain }}"
+  service:
+    type: LoadBalancer
   etc:
     config:
       gitiles.config: |
         {% filter indent(width=8,blank=True) %}{% include 'gitiles.config.j2' %}{% endfilter %}
+
       project.config: |
         {% filter indent(width=8,blank=True) %}{% include 'project.config.j2' %}{% endfilter %}
+
       gerrit.config: |
         {% filter indent(width=8,blank=True) %}{% include 'gerrit.config.j2' %}{% endfilter %}
+
     secret:
       secure.config: |
         {% filter indent(width=8,blank=True) %}{% include 'secure.config.j2' %}{% endfilter %}
+
       ssh_host_ecdsa_384_key: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ecdsa_384_key' %}{% endfilter %}
+
       ssh_host_ecdsa_384_key.pub: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ecdsa_384_key.pub' %}{% endfilter %}
+
       ssh_host_ecdsa_521_key: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ecdsa_521_key' %}{% endfilter %}
+
       ssh_host_ecdsa_521_key.pub: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ecdsa_521_key.pub' %}{% endfilter %}
+
       ssh_host_ecdsa_key: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ecdsa_key' %}{% endfilter %}
+
       ssh_host_ecdsa_key.pub: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ecdsa_key.pub' %}{% endfilter %}
+
       ssh_host_ed25519_key: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ed25519_key' %}{% endfilter %}
+
       ssh_host_ed25519_key.pub: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_ed25519_key.pub' %}{% endfilter %}
+
       ssh_host_rsa_key: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_rsa_key' %}{% endfilter %}
+
       ssh_host_rsa_key.pub: |
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_rsa_key.pub' %}{% endfilter %}
+
 storageClasses:
   default:
     name: rook-ceph-block

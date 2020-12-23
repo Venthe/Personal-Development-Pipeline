@@ -4,5 +4,5 @@ env:
   LDAP_ORGANISATION: {{ ldap_organisation }}
   LDAP_READONLY_USER: "true"
 customLdifFiles:
-  export.ldif: |-
-    {{ ldif | indent(width=4) }}
+  export.ldif: |
+    {% filter indent(width=4,blank=True) %}{% include 'export.ldif.j2' %}{% endfilter %}

@@ -1,0 +1,10 @@
+---
+- name: Install jq
+  gather_facts: false
+  hosts: all
+  tasks:
+    - name: Install jq
+      become: true
+      apt:
+        name: "jq"
+...
