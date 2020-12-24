@@ -1,0 +1,26 @@
+clusterZone: "{{cluster_zone}}"
+controller:
+  ingress:
+    enabled: true
+    paths: []
+    apiVersion: "extensions/v1beta1"
+    labels: {}
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    hostName: "{{release_name}}.{{domain}}"
+  additionalPlugins:
+    - timestamper:1.11.8
+    - ldap:1.26
+    - gerrit-trigger:2.32.0
+  prometheus.enabled: true
+  servicePort: 80
+  jenkinsUrl: http://{{release_name}}.{{domain}}/
+  initializeOnce: false
+  JCasC:
+    configScripts:
+      security: |
+        {% filter indent(width=8,blank=True) %}{% include 'security.yaml.j2' %}{% endfilter %}
+
+      credentials: |
+        {% filter indent(width=8,blank=True) %}{% include 'credentials.yaml.j2' %}{% endfilter %}

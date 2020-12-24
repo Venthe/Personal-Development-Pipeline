@@ -43,7 +43,7 @@
       with_items:
         - openldap
         - phpldapadmin
-    - name: First templating pass
+    - name: Templating pass
       become: true
       template:
         src: "./{{item.path}}/{{item.filename}}.j2"
