@@ -1,0 +1,130 @@
+---
+- name: Deploy LDAP
+  gather_facts: false
+  hosts: all
+  vars:
+    TEMP_DIRECTORY: "/tmp/jenkins"
+    LDAP_SERVER: "ldap://openldap.ldap"
+    GERRIT_SERVER: "gerrit-gerrit-service-gerrit"
+  vars_prompt:
+    - name: should_clean
+      prompt: Should clean before install
+      default: false
+      private: no
+    - name: namespace
+      prompt: Namespace
+      default: "jenkins"
+      private: no
+    - name: release_name
+      prompt: Release name
+      default: "jenkins"
+      private: no
+    - name: domain
+      default: "example.org"
+      prompt: Domain
+      private: no
+    - name: root_dn
+      default: "dc=example,dc=org"
+      prompt: Root DN
+      private: no
+    - name: ldap_user
+      default: "readonly"
+      prompt: Ldap user
+      private: no
+    - name: ldap_password
+      default: "readonly"
+      prompt: Ldap user password
+      private: true
+    - name: cluster_zone
+      default: "cluster.internal"
+      private: false
+    - name: jenkins_ldap_username
+      default: "jenkins"
+      private: false
+    - name: jenkins_ldap_password
+      default: "jenkins"
+      private: false
+  tasks:
+    - name: Delete old releases
+      command: "helm uninstall --namespace={{ namespace }} {{ release_name }}"
+      when: "should_clean|bool"
+    - name: Delete namespace
+      command: "kubectl delete namespace {{ namespace }}"
+      when: "should_clean|bool"
+    - name: Create temporary directories
+      become: true
+      file:
+        path: "{{ TEMP_DIRECTORY }}"
+        state: directory
+    - name: Generate SSH key
+      command: "{{item}}"
+      with_items:
+        - "ssh-keygen -b 2048 -t rsa -f {{TEMP_DIRECTORY}}/sshkey -q -N '' <<<y 2>&1 >/dev/null"
+        - "ssh-keygen -y -f {{TEMP_DIRECTORY}}/sshkey > {{TEMP_DIRECTORY}}/sshkey.pub"
+    - name: Copy manifests
+      become: true
+      copy:
+        src: ./manifests/
+        dest: "{{TEMP_DIRECTORY}}"
+        directory_mode: yes
+        mode: 0777
+        owner: vagrant
+    - name: Templating pass
+      become: true
+      template:
+        src: "./templates/{{item}}.j2"
+        dest: "{{ TEMP_DIRECTORY }}/{{item}}"
+        owner: vagrant
+        mode: '0777'
+      with_items:
+        - values.yaml
+        - ldap-password
+    - name:
+      command: "kubectl create namespace {{namespace}}"
+    - name: Create ldap secret
+      command: kubectl apply -f {{ TEMP_DIRECTORY }}/ldap-password
+    - name: Create gerrit ssh secret
+      command: "kubectl create secret generic gerrit-ssh --from-file=ssh-privatekey={{TEMP_DIRECTORY}}/sshkey --namespace={{ namespace }}"
+    - name: Add helm repository
+      command: helm repo add jenkins https://charts.jenkins.io
+      notify: Update helm repository
+    - name: Deploy helm charts
+      shell:
+        cmd: |
+          helm upgrade --install \
+            --namespace={{ namespace }} --create-namespace \
+            --values={{TEMP_DIRECTORY}}/values.yaml \
+            {{ release_name }} \
+            jenkins/jenkins
+    - name: Create ldap secret
+      command: "kubectl patch --namespace=jenkins StatefulSet jenkins --patch $(cat {{TEMP_DIRECTORY}}/{{item}})"
+      with_items:
+        - gerrit-ssh.patch
+        - ldap-password.patch
+
+      # Gerrit
+    - name: Create jenkins basicauth
+      command: "printf 'Authorization: Basic {{ (jenkins_ldap_username + jenkins_ldap_password) | string | b64encode }}'"
+      register: basic_auth
+    - name: Get public key
+      command: "cat {{TEMP_DIRECTORY}}/sshkey.pub"
+      register: sshkey_pub
+    - name: Act on gerrit
+      command: "curl --method POST --show-error --header 'Authorization: Basic {{basic_auth.stdout}}' --header 'Conent-Type: {{item.header}}' --data '{{item.data}}' {{GERRIT_SERVER}}/{{item.url}}"
+      with_items:
+        - header: application:x-www-form-urlencoded
+          data: username={{jenkins_ldap_username}}&password={{jenkins_ldap_password}}
+          url: login
+        - header: text/plain
+          data: "{{sshkey_pub.stdout}}"
+          url: a/accounts/self/sshkeys
+
+    - name: Clean temp path
+      become: true
+      file:
+        state: absent
+        path: "{{ TEMP_DIRECTORY }}"
+
+  handlers:
+    - name: Update helm repository
+      command: helm repo update

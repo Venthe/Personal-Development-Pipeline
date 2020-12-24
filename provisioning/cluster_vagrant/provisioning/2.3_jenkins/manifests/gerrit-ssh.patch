@@ -1,0 +1,15 @@
+spec:
+  template:
+    spec:
+      volumes:
+        - name: gerrit-ssh
+          secret:
+            secretName: gerrit-ssh
+            defaultMode: 420
+      containers:
+        - name: jenkins
+          volumeMounts:
+            - name: ldap-secret
+              readOnly: true
+              mountPath: /run/secrets/gerrit-ssh
+              subPath: gerrit-ssh

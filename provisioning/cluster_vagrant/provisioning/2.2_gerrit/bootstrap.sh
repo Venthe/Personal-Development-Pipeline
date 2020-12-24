@@ -2,7 +2,7 @@
 
 . .env
 
-./user.sh create_user
+./users.sh create_user
 
 ./groups.sh set_ldap_subgroup "Administrators" "Administrators"
 ./groups.sh create_group "Integrators" "Administrators" "contains all integrators"
@@ -22,7 +22,7 @@
     }
   }'
 
-./user.sh generate_ssh_key
+./users.sh generate_ssh_key
 
 ./projects.sh provide_project "Jenkins" "${ROOT_PWD}/git-projects/Jenkins" "${TEMP_SSHKEY}"
 ./projects.sh provide_project "Sample-Jenkins-Git-Repository" "${ROOT_PWD}/git-projects/Sample-Jenkins-Git-Repository" "${TEMP_SSHKEY}"
@@ -39,4 +39,4 @@
 ./projects.sh provide_project "Helm-SonarQube" "${ROOT_PWD}/kubernetes/helm-apps/sonarqube" "${TEMP_SSHKEY}"
 ./projects.sh provide_project "Helm-Xwiki" "${ROOT_PWD}/kubernetes/helm-apps/xwiki" "${TEMP_SSHKEY}"
 
-./user.sh remove_ssh_key
+./users.sh remove_ssh_key

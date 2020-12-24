@@ -1,7 +1,10 @@
 #!/bin/env bash
 
-. .env
+DIRECTORY=${DIRECTORY:-.}
 
+. ${DIRECTORY}/.env
+
+set -x
 function rest() {
     HTTP_BASIC_AUTH=$(printf ${USER}:${PASSWORD} | base64)
     local method="${1}"
