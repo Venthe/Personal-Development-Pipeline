@@ -22,7 +22,7 @@
     - name: copy manifests
       become: true
       copy:
-        src: ./1.9b_externaldns-coredns/
+        src: ./manifest/
         dest: /tmp/
         directory_mode: yes
         mode: 0777
@@ -30,7 +30,7 @@
     - name: Template manifests
       become: true
       template:
-        src: "./1.9b_externaldns-coredns/{{ item }}"
+        src: "./template/{{ item }}"
         dest: "/tmp/{{ item }}"
         owner: vagrant
         mode: '0777'

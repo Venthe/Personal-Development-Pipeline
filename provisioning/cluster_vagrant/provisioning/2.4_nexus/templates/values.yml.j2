@@ -1,0 +1,17 @@
+nexusProxy:
+  enabled: true
+  port: 80
+  env:
+    nexusDockerHost: docker.{{domain}}
+    nexusHttpHost: {{release_name}}.{{domain}}
+ingress:
+  enabled: true
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "{{release_name}}.{{domain}}"
+ingressDocker:
+  enabled: true
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "docker.{{domain}}"
+# TODO: Change service to NodePort
+# TODO: Assign docker proxy NodePort to 31201
+# TODO: Assign docker hosted NodePort to 31200
