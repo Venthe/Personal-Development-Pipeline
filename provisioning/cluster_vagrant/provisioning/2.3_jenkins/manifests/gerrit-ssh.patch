@@ -9,7 +9,7 @@ spec:
       containers:
         - name: jenkins
           volumeMounts:
-            - name: ldap-secret
+            - name: gerrit-ssh
               readOnly: true
               mountPath: /run/secrets/gerrit-ssh
-              subPath: gerrit-ssh
+              subPath: ssh-privatekey
