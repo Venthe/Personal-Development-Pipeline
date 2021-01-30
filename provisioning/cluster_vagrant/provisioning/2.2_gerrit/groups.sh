@@ -1,15 +1,17 @@
 #!/usr/bin/bash
 
-. .env
+set -e
+
+. ./_rest.sh
 
 function query_existing_group_id() {
-  ./_rest.sh rest GET "a/groups/?query=inname:${1}" \
+   rest GET "a/groups/?query=inname:${1}" \
     --header "Accept: application/json" \
     | jq '.[0].id' --raw-output
 }
 
 function get_ldap_subgroup_id() {
-  ./_rest.sh rest GET "a/groups/?s=ldap/${1}" \
+  rest GET "a/groups/?s=ldap/${1}" \
     --header "Accept: application/json" \
     | jq 'map(select(.)) | first .id' --raw-output
 }
@@ -18,7 +20,7 @@ function set_ldap_subgroup() {
     local group_name="${1}"
     local subgroup_name="${2}"
     local subgroup_id=$(get_ldap_subgroup_id ${subgroup_name})
-    ./_rest.sh rest PUT "a/groups/${group_name}/groups/${subgroup_id}" \
+    rest PUT "a/groups/${group_name}/groups/${subgroup_id}" \
         --header "Accept: application/json"
 }
 
@@ -26,7 +28,7 @@ function create_group() {
     local group_name="${1}"
     local owner="${2}"
     local description="${3}"
-    ./_rest.sh rest PUT "a/groups/${group_name}" \
+    rest PUT "a/groups/${group_name}" \
         --header "Content-Type: application/json" \
         --header "Accept: application/json" \
         --data '{
@@ -37,4 +39,6 @@ function create_group() {
         }'
 }
 
-"${@}"
+if [[ ${#} -ne 0 ]]; then
+    "${@}"
+fi
