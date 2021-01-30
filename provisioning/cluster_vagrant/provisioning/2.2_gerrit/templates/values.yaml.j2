@@ -27,8 +27,8 @@ gerrit:
     - "plugin-manager" 
     - "delete-project"
     - "codemirror-editor"
-  ingress:
-    host: "{{ release_name }}.{{ domain }}"
+  # ingress:
+  #   host: "{{ release_name }}.{{ domain }}"
   service:
     type: LoadBalancer
   etc:
