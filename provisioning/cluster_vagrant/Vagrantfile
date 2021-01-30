@@ -8,7 +8,6 @@ KUBERNETES_VERSION ||= "1.20.1-00"
 
 # TODO: Explore HA control plane
 #  Currently limited to 1
-MAIN_NODE_COUNT ||= 1
 MAIN_NODE_NAME ||= "#{DEPLOYMENT_NAME}main-node"
 MAIN_NODE_MEMORY ||= 2048
 MAIN_NODE_CPU_COUNT ||= 2
@@ -31,73 +30,69 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         hyperv.provider "hyperv"
     end
 
-    (1..MAIN_NODE_COUNT).each do |i|
-        config.vm.define "#{MAIN_NODE_NAME}-#{i}" do |mainNode|
-            mainNode.vm.provider :virtualbox do |virtualbox|
-                mainNode.vm.network "private_network", ip: "#{SUBNET_IP_BASE}.#{50 + i}", :adapter => 2
-                virtualbox.name = "#{MAIN_NODE_NAME}-#{i}"
-                config.vm.network :forwarded_port, guest: 22, host: 3200, id: 'ssh'
+    config.vm.define "#{MAIN_NODE_NAME}" do |mainNode|
+        mainNode.vm.provider :virtualbox do |virtualbox|
+            mainNode.vm.network "private_network", ip: "#{SUBNET_IP_BASE}.#{50}", :adapter => 2
+            virtualbox.name = "#{MAIN_NODE_NAME}"
+            config.vm.network :forwarded_port, guest: 22, host: 3200, id: 'ssh'
+        end
+        [:virtualbox, :hyperv].each do |provider|
+            mainNode.vm.provider provider do |vm_provider|
+                vm_provider.memory = MAIN_NODE_MEMORY
+                vm_provider.cpus = MAIN_NODE_CPU_COUNT
             end
-            [:virtualbox, :hyperv].each do |provider|
-                mainNode.vm.provider provider do |vm_provider|
-                    vm_provider.memory = MAIN_NODE_MEMORY
-                    vm_provider.cpus = MAIN_NODE_CPU_COUNT
-                end
-            end
-            mainNode.vm.provider :hyperv do |hyperv|
-                hyperv.vmname = "#{MAIN_NODE_NAME}-#{i}"
-                hyperv.maxmemory = MAIN_NODE_MEMORY
-            end
+        end
+        mainNode.vm.provider :hyperv do |hyperv|
+            hyperv.vmname = "#{MAIN_NODE_NAME}"
+            hyperv.maxmemory = MAIN_NODE_MEMORY
+        end
 
-            mainNode.vm.hostname = "#{MAIN_NODE_NAME}-#{i}"
-            if MAIN_NODE_TAINT == false
-                mainNode.vm.disk :disk, name: "main-node-cephfs-#{i}", size: "100GB"
-            end
+        mainNode.vm.hostname = "#{MAIN_NODE_NAME}"
+        if MAIN_NODE_TAINT == false
+            mainNode.vm.disk :disk, name: "main-node-cephfs", size: "100GB"
+        end
 
-            mainNode.vm.provision "baremetal" , type: "ansible" do |ansible|
-                ansible.playbook = "core/1.1_baremetal.yaml"
-            end
-            mainNode.vm.provision "cri", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.2_cri-containerd.yaml"
-                ansible.extra_vars = {
-                    containerd_version: "#{CONTAINERD_VERSION}"
-                }
-            end
-            mainNode.vm.provision "kubernetes", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.3_kubernetes.yaml"
-                ansible.extra_vars = {
-                    kubernetes_version: "#{KUBERNETES_VERSION}"
-                }
-            end
-            mainNode.vm.provision "control-plane", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.4a_control-plane.yml"
-                ansible.extra_vars = {
-                    taint: MAIN_NODE_TAINT,
-                    node:  "#{MAIN_NODE_NAME}-#{i}",
-                    adapter_id: MAIN_NODE_ADAPTER_ID
-                }
-            end
-            mainNode.vm.provision "helm", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.5_helm.yml"
-            end
-            
-            if i == 1
-                mainNode.vm.provision "cni", type: "ansible" do |ansible|
-                    ansible.playbook = "core/1.6_cni-calico.yml"
-                end
-                mainNode.vm.provision "csi", type: "ansible" do |ansible|
-                    ansible.playbook = "core/1.7_csi-rook.yml"
-                    ansible.extra_vars = {
-                        rook_version: "release-1.5",
-                        reset: false,
-                        namespace: "rook-ceph"
-                    }
-                end
-            end
-            
-            mainNode.vm.provision "helm", type: "jq" do |ansible|
-                ansible.playbook = "core/1.8_jq.yml"
-            end
+        mainNode.vm.provision "baremetal" , type: "ansible" do |ansible|
+            ansible.playbook = "core/1.1_baremetal.yaml"
+        end
+        mainNode.vm.provision "cri", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.2_cri-containerd.yaml"
+            ansible.extra_vars = {
+                containerd_version: "#{CONTAINERD_VERSION}"
+            }
+        end
+        mainNode.vm.provision "kubernetes", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.3_kubernetes.yaml"
+            ansible.extra_vars = {
+                kubernetes_version: "#{KUBERNETES_VERSION}"
+            }
+        end
+        mainNode.vm.provision "control-plane", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.4a_control-plane.yml"
+            ansible.extra_vars = {
+                taint: MAIN_NODE_TAINT,
+                node:  "#{MAIN_NODE_NAME}",
+                adapter_id: MAIN_NODE_ADAPTER_ID
+            }
+        end
+        mainNode.vm.provision "helm", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.5_helm.yml"
+        end
+        
+        mainNode.vm.provision "cni", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.6_cni-calico.yml"
+        end
+        mainNode.vm.provision "csi", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.7_csi-rook.yml"
+            ansible.extra_vars = {
+                rook_version: "release-1.5",
+                reset: false,
+                namespace: "rook-ceph"
+            }
+        end
+        
+        mainNode.vm.provision "jq", type: "ansible" do |ansible|
+            ansible.playbook = "core/1.8_jq.yml"
         end
     end
 

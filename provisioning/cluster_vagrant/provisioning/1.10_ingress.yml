@@ -20,7 +20,8 @@
       when: "delete_namespace|bool"
     - name: Add helm repository
       command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-      notify: Update helm repository
+    - name: Update helm repositories
+      command: helm repo update
     - name: Prepare Helm dashboard value customization
       copy:
         dest: "/tmp/values.yml"
@@ -43,7 +44,3 @@
     - name: Instructions
       debug:
         msg: "To use, add the 'kubernetes.io/ingress.class: nginx' annotation to ingress"
-
-  handlers:
-    - name: Update helm repository
-      include_tasks: _update_helm_repositories.yml

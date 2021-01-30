@@ -89,7 +89,8 @@
       command: "kubectl create secret generic gerrit-ssh --from-file=ssh-privatekey={{TEMP_DIRECTORY}}/sshkey --namespace={{ namespace }}"
     - name: Add helm repository
       command: helm repo add jenkins https://charts.jenkins.io
-      notify: Update helm repository
+    - name: Update helm repositories
+      command: helm repo update
     - name: Deploy helm charts
       args:
         executable: /usr/bin/bash
@@ -117,6 +118,7 @@
       command: "kubectl get service --namespace=gerrit gerrit-gerrit-service --output=jsonpath='{.status.loadBalancer.ingress[0].ip}'"
       register: gerrit_server
       # FIXME: Not working
+      # FIXME: Wait for gerrit
     - name: Act on gerrit
       command: "curl --request POST --show-error --header 'Authorization: Basic {{basic_auth.stdout}}' --header 'Conent-Type: {{item.header}}' --data '{{item.data}}' {{gerrit_server.stdout}}/{{item.url}}"
       with_items:
@@ -132,7 +134,3 @@
       file:
         state: absent
         path: "{{ TEMP_DIRECTORY }}"
-
-  handlers:
-    - name: Update helm repository
-      command: helm repo update

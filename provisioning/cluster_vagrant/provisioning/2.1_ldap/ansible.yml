@@ -64,7 +64,8 @@
           url: https://charts.helm.sh/stable
         - name: cetic
           url: https://cetic.github.io/helm-charts
-      notify: "Update helm repository"
+    - name: Update helm repositories
+      command: helm repo update
     - name: Deploy helm charts
       shell:
         cmd: |
@@ -87,6 +88,3 @@
       file:
         state: absent
         path: "{{ TEMP_PATH }}/"
-  handlers:
-    - name: Update helm repository
-      command: helm repo update

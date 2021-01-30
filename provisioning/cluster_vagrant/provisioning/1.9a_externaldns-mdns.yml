@@ -6,7 +6,6 @@
   vars:
     deploy_manifest: true
   tasks:
-
     - name: Install Avahi
       become: true
       apt:
