@@ -20,4 +20,5 @@ VAGRANT_EXPERIMENTAL="disks" vagrant up --provider="${PROVIDER}"
 CURRENT_DIR=$(pwd); cd ./provisioning/2.2_gerrit; ./bootstrap.sh; cd ${CURRENT_DIR}
 ./provision.sh ./provisioning/2.3_jenkins/ansible.yml
 ./provision.sh ./provisioning/2.4_nexus/ansible.yml
+CURRENT_DIR=$(pwd); cd ./provisioning/2.4_nexus; ./bootstrap.sh; cd ${CURRENT_DIR}
 ./provision.sh ./provisioning/2.5_monitoring/ansible.yml

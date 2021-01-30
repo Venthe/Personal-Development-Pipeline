@@ -1,7 +1,5 @@
 #!/bin/env bash
 
-. .env
-
 DEFAULT_CONTAINER_NAME=${DEFAULT_CONTAINER_NAME:=nexus}
 NEXUS_USERNAME=admin
 NEXUS_PASSWORD="${NEXUS_PASSWORD:=admin123}"
@@ -9,8 +7,12 @@ NEXUS_URL="${BASE_URL:=localhost:8081}/service/rest"
 
 function call() {
     local METHOD=$1
+    >&2 echo "* Calling with ${method} ${@:2}"
     curl --user "${NEXUS_USERNAME}:${NEXUS_PASSWORD}" \
          --request "${METHOD}" \
+         --show-error \
+         --fail \
+         --silent \
          --insecure \
          "${NEXUS_URL}${@:2}"
 }
@@ -98,12 +100,14 @@ function wait_for_nexus() {
     printf '\n'
 }
 
-if declare -f "$1" > /dev/null
-then
-  # call arguments verbatim
-  "$@"
-else
-  # Show a helpful error
-  echo "'$1' is not a known function name" >&2
-  exit 1
+if [[ ${#} -ne 0 ]]; then
+    if declare -f "$1" > /dev/null
+    then
+        # call arguments verbatim
+        "$@"
+    else
+        # Show a helpful error
+        echo "'$1' is not a known function name" >&2
+        exit 1
+    fi
 fi
