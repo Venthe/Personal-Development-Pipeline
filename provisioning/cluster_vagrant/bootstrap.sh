@@ -17,5 +17,6 @@ VAGRANT_EXPERIMENTAL="disks" vagrant up --provider="${PROVIDER}"
 ./provision.sh ./provisioning/1.12_cert-manager/ansible.yml
 ./provision.sh ./provisioning/2.1_ldap/ansible.yml
 ./provision.sh ./provisioning/2.2_gerrit/ansible.yml
+CURRENT_DIR=$(pwd); cd ./provisioning/2.2_gerrit; ./bootstrap.sh; cd ${CURRENT_DIR}
 ./provision.sh ./provisioning/2.3_jenkins/ansible.yml
 ./provision.sh ./provisioning/2.4_nexus/ansible.yml

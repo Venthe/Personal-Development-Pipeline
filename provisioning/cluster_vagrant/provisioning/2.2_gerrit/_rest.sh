@@ -1,26 +1,29 @@
 #!/bin/env bash
 
-DIRECTORY=${DIRECTORY:-.}
+set -e
 
-. ${DIRECTORY}/.env
-
-set -x
 function rest() {
-    HTTP_BASIC_AUTH=$(printf ${USER}:${PASSWORD} | base64)
+    local basic_auth=$(printf ${GERRIT_USER}:${GERRIT_PASSWORD} | base64)
     local method="${1}"
     local path="${2}"
-    local url="${URL}/${path}"
     shift 2
+    local url="${GERRIT_URL}/${path}"
+    >&2 echo "* ${method} '${url}'"
     curl --request "${method}" \
          --show-error \
-         --header "Authorization: Basic ${HTTP_BASIC_AUTH}" \
-         "${url}" "${@}" | sed '0,/)]}/ d'
+         --fail \
+         --silent \
+         --header "Authorization: Basic ${basic_auth}" \
+         "${url}" "${@}" \
+         | sed '0,/)]}/ d'
 }
 
 function login() {
-    rest POST login/ \
+    rest POST "login/" \
         --header 'Conent-Type: application:x-www-form-urlencoded' \
-        --data "username=${USER}&password=${PASSWORD}"
+        --data "username=${GERRIT_USER}&password=${GERRIT_PASSWORD}"
 }
 
-"${@}"
+if [[ ${#} -ne 0 ]]; then
+    "${@}"
+fi
