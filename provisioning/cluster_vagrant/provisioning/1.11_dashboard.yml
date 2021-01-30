@@ -23,7 +23,8 @@
       when: "delete_namespace|bool"
     - name: Add helm repository
       command: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-      notify: Update helm repository
+    - name: Update helm repositories
+      command: helm repo update
     - name: Template manifests
       become: true
       template:
@@ -32,7 +33,6 @@
         owner: vagrant
         mode: '0777'
       with_items:
-        - ingress.yaml
         - user.yaml
         - values.yaml
     - name: Install dashboard manifest
@@ -61,7 +61,3 @@
       when: debug|bool
       debug:
         msg: "{{dashboard_password.stdout}}"
-
-  handlers:
-    - name: Update helm repository
-      include_tasks: _update_helm_repositories.yml

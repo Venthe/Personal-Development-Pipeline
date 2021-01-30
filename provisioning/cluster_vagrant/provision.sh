@@ -2,7 +2,7 @@
 
 set -e
 
-MACHINE_NAME=${MACHINE_NAME:-kubernetes-main-node-1}
+MACHINE_NAME=${MACHINE_NAME:-kubernetes-main-node}
 PROVIDER=${PROVIDER:-hyperv}
 INVENTORY=$(vagrant ssh-config ${MACHINE_NAME} | grep HostName | awk '{print $2}')
 

@@ -46,7 +46,8 @@
           url: https://charts.helm.sh/stable
         - name: bitnami
           url: https://charts.bitnami.com/bitnami
-      notify: Update helm repository
+    - name: Update helm repositories
+      command: helm repo update
     - name: Install coredns helm chart
       shell:
         cmd: |
@@ -118,6 +119,3 @@
     #   command: netplan apply
     # - name: Restart network server
     #   command: systemctl restart system-networkd
-  handlers:
-    - name: Update helm repository
-      include_tasks: _update_helm_repositories.yml
