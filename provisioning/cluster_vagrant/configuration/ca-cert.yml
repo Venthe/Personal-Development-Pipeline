@@ -1,0 +1,30 @@
+---
+- name: Add CA cert
+  gather_facts: false
+  hosts: all
+  vars_prompt:
+    - name: cert_path
+      default: "ca.crt"
+      private: false
+  tasks:
+    - name: Create certificate directory
+      become: true
+      file:
+        mode: '0644'
+        owner: 'vagrant'
+        path: "/usr/local/share/ca-certificates/extra"
+        state: directory
+    - name: Copy CA cert
+      become: true
+      copy:
+        src: "{{ cert_path }}"
+        dest: /usr/local/share/ca-certificates/extra/ca.crt
+        mode: 0644
+    - name: Update CA certificate store
+      become: true
+      command: update-ca-certificates
+    - name: Copy final cert file
+      ansible.builtin.fetch:
+        src: /etc/ssl/certs/ca-certificates.crt
+        dest: ca-certificates-{{ inventory_hostname }}.crt
+        flat: yes

@@ -69,6 +69,9 @@ kubectl patch --namespace=nexus deployment/nexus-sonatype-nexus --patch='{
 }'
 
 kubectl patch --namespace=nexus ingress/nexus-sonatype-nexus-docker --patch='{
+  "metadata": {
+      "annotations": [ "nginx.ingress.kubernetes.io/proxy-body-size": "0"]
+  },
   "spec": {
     "rules": [
       {
@@ -80,7 +83,7 @@ kubectl patch --namespace=nexus ingress/nexus-sonatype-nexus-docker --patch='{
               "pathType": "ImplementationSpecific",
               "backend": {
                 "serviceName": "nexus-sonatype-nexus",
-                "servicePort": 5001
+                "servicePort": 5000
               }
             }
           ]

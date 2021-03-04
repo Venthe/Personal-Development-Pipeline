@@ -20,7 +20,7 @@ function rest() {
 
 function login() {
     rest POST "login/" \
-        --header 'Conent-Type: application:x-www-form-urlencoded' \
+        --header 'Content-Type: application:x-www-form-urlencoded' \
         --data "username=${GERRIT_USER}&password=${GERRIT_PASSWORD}"
 }
 

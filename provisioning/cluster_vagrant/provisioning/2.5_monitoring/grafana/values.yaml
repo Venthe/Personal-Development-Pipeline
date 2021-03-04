@@ -22435,12 +22435,12 @@ ldap:
     use_ssl = false
     start_tls = false
     ssl_skip_verify = true
-    bind_dn = "cn=readonly,dc=my-company,dc=com"
+    bind_dn = "cn=readonly,dc=example,dc=org"
     bind_password = 'readonly'
     search_filter = "(|(uid=%s)(mail=%s))"
-    search_base_dns = ["ou=people,dc=my-company,dc=com"]
+    search_base_dns = ["ou=people,dc=example,dc=org"]
     group_search_filter = "(&(objectClass=posixGroup)(memberUid=%s))"
-    group_search_base_dns = ["ou=groups,dc=my-company,dc=com"]
+    group_search_base_dns = ["ou=groups,dc=example,dc=org"]
     group_search_filter_user_attribute = "uid"
 
     [servers.attributes]

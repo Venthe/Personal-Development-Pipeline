@@ -1,0 +1,46 @@
+---
+- name: Set DNS
+  gather_facts: false
+  hosts: all
+  vars_prompt:
+    - name: ip
+      private: false
+  tasks:
+    - name: Install yq for YAML manipulation
+      become: true
+      community.general.snap:
+        name:
+          - yq
+        # defaults
+        channel: stable
+        state: present
+        classic: no
+    - name: Add IP address to DNS
+      become: true
+      shell:
+        cmd: |
+          sh -c "cat /etc/netplan/01-netcfg.yaml | yq eval '.network.ethernets.eth0.nameservers.addresses |= [\"{{ ip }}\"] + .' - | tee /etc/netplan/01-netcfg.yaml"
+      notify: Apply configuration
+    - name: Disable DNSSEC
+      become: true
+      blockinfile:
+        create: true
+        dest: /etc/systemd/resolved.conf.d/dnssec.conf
+        block: |
+          [Resolve]
+          DNSSEC=false
+        owner: vagrant
+      notify: Restart services
+
+  handlers:
+    - name: Restart services
+      become: true
+      service:
+        name: systemd-resolved
+        state: restarted
+    - name: Apply configuration
+      become: true
+      command: netplan apply
+
+# resolvectl status
+# sudo systemctl status systemd-resolved.service
