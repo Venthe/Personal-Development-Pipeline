@@ -20,7 +20,7 @@ if [[ "$#" -ne 0 ]]; then
     provision "$@"
 else
     provision ./provisioning/1.8_loadbalancer.yml
-    provision ./provisioning/1.9b_externaldns-coredns.yml
+    provision ./provisioning/1.9b_externaldns-coredns/ansible.yml
     provision ./provisioning/1.10_ingress.yml
     provision ./provisioning/1.11_dashboard.yml
     provision ./provisioning/2.1_ldap.yml --extra-vars '
