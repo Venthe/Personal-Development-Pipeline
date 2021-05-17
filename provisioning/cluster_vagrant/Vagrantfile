@@ -1,10 +1,10 @@
 VAGRANTFILE_API_VERSION ||= "2"
 IMAGE_NAME ||= "generic/ubuntu2010"
-IMAGE_VERSION ||= "3.2.0"
+IMAGE_VERSION ||= "3.2.18"
 DEPLOYMENT_NAME ||= "kubernetes-"
 SUBNET_IP_BASE ||= "192.168.3"
-CONTAINERD_VERSION ||= "1.3.9-1"
-KUBERNETES_VERSION ||= "1.20.1-00"
+CONTAINERD_VERSION ||= "1.4.4"
+KUBERNETES_VERSION ||= "1.21"
 
 # TODO: Explore HA control plane
 #  Currently limited to 1
