@@ -1,0 +1,15 @@
+auth:
+  rbac:
+    enabled: true
+    rootPassword: BDvQMmluQy
+  client:
+    enableAuthentication: true
+    secureTransport: true
+    certFilename: etcd-client.pem
+    certKeyFilename: etcd-client-key.pem
+    caFilename: etcd-ca.pem
+    existingSecret: etcd-client-tls
+image.debug: true
+extraEnvVars:
+  - name: ETCD_LOG_LEVEL
+    value: error
