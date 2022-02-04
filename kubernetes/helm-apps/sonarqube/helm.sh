@@ -9,7 +9,7 @@ helm upgrade --install \
   oteemocharts/sonarqube
 
 cat <<EOF | kubectl apply -f -
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sonarqube-nginx
@@ -22,6 +22,8 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: sonarqube-sonarqube
-          servicePort: 9000
+          service:
+            name: sonarqube-sonarqube
+            port: 9000
+        pathType: ImplementationSpecific
 EOF

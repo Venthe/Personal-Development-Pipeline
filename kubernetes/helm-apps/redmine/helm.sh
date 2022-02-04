@@ -11,7 +11,7 @@ helm upgrade --install \
   bitnami/redmine
 
 cat <<EOF | kubectl apply -f -
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: redmine-nginx
@@ -24,6 +24,8 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: redmine
-          servicePort: 80
+          service:
+            name: redmine
+            port: 80
+        pathType: ImplementationSpecific
 EOF

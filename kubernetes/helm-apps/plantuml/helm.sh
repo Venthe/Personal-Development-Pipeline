@@ -7,7 +7,7 @@ helm upgrade --install \
   gitlab/plantuml
 
 cat <<EOF | kubectl apply -f -
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: plantuml-nginx
@@ -20,6 +20,8 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: plantuml
-          servicePort: 80
+          service:
+            name: plantuml
+            port: 80
+        pathType: ImplementationSpecific
 EOF
