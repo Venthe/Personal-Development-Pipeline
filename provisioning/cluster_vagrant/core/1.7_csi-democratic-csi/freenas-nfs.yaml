@@ -43,7 +43,7 @@ volumeSnapshotClasses: []
 
 driver:
   config:
-    driver: freenas-nfs
+    driver: freenas-api-nfs
     instance_id:
     httpConnection:
       protocol: http
@@ -130,8 +130,8 @@ driver:
       datasetEnableQuotas: true
       datasetEnableReservation: false
       datasetPermissionsMode: "0777"
-      datasetPermissionsUser: root
-      datasetPermissionsGroup: root
+      datasetPermissionsUser: 0
+      datasetPermissionsGroup: 0
       #datasetPermissionsAcls:
       #- "-m everyone@:full_set:allow"
       #- "-m u:kube:full_set:allow"
