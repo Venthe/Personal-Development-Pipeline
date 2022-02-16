@@ -20,11 +20,11 @@
       default: "jenkins"
       private: no
     - name: domain
-      default: "example.org"
+      default: "home.arpa"
       prompt: Domain
       private: no
     - name: root_dn
-      default: "dc=example,dc=org"
+      default: "dc=home,dc=arpa"
       prompt: Root DN
       private: no
     - name: ldap_user

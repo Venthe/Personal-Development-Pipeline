@@ -20,7 +20,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: redmine.example.org
+  - host: redmine.home.arpa
     http:
       paths:
       - backend:

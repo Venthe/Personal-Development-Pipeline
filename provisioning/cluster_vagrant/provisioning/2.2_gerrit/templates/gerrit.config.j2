@@ -18,12 +18,12 @@
 [ldap]
     server = {{ LDAP_SERVER }}
 
-    accountBase = ou=people,dc=example,dc=org
+    accountBase = ou=people,dc=home,dc=arpa
     accountPattern = (&(objectClass=inetOrgPerson)(uid=${username}))
     accountFullName = cn
     accountEmailAddress = mail
 
-    groupBase = ou=groups,dc=example,dc=org
+    groupBase = ou=groups,dc=home,dc=arpa
     groupMemberPattern = (&(objectClass=posixGroup)(memberUid=${username}))
 [httpd]
     # If using an ingress use proxy-http or proxy-https

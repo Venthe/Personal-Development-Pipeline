@@ -10,7 +10,7 @@
       default: false
       private: false
     - name: domain
-      default: "example.org"
+      default: "home.arpa"
       prompt: Domain
       private: no
   vars:

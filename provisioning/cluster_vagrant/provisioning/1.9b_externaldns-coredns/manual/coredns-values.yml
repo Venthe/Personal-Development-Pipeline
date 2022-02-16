@@ -29,7 +29,7 @@ servers:
       - name: reload
       - name: loadbalance
       - name: etcd
-        parameters: internal
+        parameters: home.arpa
         configBlock: |-
           stubzones
           path /skydns

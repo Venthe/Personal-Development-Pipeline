@@ -17,8 +17,8 @@
       prompt: Release name
       default: "nexus"
       private: no
-    - name: domain
-      default: "example.org"
+    - name: domain_name
+      default: "home.arpa"
       prompt: Domain
       private: no
   tasks:

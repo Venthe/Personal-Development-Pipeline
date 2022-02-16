@@ -31,7 +31,7 @@ else
     {
         "namespace": "ldap",
         "admin_password": "secret",
-        "ldap_domain": "example.org",
+        "ldap_domain": "home.arpa",
         "ldap_organisation": "My Company",
         "should_clear": false
     }

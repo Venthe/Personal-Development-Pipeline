@@ -2,7 +2,7 @@ helm repo add gitlab https://charts.gitlab.io/
 # helm pull gitlab/plantuml
 helm upgrade --install \
   --namespace=plantuml --create-namespace \
-  --set "nginx_sidecar.server_name=plantuml.example.org" \
+  --set "nginx_sidecar.server_name=plantuml.home.arpa" \
   plantuml \
   gitlab/plantuml
 
@@ -16,7 +16,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: plantuml.example.org
+  - host: plantuml.home.arpa
     http:
       paths:
       - backend:

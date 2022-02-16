@@ -18,7 +18,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: sonarqube.example.org
+  - host: sonarqube.home.arpa
     http:
       paths:
       - backend:

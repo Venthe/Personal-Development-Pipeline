@@ -21,7 +21,7 @@
       default: "secret"
       prompt: Admin password
     - name: ldap_domain
-      default: "example.org"
+      default: "home.arpa"
       prompt: LDAP domain
       private: no
     - name: ldap_organisation

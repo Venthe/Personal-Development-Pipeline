@@ -34,9 +34,9 @@ jenkins:
         groupSearchFilter: "(& (cn={0}) (| (objectclass=groupOfNames) (objectclass=groupOfUniqueNames)\
           \ (objectclass=posixGroup)))"
         inhibitInferRootDN: false
-        managerDN: "cn=readonly,dc=my-company,dc=com"
+        managerDN: "cn=readonly,dc=home,dc=arpa
         managerPasswordSecret: "{AQAAABAAAAAQJlDt/z7PuVe+JfqP+eZthd/ZBSKRvPgZsbO/GNCWOFU=}"
-        rootDN: "dc=my-company,dc=com"
+        rootDN: "dc=home,dc=arpa
         server: "ldap-service.ldap-namespace"
         userSearchBase: "ou=people"
       disableMailAddressResolver: false

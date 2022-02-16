@@ -12,11 +12,11 @@
     [plugins.cri.registry]
       [plugins.cri.registry.mirrors]
         [plugins.cri.registry.mirrors."docker.io"]
-          endpoint = ["http://dockerhub-mirror.example.org"]
+          endpoint = ["http://dockerhub-mirror.home.arpa"]
         [plugins.cri.registry.mirrors."*"]
-          endpoint = ["http://dockerhub-mirror.example.org"]
-        [plugins.cri.registry.mirrors."docker.example.org"]
-          endpoint = ["http://docker.example.org"]
+          endpoint = ["http://dockerhub-mirror.home.arpa"]
+        [plugins.cri.registry.mirrors."docker.home.arpa"]
+          endpoint = ["http://docker.home.arpa"]
 
 sudo systemctl restart containerd
 ```

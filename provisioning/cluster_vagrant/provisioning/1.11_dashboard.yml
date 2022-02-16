@@ -10,7 +10,7 @@
       default: false
       private: false
     - name: tld_hostname
-      default: example.org
+      default: home.arpa
       private: false
     - name: deployment_name
       default: dashboard

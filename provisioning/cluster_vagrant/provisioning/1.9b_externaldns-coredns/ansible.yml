@@ -10,7 +10,7 @@
       default: external-dns
       private: false
     - name: tld_hostname
-      default: example.org
+      default: home.arpa
       private: false
     - name: delete_namespace
       default: false

@@ -6,7 +6,7 @@ kubectl get \
     --output=jsonpath='{.data.Corefile}' \
      configmap/coredns  \
     > /tmp/coredns/Corefile
-echo "example.org:53 {
+echo "home.arpa:53 {
     errors
     cache 30
     forward . $(kubectl get service \

@@ -10,8 +10,8 @@
         block: |
           [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
               SystemdCgroup = true
-          [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.example.org"]
-            endpoint = ["https://docker.example.org"]
+          [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.home.arpa"]
+            endpoint = ["https://docker.home.arpa"]
         owner: vagrant
       notify: Restart containerd
 
