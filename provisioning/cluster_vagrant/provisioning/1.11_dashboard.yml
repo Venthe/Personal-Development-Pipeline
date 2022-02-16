@@ -15,6 +15,8 @@
     - name: deployment_name
       default: dashboard
       private: false
+    - name: chown_user
+      default: vagrant
   vars:
     debug: false
   tasks:
@@ -30,7 +32,7 @@
       template:
         src: "./1.11_dashboard/{{ item }}"
         dest: "/tmp/{{ item }}"
-        owner: vagrant
+        owner: "{{ chown_user }}"
         mode: '0777'
       with_items:
         - user.yaml

@@ -4,6 +4,9 @@
   become: true
   hosts: all
   vars_prompt:
+    - name: chown_user
+      default: vagrant
+      private: false
     - name: taint
       prompt: Should taint node?
       private: false
@@ -47,7 +50,7 @@
           apiVersion: kubelet.config.k8s.io/v1beta1
           kind: KubeletConfiguration
           cgroupDriver: systemd
-        owner: vagrant
+        owner: '{{ chown_user }}'
     - name: Restart kubelet
       become: true
       service:
@@ -89,16 +92,16 @@
     - name: Create .kube directory for vagrant user
       become: true
       file:
-        path: "/home/vagrant/.kube"
+        path: "/home/{{chown_user}}/.kube"
         state: directory
         mode: '0700'
-        owner: vagrant
+        owner: '{{ chown_user }}'
     - name: Setup kubeconfig for vagrant user
       become: true
       copy:
         src: /etc/kubernetes/admin.conf
         dest: /home/vagrant/.kube/config
-        owner: vagrant
+        owner: '{{ chown_user }}'
         remote_src: true
         mode: '0700'
     - name: Generate join command

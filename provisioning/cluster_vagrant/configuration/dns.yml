@@ -5,6 +5,9 @@
   vars_prompt:
     - name: ip
       private: false
+    - name: chown_user
+      default: vagrant
+      private: false
   tasks:
     - name: Install yq for YAML manipulation
       become: true
@@ -29,7 +32,7 @@
         block: |
           [Resolve]
           DNSSEC=false
-        owner: vagrant
+        owner: "{{ chown_user }}"
       notify: Restart services
 
   handlers:

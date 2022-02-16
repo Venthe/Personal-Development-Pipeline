@@ -11,6 +11,8 @@
       prompt: Should clean before install
       default: false
       private: no
+    - name: chown_user
+      default: vagrant
     - name: namespace
       prompt: Namespace
       default: "jenkins"
@@ -70,13 +72,13 @@
         src: ./manifests/
         dest: "{{TEMP_DIRECTORY}}"
         directory_mode: yes
-        owner: vagrant
+        owner: "{{ chown_user }}"
     - name: Templating pass
       become: true
       template:
         src: "./templates/{{item}}.j2"
         dest: "{{ TEMP_DIRECTORY }}/{{item}}"
-        owner: vagrant
+        owner: "{{ chown_user }}"
         mode: '0777'
       with_items:
         - values.yaml

@@ -9,6 +9,10 @@
     LDAP_READONLY_USER_PASSWORD_ENCRYPTED: "{{'{{ LDAP_READONLY_USER_PASSWORD_ENCRYPTED }}'}}"
     TEMP_PATH: "/tmp/ldap"
   vars_prompt:
+    - name: chown_user
+      prompt: linux user for chown
+      default: vagrant
+      private: no
     - name: namespace
       prompt: Namespace for LDAP
       default: ldap
@@ -48,7 +52,7 @@
       template:
         src: "./{{item.path}}/{{item.filename}}.j2"
         dest: "{{ TEMP_PATH }}/{{item.path}}/{{item.filename}}"
-        owner: vagrant
+        owner: "{{ chown_user }}"
         mode: '0777'
       with_items:
         - filename: values.yml

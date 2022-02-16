@@ -3,6 +3,10 @@
   - name: Update CRI
   gather_facts: false
   hosts: all
+  vars_prompt:
+    - name: chown_user
+      default: vagrant
+      private: false
   vars:
     docker_proxy_protocol: http
     docker_proxy: localhost:31201
@@ -21,7 +25,7 @@
                     endpoint = ["{{docker_proxy_protocol}}/{{docker_proxy}}"]
                   [plugins.cri.registry.mirrors."{{docker_private}}"]
                     endpoint = ["{{docker_private_protocol}}/{{docker_private}}"]
-        owner: vagrant
+        owner: '{{ chown_user }}'
       become: true
       notify: Restart containerd
 

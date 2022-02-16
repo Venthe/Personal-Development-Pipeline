@@ -2,6 +2,10 @@
 - name: Add registry to containerd
   gather_facts: false
   hosts: all
+  vars_prompt:
+    - name: chown_user
+      default: vagrant
+      private: false
   tasks:
     - name: Add registry to containerd
       become: true
@@ -12,7 +16,7 @@
               SystemdCgroup = true
           [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.home.arpa"]
             endpoint = ["https://docker.home.arpa"]
-        owner: vagrant
+        owner: '{{ chown_user }}'
       notify: Restart containerd
 
   handlers:

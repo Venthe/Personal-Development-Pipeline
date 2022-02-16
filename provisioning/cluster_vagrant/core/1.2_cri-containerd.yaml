@@ -3,6 +3,10 @@
   gather_facts: false
   become: true
   hosts: all
+  vars_prompt:
+    - name: chown_user
+      default: vagrant
+      private: false
   tasks:
     - name: Add kernel modules required by CRI to system.d
       copy:
@@ -95,7 +99,7 @@
             SystemdCgroup = true
           [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.home.arpa"]
             endpoint = ["https://docker.home.arpa"]
-        owner: vagrant
+        owner: '{{ chown_user }}'
       notify: Restart containerd
     - name: Configure crictl to use containerd
       copy:

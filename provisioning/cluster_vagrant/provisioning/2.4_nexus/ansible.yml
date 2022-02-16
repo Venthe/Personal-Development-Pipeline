@@ -21,6 +21,9 @@
       default: "home.arpa"
       prompt: Domain
       private: no
+    - name: chown_user
+      default: "vagrant"
+      private: no
   tasks:
     - name: Delete old releases
       command: "helm uninstall --namespace={{ namespace }} {{ release_name }}"
@@ -38,7 +41,7 @@
       template:
         src: "./templates/{{item}}.j2"
         dest: "{{ TEMP_DIRECTORY }}/{{item}}"
-        owner: vagrant
+        owner: "{{ chown_user }}"
         mode: '0777'
       with_items:
         - values.yml

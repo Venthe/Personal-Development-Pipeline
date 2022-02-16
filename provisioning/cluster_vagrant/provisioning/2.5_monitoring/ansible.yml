@@ -13,6 +13,9 @@
       default: "home.arpa"
       prompt: Domain
       private: no
+    - name: chown_user
+      default: "vagrant"
+      private: no
   vars:
     debug: true
     temp_path: /tmp/grafana
@@ -44,7 +47,7 @@
         dest: "{{ temp_path }}/{{ item }}"
         directory_mode: yes
         mode: 0777
-        owner: vagrant
+        owner: "{{ chown_user }}"
       with_items:
         - grafana
         - loki
