@@ -4,3 +4,5 @@
 *.crt
 *.cert
 *.key
+
+ca*.json
