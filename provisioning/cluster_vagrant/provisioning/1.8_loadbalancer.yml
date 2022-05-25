@@ -5,7 +5,7 @@
   hosts: all
   vars:
     bits_in_secret: 512
-    metallb_version: v0.9.5
+    metallb_version: v0.12.1
     address_range:
       from: 192.168.4.1
       to: 192.168.5.254
