@@ -12,6 +12,9 @@
     - name: delete_namespace
       default: false
       private: false
+    - name: chown_user
+      default: vagrant
+      private: false
   tasks:
     - name: Delete namespace
       command: "kubectl delete namespace {{ deployment_namespace }}"
@@ -23,13 +26,13 @@
         dest: /tmp/
         directory_mode: yes
         mode: 0777
-        owner: vagrant
+        owner: '{{ chown_user }}'
     - name: Template manifests
       become: true
       template:
         src: "./template/{{ item }}"
         dest: "/tmp/{{ item }}"
-        owner: vagrant
+        owner: '{{ chown_user }}'
         mode: '0777'
       with_items:
         - cilium-etcd-operator.yaml
