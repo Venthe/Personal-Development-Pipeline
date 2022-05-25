@@ -10,9 +10,10 @@ controller:
       kubernetes.io/tls-acme: "true"
     hostName: "{{release_name}}.{{domain}}"
   additionalPlugins:
-    - timestamper:1.11.8
-    - ldap:1.26
-    - gerrit-trigger:2.32.0
+    - timestamper:1.13
+    - ldap:2.7
+    - gerrit-trigger:2.34.0
+    - blueocean:1.25.3
   prometheus.enabled: true
   servicePort: 80
   jenkinsUrl: http://{{release_name}}.{{domain}}/
