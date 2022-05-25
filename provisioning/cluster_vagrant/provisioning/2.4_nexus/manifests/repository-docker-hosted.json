@@ -3,7 +3,7 @@
     "storage": {
       "blobStoreName": "docker-hosted",
       "strictContentTypeValidation": true,
-      "writePolicy": "allow_once"
+      "writePolicy": "allow"
     },
     "online": true,
     "docker": {
