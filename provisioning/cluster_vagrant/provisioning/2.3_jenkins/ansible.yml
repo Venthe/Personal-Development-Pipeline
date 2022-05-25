@@ -117,7 +117,7 @@
       command: "cat {{TEMP_DIRECTORY}}/sshkey.pub"
       register: sshkey_pub
     - name: Act on gerrit
-      command: "curl --request POST --show-error --header 'Authorization: Basic {{basic_auth.stdout}}' --header 'Conent-Type: {{item.header}}' --data '{{item.data}}' https:/gerrit.{{ domain }}/{{item.url}}"
+      command: "curl --request POST --show-error --header 'Authorization: Basic {{basic_auth.stdout}}' --header 'Content-Type: {{item.header}}' --data '{{item.data}}' https:/gerrit.{{ domain }}/{{item.url}}"
       with_items:
         - header: application:x-www-form-urlencoded
           data: username={{jenkins_ldap_username}}&password={{jenkins_ldap_password}}
