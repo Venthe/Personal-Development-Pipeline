@@ -15,6 +15,9 @@
       prompt: Namespace
       default: "gerrit"
       private: no
+    - name: chown_user
+      default: "ansible"
+      private: no
     - name: release_name
       prompt: Release name
       default: "gerrit"
@@ -40,7 +43,7 @@
       template:
         src: "./values.yaml.j2"
         dest: "{{ TEMP_DIRECTORY }}/values.yaml"
-        owner: vagrant
+        owner: "{{ chown_user }}"
         mode: '0777'
     - name: Add helm repository
       command: helm repo add venthe https://raw.githubusercontent.com/Venthe/k8s-gerrit/various-updates/chart-repository/
