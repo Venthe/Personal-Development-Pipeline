@@ -19,7 +19,7 @@
       default: 1
       private: false
     - name: cluster_domain
-      default: cluster.internal
+      default: cluster.local
       private: false
   tasks:
     # Do this step in gather facts

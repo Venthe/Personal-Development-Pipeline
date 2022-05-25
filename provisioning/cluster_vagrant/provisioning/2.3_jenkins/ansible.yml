@@ -37,14 +37,14 @@
       default: "readonly"
       prompt: Ldap user password
       private: true
-    - name: cluster_zone
-      default: "cluster.internal"
-      private: false
     - name: jenkins_ldap_username
       default: "jenkins"
       private: false
     - name: jenkins_ldap_password
       default: "jenkins"
+      private: false
+    - name: cluster_zone
+      default: cluster.local
       private: false
   tasks:
     - name: Delete old releases
