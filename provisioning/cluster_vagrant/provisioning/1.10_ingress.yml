@@ -15,6 +15,9 @@
   vars:
     debug: false
   tasks:
+    - name: "Clear release"
+      command: "helm uninstall -n{{ deployment_namespace }} ingress"
+      when: "delete_namespace|bool"
     - name: "Delete {{ deployment_namespace }} namespace"
       command: "kubectl delete namespace {{ deployment_namespace }}"
       when: "delete_namespace|bool"
