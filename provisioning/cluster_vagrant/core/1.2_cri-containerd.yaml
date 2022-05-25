@@ -16,7 +16,7 @@
         content: |
           overlay
           br_netfilter
-      notify: Restart system.d kernel modules
+      notify: reload systemd
     # As a requirement for your Linux Node's iptables to
     # correctly see bridged traffic
     - name: Set required CRI settings
