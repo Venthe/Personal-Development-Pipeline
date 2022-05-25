@@ -17,6 +17,8 @@
       prompt: Release name
       default: "nexus"
       private: no
+    - name: nexus_version
+      default: "38.0.0"
     - name: domain_name
       default: "home.arpa"
       prompt: Domain
@@ -46,7 +48,7 @@
       with_items:
         - values.yml
     - name: Add helm repository
-      command: helm repo add oteemocharts https://oteemo.github.io/charts
+      command: helm repo add sonatype https://sonatype.github.io/helm3-charts/
     - name: Update helm repository
       command: helm repo update
     - name: Deploy helm charts
@@ -54,9 +56,10 @@
         cmd: |
           helm upgrade --install \
             --create-namespace --namespace={{ namespace }} \
+            --version {{ nexus_version }} \
             --values={{ TEMP_DIRECTORY }}/values.yml \
             {{ release_name }} \
-            oteemocharts/sonatype-nexus
+            sonatype/nexus-repository-manager
     - name: Clean temp path
       become: true
       file:
