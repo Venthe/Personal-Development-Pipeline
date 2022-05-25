@@ -3,7 +3,7 @@
   gather_facts: false
   hosts: all
   vars_prompt:
-    - name: namespace
+    - name: deployment_namespace
       default: dashboard
       private: false
     - name: delete_namespace
@@ -20,8 +20,8 @@
   vars:
     debug: false
   tasks:
-    - name: "Delete {{ namespace }} namespace"
-      command: "kubectl delete namespace {{ namespace }}"
+    - name: "Delete {{ deployment_namespace }} namespace"
+      command: "kubectl delete namespace {{ deployment_namespace }}"
       when: "delete_namespace|bool"
     - name: Add helm repository
       command: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
@@ -43,7 +43,7 @@
           helm upgrade \
             --install \
             --create-namespace \
-            --namespace={{ namespace }} \
+            --namespace={{ deployment_namespace }} \
             --values=/tmp/values.yaml \
             {{ deployment_name }} \
             kubernetes-dashboard/kubernetes-dashboard
@@ -53,8 +53,8 @@
       shell:
         cmd: |
           kubectl get secret \
-                  $(kubectl get secret --namespace={{ namespace }} --output=jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep admin-user) \
-                  --namespace={{ namespace }} \
+                  $(kubectl get secret --namespace={{ deployment_namespace }} --output=jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep admin-user) \
+                  --namespace={{ deployment_namespace }} \
                   --output=jsonpath="{.data.token}" |
                   awk '{system("echo -n "$1" | base64 --decode")}'
       register: dashboard_password

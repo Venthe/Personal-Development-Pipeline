@@ -35,5 +35,5 @@ servers:
         configBlock: |-
           stubzones
           path /skydns
-          endpoint https://cilium-etcd-client.{{ namespace }}.svc:2379
+          endpoint https://cilium-etcd-client.{{ deployment_namespace }}.svc:2379
           tls /etc/coredns/tls/etcd/etcd-client.crt /etc/coredns/tls/etcd/etcd-client.key /etc/coredns/tls/etcd/etcd-client-ca.crt

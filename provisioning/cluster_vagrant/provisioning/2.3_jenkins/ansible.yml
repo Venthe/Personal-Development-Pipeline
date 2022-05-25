@@ -13,7 +13,7 @@
       private: no
     - name: chown_user
       default: vagrant
-    - name: namespace
+    - name: deployment_namespace
       prompt: Namespace
       default: "jenkins"
       private: no
@@ -48,10 +48,10 @@
       private: false
   tasks:
     - name: Delete old releases
-      command: "helm uninstall --namespace={{ namespace }} {{ release_name }}"
+      command: "helm uninstall --namespace={{ deployment_namespace }} {{ release_name }}"
       when: "should_clean|bool"
     - name: Delete namespace
-      command: "kubectl delete namespace {{ namespace }}"
+      command: "kubectl delete namespace {{ deployment_namespace }}"
       when: "should_clean|bool"
     - name: Create temporary directories
       become: true

@@ -11,7 +11,7 @@
       prompt: Should clean before install
       default: false
       private: no
-    - name: namespace
+    - name: deployment_namespace
       prompt: Namespace
       default: "gerrit"
       private: no
@@ -25,10 +25,10 @@
       private: no
   tasks:
     - name: Delete old releases
-      command: "helm uninstall --namespace={{ namespace }} {{ release_name }}"
+      command: "helm uninstall --namespace={{ deployment_namespace }} {{ release_name }}"
       when: "should_clean|bool"
     - name: Delete namespace
-      command: "kubectl delete namespace {{ namespace }}"
+      command: "kubectl delete namespace {{ deployment_namespace }}"
       when: "should_clean|bool"
     - name: Create temporary directories
       become: true
@@ -50,12 +50,12 @@
       shell:
         cmd: |
           helm upgrade --install \
-            --namespace={{ namespace }} --create-namespace \
+            --namespace={{ deployment_namespace }} --create-namespace \
             --values={{TEMP_DIRECTORY}}/values.yaml \
             {{ release_name }} \
             venthe/gerrit
     - name: Annotate Block storageclass as default
-      command: "kubectl annotate Service {{release_name}}-gerrit-service --namespace={{ namespace }} --overwrite external-dns.alpha.kubernetes.io/hostname=\"{{release_name}}.{{domain}}\""
+      command: "kubectl annotate Service {{release_name}}-gerrit-service --namespace={{ deployment_namespace }} --overwrite external-dns.alpha.kubernetes.io/hostname=\"{{release_name}}.{{domain}}\""
     - name: Clean temp path
       become: true
       file:

@@ -3,8 +3,8 @@
   gather_facts: false
   hosts: all
   vars_prompt:
-    - name: namespace
-      default: nginx
+    - name: deployment_namespace
+      default: ingress
       private: false
     - name: tld_hostname
       default: example.org
@@ -15,8 +15,8 @@
   vars:
     debug: false
   tasks:
-    - name: "Delete {{ namespace }} namespace"
-      command: "kubectl delete namespace {{ namespace }}"
+    - name: "Delete {{ deployment_namespace }} namespace"
+      command: "kubectl delete namespace {{ deployment_namespace }}"
       when: "delete_namespace|bool"
     - name: Add helm repository
       command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -37,7 +37,7 @@
           helm upgrade \
             --install \
             --create-namespace \
-            --namespace={{ namespace }} \
+            --namespace={{ deployment_namespace }} \
             --values=/tmp/values.yml \
             ingress-nginx \
             ingress-nginx/ingress-nginx

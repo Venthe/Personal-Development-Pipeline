@@ -3,10 +3,7 @@
   gather_facts: false
   hosts: all
   vars_prompt:
-    - name: cluster_domain
-      default: cluster.internal
-      private: false
-    - name: namespace
+    - name: deployment_namespace
       default: external-dns
       private: false
     - name: tld_hostname
@@ -17,7 +14,7 @@
       private: false
   tasks:
     - name: Delete namespace
-      command: "kubectl delete namespace {{ namespace }}"
+      command: "kubectl delete namespace {{ deployment_namespace }}"
       when: "delete_namespace|bool"
     - name: copy manifests
       become: true
@@ -54,7 +51,7 @@
           helm upgrade \
             --install \
             --create-namespace \
-            --namespace={{ namespace }} \
+            --namespace={{ deployment_namespace }} \
             --values=/tmp/coredns-values.yml \
             coredns \
             stable/coredns
@@ -71,7 +68,7 @@
             --install \
             --create-namespace \
             --set=customResources.createEtcdClusterCRD=true \
-            --namespace={{ namespace }} \
+            --namespace={{ deployment_namespace }} \
             my-etcd-op \
             stable/etcd-operator
     - name: Install ExternalDNS Container helm chart

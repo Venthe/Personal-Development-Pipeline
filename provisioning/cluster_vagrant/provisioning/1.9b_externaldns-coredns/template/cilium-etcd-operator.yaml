@@ -6,7 +6,7 @@ metadata:
     io.cilium/app: etcd-operator
     name: cilium-etcd-operator
   name: cilium-etcd-operator
-  namespace: {{ namespace }}
+  namespace: {{ deployment_namespace }}
 spec:
   replicas: 1
   selector:
@@ -68,7 +68,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cilium-etcd-operator
-  namespace: {{ namespace }}
+  namespace: {{ deployment_namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -153,13 +153,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: cilium-etcd-operator
-    namespace: {{ namespace }}
+    namespace: {{ deployment_namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cilium-etcd-sa
-  namespace: {{ namespace }}
+  namespace: {{ deployment_namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
