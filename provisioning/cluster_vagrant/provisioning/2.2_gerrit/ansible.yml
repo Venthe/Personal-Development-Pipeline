@@ -6,6 +6,7 @@
     HTTPD_LISTEN_URL: "proxy-http://*:8080/"
     TEMP_DIRECTORY: "/tmp/gerrit"
     LDAP_SERVER: "ldap://openldap.ldap"
+    LDAP_DC: "dc=home,dc=arpa"
   vars_prompt:
     - name: should_clean
       prompt: Should clean before install
@@ -23,7 +24,7 @@
       default: "gerrit"
       private: no
     - name: domain
-      default: "example.org"
+      default: "home.arpa"
       prompt: Domain
       private: no
   tasks:

@@ -4,7 +4,7 @@
     username = postgres
     password = Askiv4ViRfCUdiwT
 [ldap]
-    username = cn=readonly,dc=home,dc=arpa
+    username = cn=readonly,{{ LDAP_DC }}
     password = readonly
     # Password for the keystore added as value for 'gerritReplica.keystore'
 # Only needed, if SSL is enabled.
