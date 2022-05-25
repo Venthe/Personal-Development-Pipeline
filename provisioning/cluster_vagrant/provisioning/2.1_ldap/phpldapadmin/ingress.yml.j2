@@ -6,6 +6,7 @@ metadata:
   namespace: {{ namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: ca-issuer
 spec:
   rules:
   - host: "ldap-admin.{{ ldap_domain }}"
@@ -17,3 +18,7 @@ spec:
             port:
               number: 80
         pathType: ImplementationSpecific
+  tls:
+    - hosts:
+      - "ldap-admin.{{ ldap_domain }}"
+      secretName: ldap-admin-tls

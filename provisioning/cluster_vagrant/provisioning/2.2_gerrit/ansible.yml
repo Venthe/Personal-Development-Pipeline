@@ -3,7 +3,7 @@
   gather_facts: false
   hosts: all
   vars:
-    HTTPD_LISTEN_URL: "proxy-http://*:8080/"
+    HTTPD_LISTEN_URL: "proxy-https://*:8080/"
     TEMP_DIRECTORY: "/tmp/gerrit"
     LDAP_SERVER: "ldap://openldap.ldap"
     LDAP_DC: "dc=home,dc=arpa"
