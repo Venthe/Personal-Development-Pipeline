@@ -97,13 +97,13 @@
                     serviceName: prometheus-server
                     servicePort: 80
           EOF
-    - name: Password to grafana
-      shell:
-        cmd: |
-          kubectl get secret --namespace {{namespace}} grafana -o jsonpath="{.data.admin-password}" | base64 --decode
-      register: grafana_password
-      when: debug|bool
-    - name: Show debug info
-      when: debug|bool
-      debug:
-        msg: "{{grafana_password.stdout}}"
+    # - name: Password to grafana
+    #   shell:
+    #     cmd: |
+    #       kubectl get secret --namespace {{namespace}} grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+    #   register: grafana_password
+    #   when: debug|bool
+    # - name: Show debug info
+    #   when: debug|bool
+    #   debug:
+    #     msg: "{{grafana_password.stdout}}"
