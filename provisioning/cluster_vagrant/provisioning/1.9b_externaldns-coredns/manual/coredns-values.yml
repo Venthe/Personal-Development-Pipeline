@@ -33,5 +33,5 @@ servers:
         configBlock: |-
           stubzones
           path /skydns
-          endpoint https://etcd-headless:2379
-          tls /etc/coredns/tls/etcd/etcd-client.pem /etc/coredns/tls/etcd/etcd-client-key.pem /etc/coredns/tls/etcd/etcd-ca.pem
+          endpoint https://etcd:2379
+          tls /etc/coredns/tls/etcd/client.pem /etc/coredns/tls/etcd/client-key.pem /etc/coredns/tls/etcd/ca.pem

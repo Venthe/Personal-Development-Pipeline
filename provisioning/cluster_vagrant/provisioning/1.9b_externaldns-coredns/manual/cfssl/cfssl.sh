@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 NAMESPACE=${NAMESPACE:-external-dns}
 
 function jq() {
@@ -111,14 +113,14 @@ cfssl gencert -initca ca-csr.modified.json | cfssljson -bare ca -
 # Generate Server certificate
 
 #172.16.164.101,e11k8setcd01.mercury.corp,e11k8setcd01.local,e11k8setcd01
-echo '{"CN":"etcd-0","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
-    | generate server "etcd-0" server
+# echo '{"CN":"etcd-0","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
+    # | generate server "etcd-0" server
 # validate server
 
 # Generate Peer certificate
 
-echo '{"CN":"etcd-0","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
-    | generate peer "etcd-0,etcd,etcd-headless,*.external-dns.svc.cluster.local,external-dns.svc.cluster.local" peer
+# echo '{"CN":"etcd-0","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
+    # | generate peer "etcd-0,etcd,etcd-headless,*.etcd-headless.external-dns.svc.cluster.local" peer
 # validate peer
 
 # We will need to run above commands for all the etcd nodes, which is 5 times.
@@ -127,29 +129,33 @@ echo '{"CN":"etcd-0","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
 
 # Finally, let's generate the client certs for all the client need to connect to the etcd cluster
 
-echo '{"CN":"etcd-headless","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
-    | generate peer "etcd-0,etcd,etcd-headless,*.external-dns.svc.cluster.local,external-dns.svc.cluster.local,etcd-0.etcd-headless.external-dns.svc.cluster.local," client
+echo '{"CN":"root","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
+    | generate peer "etcd,etcd-headless,localhost,*.etcd-headless.external-dns.svc.cluster.local" client
+# echo '{"CN":"etcd-headless","hosts":[""],"key":{"algo":"rsa","size":2048}}' \
+#     | generate peer "etcd,etcd-headless,localhost,*.etcd-headless.external-dns.svc.cluster.local" peer
 # validate client
 
 # pem_to_crt client-e11k8setcd01 etcd-client
 # pem_to_crt ca etcd-ca
 # PKCS1_to_PKCS8 client-e11k8setcd01-key etcd-client
+    # --from-file=peer.pem=./peer.pem \
+    # --from-file=peer-key.pem=./peer-key.pem \
 
 kubectl delete secret/etcd-client-tls --namespace=$NAMESPACE
 kubectl create secret generic \
-    --from-file=etcd-client.pem=./client.pem \
-    --from-file=etcd-ca.pem=./ca.pem \
-    --from-file=etcd-client-key.pem=./client-key.pem \
+    --from-file=client.pem=./client.pem \
+    --from-file=ca.pem=./ca.pem \
+    --from-file=client-key.pem=./client-key.pem \
     --namespace=$NAMESPACE \
     etcd-client-tls
 
-kubectl delete secret/etcd-peer-tls --namespace=$NAMESPACE
-kubectl create secret generic \
-    --from-file=etcd-peer.pem=./peer.pem \
-    --from-file=etcd-ca.pem=./ca.pem \
-    --from-file=etcd-peer-key.pem=./peer-key.pem \
-    --namespace=$NAMESPACE \
-    etcd-peer-tls
+# kubectl delete secret/etcd-peer-tls --namespace=$NAMESPACE
+# kubectl create secret generic \
+#     --from-file=etcd-peer.pem=./peer.pem \
+#     --from-file=etcd-ca.pem=./ca.pem \
+#     --from-file=etcd-peer-key.pem=./peer-key.pem \
+#     --namespace=$NAMESPACE \
+#     etcd-peer-tls
 
 # kubectl get secret/etcd-client-tls --namespace=$NAMESPACE --output=json \
 #     | jq "\

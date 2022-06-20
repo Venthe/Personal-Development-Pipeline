@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
+set -x
 
 NAMESPACE=external-dns
 
+helm uninstall --namespace $NAMESPACE external-dns
+helm uninstall --namespace $NAMESPACE etcd
+helm uninstall --namespace $NAMESPACE coredns
 kubectl delete namespace $NAMESPACE
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -12,10 +16,8 @@ helm repo update
 kubectl create namespace $NAMESPACE
 
 bash -c 'cd cfssl && ./cfssl.sh'
-
 helm upgrade \
     --install \
-    --version=6.13.3 \
     --create-namespace \
     --values=etcd-values.yml \
     --namespace=${NAMESPACE} \
