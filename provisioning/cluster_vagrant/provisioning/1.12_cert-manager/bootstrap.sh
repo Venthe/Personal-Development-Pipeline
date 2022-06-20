@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 TEMP_PATH="/tmp/certs"
 CA_PATH="/etc/kubernetes/pki"
 INTERMEDIATE_CA_FILENAME="company-intermediate-ca"
@@ -99,22 +101,5 @@ spec:
   selfSigned: {}
 EOF
 
-# kubectl get ClusterIssuer ca-issuer --namespace cert-manager --output wide
-
 # Cleanup
-rm --recursive --force "${TEMP_PATH}"
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: dind
-spec:
-  containers:
-    - name: dind
-      args:
-        - "--debug"
-      image: docker:20.10.0-dind
-      securityContext:
-        privileged: true
-EOF
+# rm --recursive --force "${TEMP_PATH}"
