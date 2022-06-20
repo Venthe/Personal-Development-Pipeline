@@ -49,3 +49,18 @@ then run `./bootstrap.sh`
 ## Warning! There is a bug in WSL2 and `VAGRANT_EXPERIMENTAL="disks"`
 
 Vagrant up creates additional disks in directory /mnt/DRIVE_LETTER/... but places it in DRIVE_LETTER:\mnt\DRIVE_LETTER\... and because of that it is not cleared with `vagrant destroy`
+
+## DNS
+
+`sudo systemctl status systemd-resolved.service`
+
+DISABLE DNSSEC:
+```bash
+sudo mkdir -p /etc/systemd/resolved.conf.d
+sudo vim /etc/systemd/resolved.conf.d/dnssec.conf
+    enter:
+        [Resolve]
+        DNSSEC=false
+sudo systemctl restart systemd-resolved
+systemd-resolve –status
+```
