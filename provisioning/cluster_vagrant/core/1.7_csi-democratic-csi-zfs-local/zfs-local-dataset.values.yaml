@@ -1,9 +1,3 @@
-node:
-  driver:
-    image: democraticcsi/democratic-csi:next
-    imagePullPolicy: Always
-    logLevel: debug
-
 csiDriver:
   # should be globally unique for a given cluster
   name: "org.democratic-csi.zfs-local-dataset"
