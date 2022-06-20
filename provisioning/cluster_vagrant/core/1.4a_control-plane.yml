@@ -35,7 +35,7 @@
         path: "{{ item }}"
         state: directory
       with_items:
-        - /etc/default/kubelet
+        # - /etc/default/kubelet
         - /var/lib/kubelet
     # - name: Configure node ip
     #   lineinfile:
