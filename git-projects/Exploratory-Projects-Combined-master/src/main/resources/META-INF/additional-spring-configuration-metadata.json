@@ -1,9 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "microservice.uri",
-      "type": "java.lang.String",
-      "description": "Description for microservice.uri."
-    }
-  ]
-}

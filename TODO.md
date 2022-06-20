@@ -15,3 +15,14 @@
     - Groups from LDAP
 - Dashboard
     - Hostname
+
+## Apps
+
+- PlantUML
+- Ghost
+- PGAdmin4
+- Redmine
+- Sonarqube
+- Xwiki
+- LOKI
+- OnCall
