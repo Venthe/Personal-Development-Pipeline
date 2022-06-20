@@ -9,21 +9,17 @@
       default: vagrant
       private: false
   tasks:
-    - name: Install yq for YAML manipulation
+    - name: Create netplan configuration for DNS
       become: true
-      community.general.snap:
-        name:
-          - yq
-        # defaults
-        channel: stable
-        state: present
-        classic: no
-    - name: Add IP address to DNS
-      become: true
-      shell:
-        cmd: |
-          sh -c "cat /etc/netplan/01-netcfg.yaml | yq eval '.network.ethernets.eth0.nameservers.addresses |= [\"{{ ip }}\"] + .' - | tee /etc/netplan/01-netcfg.yaml"
-      notify: Apply configuration
+      copy:
+        dest: "/etc/netplan/02-k8s-dns.yaml"
+        content: |
+          network:
+            ethernets:
+              eth0:
+                nameservers:
+                  adresses:
+                    - "{{ ip }}"
     - name: Disable DNSSEC
       become: true
       blockinfile:
