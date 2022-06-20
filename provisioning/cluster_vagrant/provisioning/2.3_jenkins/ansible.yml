@@ -62,7 +62,7 @@
       args:
         executable: /usr/bin/bash
       with_items:
-        - "-b 2048 -t rsa -f {{TEMP_DIRECTORY}}/sshkey -q -N '' <<<y 2>&1 >/dev/null 2>&1 >/dev/null"
+        - "-b 2048 -t rsa -f {{TEMP_DIRECTORY}}/sshkey -q -N '' <<<y 2>&1 >/dev/null"
         - "-y -f {{TEMP_DIRECTORY}}/sshkey > {{TEMP_DIRECTORY}}/sshkey.pub"
     - name: Copy manifests
       become: true
