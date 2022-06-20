@@ -19,12 +19,33 @@ spec:
       containers:
         - name: dind
           args:
-            - "--insecure-registry=nexus.nexus:5000"
-            - "--registry-mirror=http://nexus.nexus:5001"
+            # - "--insecure-registry=http://docker.example.org"
+            # - "--insecure-registry=http://dockerhub-mirror.example.org"
+            # - "--registry-mirror=http://dockerhub-mirror.example.org"
+            - "--insecure-registry=http://nexus-sonatype-nexus.nexus:5000"
+            - "--insecure-registry=http://nexus-sonatype-nexus.nexus:5001"
+            - "--registry-mirror=http://nexus-sonatype-nexus.nexus:5001"
             - "--debug"
           image: docker:20.10.0-dind
           securityContext:
             privileged: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-dind
+spec:
+  selector:
+    matchLabels:
+        container: test-dind
+  template:
+    metadata:
+      labels:
+        container: test-dind
+    spec:
+      containers:
+        - name: test-dind
+          image: localhost:30516/alpine
 ...
 EOF
 }
