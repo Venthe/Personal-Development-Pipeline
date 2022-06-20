@@ -63,6 +63,12 @@ function POST_repositories() {
          "${@:3}"
 }
 
+function DELETE_repositories() {
+    local REPOSITORY_NAME=$1
+    _call DELETE /v1/repositories/${REPOSITORY_NAME} \
+         "${@:2}"
+}
+
 function GET_anonymous_access() {
     _call GET "/v1/security/anonymous" \
          "${@}"
