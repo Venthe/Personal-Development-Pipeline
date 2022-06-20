@@ -91,9 +91,10 @@
       blockinfile:
         dest: /etc/containerd/config.toml
         block: |
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
               SystemdCgroup = true
+          [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.example.org"]
+            endpoint = ["https://docker.example.org"]
         owner: vagrant
       notify: Restart containerd
     - name: Configure crictl to use containerd
