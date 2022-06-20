@@ -1,0 +1,26 @@
+---
+- name: Add registry to containerd
+  gather_facts: false
+  hosts: all
+  tasks:
+    - name: Add registry to containerd
+      become: true
+      blockinfile:
+        dest: /etc/containerd/config.toml
+        block: |
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+              SystemdCgroup = true
+          [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.example.org"]
+            endpoint = ["https://docker.example.org"]
+        owner: vagrant
+      notify: Restart containerd
+
+  handlers:
+    - name: Restart containerd
+      become: true
+      service:
+        name: containerd
+        state: restarted
+...
+
+# sudo vim /etc/containerd/config.toml
