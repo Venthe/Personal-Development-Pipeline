@@ -7,8 +7,8 @@
     bits_in_secret: 512
     metallb_version: v0.12.1
     address_range:
-      from: 192.168.4.1
-      to: 192.168.5.254
+      from: 172.22.10.1
+      to: 172.22.15.254
   tasks:
 
     # If you’re using kube-proxy in IPVS mode, since Kubernetes v1.14.2 you have to enable strict ARP mode.
