@@ -96,12 +96,6 @@
                 - backend:
                     serviceName: prometheus-server
                     servicePort: 80
-            - host: loki.{{ domain }}
-              http:
-                paths:
-                - backend:
-                    serviceName: loki
-                    servicePort: 80
           EOF
     - name: Password to grafana
       shell:
