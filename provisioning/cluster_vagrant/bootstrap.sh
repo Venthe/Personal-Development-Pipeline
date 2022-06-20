@@ -12,6 +12,7 @@ VAGRANT_EXPERIMENTAL="disks" vagrant up --provider="${PROVIDER}"
 
 ./provision.sh ./provisioning/1.8_loadbalancer.yml
 ./provision.sh ./provisioning/1.9b_externaldns-coredns/ansible.yml
+./provisioning/1.9b_externaldns-coredns/bootstrap.sh
 ./provision.sh ./provisioning/1.10_ingress.yml
 ./provision.sh ./provisioning/1.11_dashboard.yml
 ./provision.sh ./provisioning/1.12_cert-manager/ansible.yml
