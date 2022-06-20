@@ -16,7 +16,7 @@
 - Dashboard
     - Hostname
 
-## Apps
+## Services to deploy
 
 - PlantUML
 - Ghost
@@ -26,3 +26,4 @@
 - Xwiki
 - LOKI
 - OnCall
+- SMTP

@@ -6,3 +6,7 @@
 *.code-workspace
 *.crt
 .idea
+
+.vagrant/
+.vagrant.d/
+join-command
