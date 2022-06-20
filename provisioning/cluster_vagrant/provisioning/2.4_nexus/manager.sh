@@ -60,10 +60,10 @@ function GET_repositorySettings() {
 }
 
 function POST_repositories() {
-    local REPOSITORY_TYPE=$1
-    local DATA=$2
+    local REPOSITORY_TYPE="${1}"
+    local DATA="${2}"
     _call POST /v1/repositories/${REPOSITORY_TYPE} \
-         --data ${DATA} \
+         --data "${DATA}" \
          --header "content-type: application/json" \
          "${@:3}"
 }
