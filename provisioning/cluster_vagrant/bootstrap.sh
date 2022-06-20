@@ -23,3 +23,13 @@ CURRENT_DIR=$(pwd); cd ./provisioning/2.2_gerrit; ./bootstrap.sh; cd ${CURRENT_D
 ./provision.sh ./provisioning/2.4_nexus/ansible.yml
 CURRENT_DIR=$(pwd); cd ./provisioning/2.4_nexus; ./bootstrap.sh; cd ${CURRENT_DIR}
 ./provision.sh ./provisioning/2.5_monitoring/ansible.yml
+
+# TODO: Fix host DNS
+# sudo vim /etc/systemd/resolved.conf
+# sudo vim /etc/netplan/01-netcfg.yaml
+# sudo netplan apply
+# sudo systemctl restart systemd-resolved
+# sudo systemctl daemon-reload
+# sudo systemctl restart systemd-networkd
+# resolvectl status | grep "DNS Servers"
+# systemd-resolve --flush-caches

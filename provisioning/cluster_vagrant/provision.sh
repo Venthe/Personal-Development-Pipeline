@@ -16,6 +16,10 @@ function provision() {
     ansible-playbook ./$PLAYBOOK_PATH --key-file ./.vagrant/machines/$MACHINE_NAME/$PROVIDER/private_key --user vagrant --inventory $INVENTORY, $@
 }
 
+function get_dns() {
+    kubectl --namespace=external-dns get service coredns-public --output jsonpath='{.status.loadBalancer.ingress[*].ip}'
+}
+
 if [[ "$#" -ne 0 ]]; then
     provision "$@"
 else
@@ -32,4 +36,18 @@ else
         "should_clear": false
     }
     '
+    IP=$(get_dns)
+    MACHINE_NAME=kubernetes-main-node ./provision.sh ./configuration/dns.yml --extra-vars ip="${IP}"
+    MACHINE_NAME=kubernetes-worker-node-1 ./provision.sh ./configuration/dns.yml --extra-vars ip="${IP}"
+    MACHINE_NAME=kubernetes-worker-node-2 ./provision.sh ./configuration/dns.yml --extra-vars ip="${IP}"
+    MACHINE_NAME=kubernetes-worker-node-3 ./provision.sh ./configuration/dns.yml --extra-vars ip="${IP}"
+    MACHINE_NAME=kubernetes-main-node ./provision.sh ./configuration/ca-cert.yml --extra-vars cert_path="ca.cert.crt"
+    MACHINE_NAME=kubernetes-worker-node-1 ./provision.sh ./configuration/ca-cert.yml --extra-vars cert_path="ca.cert.crt"
+    MACHINE_NAME=kubernetes-worker-node-2 ./provision.sh ./configuration/ca-cert.yml --extra-vars cert_path="ca.cert.crt"
+    MACHINE_NAME=kubernetes-worker-node-3 ./provision.sh ./configuration/ca-cert.yml --extra-vars cert_path="ca.cert.crt"
+    kubectl create configmap ca-certificates.crt --from-file=ca-certificates.crt=./configuration/ca-certificates.crt
+    MACHINE_NAME=kubernetes-main-node ./provision.sh ./configuration/add-registry.yml
+    MACHINE_NAME=kubernetes-worker-node-1 ./provision.sh ./configuration/add-registry.yml
+    MACHINE_NAME=kubernetes-worker-node-2 ./provision.sh ./configuration/add-registry.yml
+    MACHINE_NAME=kubernetes-worker-node-3 ./provision.sh ./configuration/add-registry.yml
 fi
