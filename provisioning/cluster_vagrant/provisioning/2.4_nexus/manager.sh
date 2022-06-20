@@ -36,6 +36,11 @@ function GET_blobstores() {
          "${@}"
 }
 
+function DELETE_blobstores() {
+    local BLOBSTORE_NAME=$1
+    _call DELETE "/v1/blobstores/${BLOBSTORE_NAME}" "${@:2}"
+}
+
 function POST_blobstores_file() {
     local NAME=$1
     _call POST /v1/blobstores/file \
