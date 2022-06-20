@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 DEFAULT_CONTAINER_NAME=${DEFAULT_CONTAINER_NAME:=nexus}
 NEXUS_USERNAME=admin
