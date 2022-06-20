@@ -1,0 +1,10 @@
+{
+    "id": "503",
+    "source": "default",
+    "name": "Non-interactive users",
+    "description": "",
+    "privileges": [],
+    "roles": [
+        "nx-anonymous"
+    ]
+}

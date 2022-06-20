@@ -1,0 +1,10 @@
+{
+    "id": "500",
+    "source": "default",
+    "name": "Administrators",
+    "description": "",
+    "privileges": [],
+    "roles": [
+        "nx-admin"
+    ]
+}

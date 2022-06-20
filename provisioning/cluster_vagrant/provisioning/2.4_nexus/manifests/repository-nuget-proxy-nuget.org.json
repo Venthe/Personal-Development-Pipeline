@@ -1,0 +1,39 @@
+{
+    "name": "nuget-proxy-nuget.org",
+    "online": true,
+    "storage": {
+      "blobStoreName": "nuget-default",
+      "strictContentTypeValidation": true,
+      "writePolicy": "allow"
+    },
+    "cleanup": null,
+    "proxy": {
+      "remoteUrl": "https://api.nuget.org/v3/index.json",
+      "contentMaxAge": 1440,
+      "metadataMaxAge": 1440
+    },
+    "negativeCache": {
+      "enabled": true,
+      "timeToLive": 1440
+    },
+    "httpClient": {
+      "blocked": false,
+      "autoBlock": false,
+      "connection": {
+        "retries": null,
+        "userAgentSuffix": null,
+        "timeout": null,
+        "enableCircularRedirects": false,
+        "enableCookies": false,
+        "useTrustStore": false
+      },
+      "authentication": null
+    },
+    "routingRuleName": null,
+    "nugetProxy": {
+      "queryCacheItemMaxAge": 3600,
+      "nugetVersion": "V3"
+    },
+    "format": "nuget",
+    "type": "proxy"
+  }

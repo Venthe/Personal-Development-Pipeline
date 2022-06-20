@@ -1,0 +1,14 @@
+{
+    "name": "helm-hosted",
+    "format": "helm",
+    "online": true,
+    "storage": {
+        "blobStoreName": "helm-hosted",
+        "strictContentTypeValidation": true,
+        "writePolicy": "ALLOW"
+    },
+    "component": {
+        "proprietaryComponents": false
+    },
+    "type": "hosted"
+}

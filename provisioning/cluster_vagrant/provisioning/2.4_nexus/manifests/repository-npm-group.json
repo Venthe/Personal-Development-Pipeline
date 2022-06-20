@@ -1,0 +1,17 @@
+{
+    "name": "npm-group",
+    "format": "npm",
+    "online": true,
+    "storage": {
+      "blobStoreName": "npm-default",
+      "strictContentTypeValidation": true,
+      "writePolicy": "allow"
+    },
+    "group": {
+      "memberNames": [
+        "npm-hosted",
+        "npm-proxy-npmjs.org"
+      ]
+    },
+    "type": "group"
+  }

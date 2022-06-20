@@ -1,0 +1,15 @@
+{
+    "name": "nuget-hosted",
+    "format": "nuget",
+    "online": true,
+    "storage": {
+        "blobStoreName": "nuget-hosted",
+        "strictContentTypeValidation": true,
+        "writePolicy": "allow"
+    },
+    "cleanup": null,
+    "component": {
+        "proprietaryComponents": false
+    },
+    "type": "hosted"
+}

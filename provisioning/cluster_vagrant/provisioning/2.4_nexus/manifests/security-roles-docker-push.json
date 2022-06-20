@@ -1,0 +1,10 @@
+{
+    "id": "504",
+    "source": "default",
+    "name": "Docker push",
+    "description": "",
+    "privileges": [],
+    "roles": [
+        "nx-admin"
+    ]
+}

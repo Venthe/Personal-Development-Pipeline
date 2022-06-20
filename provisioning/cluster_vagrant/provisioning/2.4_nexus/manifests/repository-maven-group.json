@@ -1,0 +1,26 @@
+{
+    "name": "maven-group",
+    "format": "maven2",
+    "online": true,
+    "storage": {
+      "blobStoreName": "maven-default",
+      "strictContentTypeValidation": true,
+      "writePolicy": "allow"
+    },
+    "group": {
+      "memberNames": [
+        "maven-hosted-releases",
+        "maven-hosted-snapshots",
+        "maven-proxy-maven.org",
+        "maven-proxy-spring-release",
+        "maven-proxy-spring-snapshot",
+        "maven-proxy-spring-milestone",
+        "maven-proxy-spring-release-2",
+        "maven-proxy-spring-snapshot-2",
+        "maven-proxy-spring-milestone-2",
+        "maven-proxy-jrs-ce-releases",
+        "maven-proxy-jaspersoft-clients-releases",
+      ]
+    },
+    "type": "group"
+  }

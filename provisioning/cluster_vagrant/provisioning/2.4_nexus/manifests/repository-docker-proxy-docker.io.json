@@ -1,0 +1,30 @@
+{
+  "dockerProxy": {
+    "indexType": "HUB",
+    "indexUrl": "https://registry-1.docker.io"
+  },
+  "proxy": {
+    "contentMaxAge": 1440,
+    "metadataMaxAge": 1440,
+    "remoteUrl": "https://registry-1.docker.io"
+  },
+  "httpClient": {
+    "blocked": false,
+    "autoBlock": true
+  },
+  "name": "docker-proxy-docker.io",
+  "online": true,
+  "storage": {
+    "blobStoreName": "docker-default",
+    "strictContentTypeValidation": true,
+    "writePolicy": "allow"
+  },
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": false
+  },
+  "negativeCache": {
+    "enabled": false,
+    "timeToLive": 1440
+  }
+}

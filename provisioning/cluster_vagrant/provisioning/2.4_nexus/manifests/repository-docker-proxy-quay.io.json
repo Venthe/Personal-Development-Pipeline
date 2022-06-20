@@ -1,23 +1,23 @@
 {
   "dockerProxy": {
     "indexType": "HUB",
-    "indexUrl": "https://registry-1.docker.io"
+    "indexUrl": "https://quay.io"
   },
   "proxy": {
     "contentMaxAge": 1440,
     "metadataMaxAge": 1440,
-    "remoteUrl": "https://registry-1.docker.io"
+    "remoteUrl": "https://quay.io"
   },
   "httpClient": {
     "blocked": false,
     "autoBlock": true
   },
-  "name": "dockerhub-proxy",
+  "name": "docker-proxy-quay.io",
   "online": true,
   "storage": {
-    "blobStoreName": "dockerhub-proxy",
+    "blobStoreName": "docker-default",
     "strictContentTypeValidation": true,
-    "writePolicy": "allow_once"
+    "writePolicy": "allow"
   },
   "docker": {
     "v1Enabled": false,

@@ -1,0 +1,32 @@
+{
+    "name": "npm-proxy-npmjs.org",
+    "online": true,
+    "storage": {
+        "blobStoreName": "npm-default",
+        "strictContentTypeValidation": true,
+        "writePolicy": "ALLOW"
+    },
+    "proxy": {
+        "remoteUrl": "https://registry.npmjs.org",
+        "contentMaxAge": 1440,
+        "metadataMaxAge": 1440
+    },
+    "negativeCache": {
+        "enabled": true,
+        "timeToLive": 1440
+    },
+    "httpClient": {
+        "blocked": false,
+        "autoBlock": true,
+        "connection": {
+            "enableCookies": false,
+            "useTrustStore": false
+        }
+    },
+    "npm": {
+        "removeNonCataloged": false,
+        "removeQuarantined": false
+    },
+    "format": "npm",
+    "type": "proxy"
+}
