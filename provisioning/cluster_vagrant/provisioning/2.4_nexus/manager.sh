@@ -119,6 +119,17 @@ function POST_roles() {
          ${@:2}
 }
 
+function GET_ldap() {
+    _call GET /v1/security/ldap
+}
+
+function POST_ldap() {
+    _call POST /v1/security/ldap \
+         --header 'content-type: application/json' \
+         --data "${1}" \
+         ${@:2}
+}
+
 function wait_for_nexus() {
     until [[ $(_call GET /v1/blobstores --output /dev/null --silent --head --fail; echo $?) == 0 ]]; do
         printf '.'
