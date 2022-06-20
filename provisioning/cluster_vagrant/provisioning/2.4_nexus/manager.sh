@@ -54,6 +54,11 @@ function GET_repositories() {
          "${@}"
 }
 
+function GET_repositorySettings() {
+    _call GET /v1/repositorySettings \
+         "${@}"
+}
+
 function POST_repositories() {
     local REPOSITORY_TYPE=$1
     local DATA=$2
