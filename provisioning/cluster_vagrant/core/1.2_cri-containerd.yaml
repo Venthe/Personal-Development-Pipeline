@@ -89,16 +89,20 @@
         path: /etc/containerd/
         state: directory
     # TODO: Configure this step 'ansible' way
+    # This did not work?
     - name: Configure containerd
       command: containerd config default > /etc/containerd/config.toml
     - name: Update containerd with systemd cgroup
       blockinfile:
+        create: true
         dest: /etc/containerd/config.toml
         block: |
           [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
             SystemdCgroup = true
           [plugin."io.containerd.grpc.v1.cri".registry.mirrors."docker.home.arpa"]
             endpoint = ["https://docker.home.arpa"]
+          [plugins."io.containerd.grpc.v1.cri".registry]
+            config_path = "/etc/containerd/certs.d"
         owner: '{{ chown_user }}'
       notify: Restart containerd
     - name: Configure crictl to use containerd
