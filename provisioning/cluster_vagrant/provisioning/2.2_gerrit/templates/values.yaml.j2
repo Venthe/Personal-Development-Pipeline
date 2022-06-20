@@ -1,20 +1,4 @@
-images:
-  version: 3.3.0
-gitGC:
-  image: venthe/git-gc
 gerrit:
-  images:
-    gerritInit: venthe/gerrit-init
-    gerrit: venthe/gerrit
-  livenessProbe:
-    initialDelaySeconds: 30
-  readinessProbe:
-    initialDelaySeconds: 30
-  startupProbe:
-    initialDelaySeconds: 60
-  sshd:
-    enabled: true
-    port: 29418
   plugins:
     packaged:
     - "commit-message-length-validator"
@@ -27,10 +11,11 @@ gerrit:
     - "plugin-manager" 
     - "delete-project"
     - "codemirror-editor"
-  # ingress:
-  #   host: "{{ release_name }}.{{ domain }}"
   service:
     type: LoadBalancer
+    ssh:
+      enabled: true
+      port: 29418
   etc:
     config:
       gitiles.config: |
@@ -77,7 +62,7 @@ gerrit:
         {% filter indent(width=8,blank=True) %}{% include 'ssh_host_rsa_key.pub' %}{% endfilter %}
 
 storageClasses:
-  default:
-    name: rook-ceph-block
-  shared:
-    name: rook-cephfs
+ default:
+   name: {{ storage_class }}
+ shared:
+   name: {{ storage_class }}
