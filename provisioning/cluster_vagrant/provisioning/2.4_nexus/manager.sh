@@ -7,7 +7,7 @@ NEXUS_URL="${BASE_URL:=localhost:8081}/service/rest"
 
 function _call() {
     local METHOD=$1
-    >&2 echo "* Calling with ${method} ${@:2}"
+    >&2 echo "* Calling with ${METHOD} ${@:2}"
     curl --user "${NEXUS_USERNAME}:${NEXUS_PASSWORD}" \
          --request "${METHOD}" \
          --show-error \
