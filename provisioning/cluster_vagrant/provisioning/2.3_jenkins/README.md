@@ -15,3 +15,8 @@ kubectl get secret \
     --output=jsonpath="{.data.jenkins-admin-password}" \
     | base64 --decode
 ```
+
+```bash
+# Create this from combined ca certifications from node
+kubectl create configmap ca-certificates.crt --namespace=jenkins --from-file=ca-certificates.crt=./configuration/ca-certificates.crt
+```
