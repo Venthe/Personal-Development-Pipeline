@@ -119,6 +119,37 @@ function POST_roles() {
          ${@:2}
 }
 
+function POST_repository_helm_proxy() {
+    POST_repositories helm/proxy "{
+        \"name\": \"helm-proxy-${1}\",
+        \"format\": \"helm\",
+        \"online\": true,
+        \"storage\": {
+            \"blobStoreName\": \"helm-default\",
+            \"strictContentTypeValidation\": true
+        },
+        \"proxy\": {
+            \"remoteUrl\": \"${2}\",
+            \"contentMaxAge\": 1440,
+            \"metadataMaxAge\": 1440
+        },
+        \"negativeCache\": {
+            \"enabled\": true,
+            \"timeToLive\": 1440
+        },
+        \"httpClient\": {
+            \"blocked\": false,
+            \"autoBlock\": true,
+            \"connection\": {
+                \"enableCircularRedirects\": false,
+                \"enableCookies\": false,
+                \"useTrustStore\": false
+            }
+        },
+        \"type\": \"proxy\"
+    }" "${@:3}"
+} 
+
 function GET_ldap() {
     _call GET /v1/security/ldap
 }
