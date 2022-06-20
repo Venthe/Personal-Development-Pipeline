@@ -1,103 +1,131 @@
 #!/bin/env bash
 
-function upgrade() {
+function apply() {
+kubectl delete pod/dind
+
+# TODO:
+#  Add DOCKER_USERNAME? DOCKER_PASSWORD?
+#  Add secret /root/.docker/config.json
+#  {
+#    "auths": {
+#      "docker.home.arpa": {
+#        "auth": "ZG9ja2VyOnNlY3JldA=="
+#      }
+#    }
+#  }
+
 cat <<EOF | kubectl apply -f -
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   name: dind
 spec:
-  selector:
-    matchLabels:
-        container: dind
-  template:
-    metadata:
-      labels:
-        container: dind
-    spec:
-      containers:
-        - name: dind
-          args:
-            # - "--insecure-registry=http://docker.example.org"
-            # - "--insecure-registry=http://dockerhub-mirror.example.org"
-            # - "--registry-mirror=http://dockerhub-mirror.example.org"
-            - "--insecure-registry=http://nexus-sonatype-nexus.nexus:5000"
-            - "--insecure-registry=http://nexus-sonatype-nexus.nexus:5001"
-            - "--registry-mirror=http://nexus-sonatype-nexus.nexus:5001"
-            - "--debug"
-          image: docker:20.10.0-dind
-          securityContext:
-            privileged: true
+  volumes:
+  - name: certificate-bundle
+    emptyDir: {}
+  - name: cacrt
+    secret:
+      items:
+        - key: ca.crt
+          path: kubernetes-ca.crt
+      secretName: jenkins-ingress-cert
+      defaultMode: 0644
+  initContainers:
+    - name: update-ca-certs
+      image: kalaksi/ca-certificates:1.2
+      volumeMounts:
+      - name: certificate-bundle
+        mountPath: /etc/ssl/certs
+      - name: cacrt
+        mountPath: "/additional_certs"
+        readOnly: true
+  containers:
+      - name: dind
+        args:
+          - --registry-mirror=https://proxy.docker.home.arpa
+          - --debug
+      image: docker:20.10.12-dind
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - name: certificate-bundle
+        mountPath: "/etc/ssl/certs"
+        readOnly: true
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: cert-manager.io/v1
+kind: Certificate
 metadata:
-  name: test-dind
+  name: docker-dind-cert
 spec:
-  selector:
-    matchLabels:
-        container: test-dind
-  template:
-    metadata:
-      labels:
-        container: test-dind
-    spec:
-      containers:
-        - name: test-dind
-          image: localhost:30516/alpine
+  secretName: docker-dind-cert
+  privateKey:
+    rotationPolicy: Always
+  dnsNames:
+    - 'test.home.arpa'
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
 ...
 EOF
 }
 
+function delete_pod() {
+  kubectl delete pod/dind
+}
+
 function get_pod() {
-    kubectl get pods -oname --selector container=dind | head
+    kubectl get pod/dind
 }
 
 function pod_exec() {
-  kubectl exec -it $(get_pod) -- "$@"
+  kubectl exec -it pod/dind -- "$@"
 }
 
 function shell() {
     pod_exec sh
 }
 
-function log() {
-    kubectl logs $(get_pod)
+function logs() {
+    kubectl logs dind
+}
+
+function describe() {
+    kubectl describe pod/dind
 }
 
 function login() {
     pod_exec docker login \
-        nexus.nexus:5000 \
+        docker.home.arpa \
         --username=admin \
         --password=admin123
 }
 
-function test() {
-    pod_exec docker pull alpine:3
-    pod_exec docker tag alpine:3 nexus.nexus:5000/alpine:3
-    login
-    pod_exec docker push nexus.nexus:5000/alpine:3
-    cat <<EOF | kubectl apply -f -
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: test-alpine3
-spec:
-  selector:
-    matchLabels:
-      container: test-alpine3
-  template:
-    metadata:
-      labels:
-        container: test-alpine3
-    spec:
-      containers:
-        - name: test-alpine3
-          image: nexus.nexus:5000/alpine:3
-...
-EOF
-}
+# function test() {
+#     pod_exec docker pull alpine:3
+#     pod_exec docker tag alpine:3 docker.home.arpa/alpine:3
+#     login
+#     pod_exec docker push docker.home.arpa/alpine:3
+#     cat <<EOF | kubectl apply -f -
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: test-alpine3
+# spec:
+#   selector:
+#     matchLabels:
+#       container: test-alpine3
+#   template:
+#     metadata:
+#       labels:
+#         container: test-alpine3
+#     spec:
+#       containers:
+#         - name: test-alpine3
+#           image: nexus.nexus:5000/alpine:3
+# ...
+# EOF
+# }
 
 "$@"
