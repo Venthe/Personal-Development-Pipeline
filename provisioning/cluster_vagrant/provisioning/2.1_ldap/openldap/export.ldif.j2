@@ -27,6 +27,13 @@ memberuid: jjuly
 objectclass: posixGroup
 objectclass: top
 
+dn: cn=Docker push user,ou=Groups,{{ LDAP_BASE_DN }}
+cn: Docker push user
+gidnumber: 504
+memberuid: docker
+objectclass: posixGroup
+objectclass: top
+
 dn: cn=Non-Interactive Users,ou=Groups,{{ LDAP_BASE_DN }}
 cn: Non-Interactive Users
 gidnumber: 503
@@ -47,6 +54,15 @@ objectclass: top
 sn: Administrator
 uid: admin
 uid: administrator
+userpassword: {SSHA}CbwUta8nMTBiGZxpzvf/DflOxeTw3Z7A
+
+dn: cn=Docker,ou=People,{{ LDAP_BASE_DN }}
+cn: Docker
+mail: docker@{{ LDAP_DOMAIN }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: Docker
+uid: docker
 userpassword: {SSHA}CbwUta8nMTBiGZxpzvf/DflOxeTw3Z7A
 
 dn: cn=Admin,ou=People,{{ LDAP_BASE_DN }}
