@@ -119,6 +119,46 @@ function POST_roles() {
          ${@:2}
 }
 
+function POST_repository_maven_proxy() {
+    POST_repositories maven/proxy "{
+        \"name\": \"maven-proxy-${1}\",
+        \"online\": true,
+        \"storage\": {
+            \"blobStoreName\": \"maven-default\",
+            \"strictContentTypeValidation\": true,
+            \"writePolicy\": \"allow\"
+        },
+        \"proxy\": {
+            \"remoteUrl\": \"${2}\",
+            \"contentMaxAge\": -1,
+            \"metadataMaxAge\": 1440
+        },
+        \"negativeCache\": {
+            \"enabled\": true,
+            \"timeToLive\": 1440
+        },
+        \"httpClient\": {
+            \"blocked\": false,
+            \"autoBlock\": false,
+            \"connection\": {
+                \"retries\": null,
+                \"userAgentSuffix\": null,
+                \"timeout\": null,
+                \"enableCircularRedirects\": false,
+                \"enableCookies\": false,
+                \"useTrustStore\": false
+            }
+        },
+        \"routingRuleName\": null,
+        \"maven\": {
+            \"versionPolicy\": \"RELEASE\",
+            \"layoutPolicy\": \"PERMISSIVE\"
+        },
+        \"format\": \"maven2\",
+        \"type\": \"proxy\"
+    }"
+}
+
 function POST_repository_helm_proxy() {
     POST_repositories helm/proxy "{
         \"name\": \"helm-proxy-${1}\",
