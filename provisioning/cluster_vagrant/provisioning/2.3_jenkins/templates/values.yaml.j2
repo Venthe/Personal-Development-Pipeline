@@ -25,3 +25,12 @@ controller:
 
       credentials: |
         {% filter indent(width=8,blank=True) %}{% include 'credentials.yaml.j2' %}{% endfilter %}
+lifecycle:                                                                                                           
+  postStart:                                                                                                         
+    exec:                                                                                                            
+      command:                                                                                                       
+      - /bin/sh                                                                                                      
+      - -c                                                                                                           
+      - |                                                                                                            
+        openssl s_client -connect docker.home.arpa:443  < /dev/null | openssl x509 -outform PEM > /tmp/cert.pem;
+        keytool -importcert -cacerts -storepass changeit -file /tmp/cert.pem
