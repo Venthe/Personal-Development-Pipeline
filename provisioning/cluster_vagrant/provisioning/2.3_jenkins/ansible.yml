@@ -5,7 +5,7 @@
   vars:
     TEMP_DIRECTORY: "/tmp/jenkins"
     LDAP_SERVER: "ldap://openldap.ldap"
-    GERRIT_SERVER: "gerrit-gerrit-service-gerrit"
+    # GERRIT_SERVER: "gerrit-service-gerrit.gerrit"
   vars_prompt:
     - name: should_clean
       prompt: Should clean before install
@@ -54,20 +54,22 @@
     - name: Create temporary directories
       become: true
       file:
+        mode: '0777'
         path: "{{ TEMP_DIRECTORY }}"
         state: directory
     - name: Generate SSH key
-      command: "{{item}}"
+      shell: "ssh-keygen {{item}}"
+      args:
+        executable: /usr/bin/bash
       with_items:
-        - "ssh-keygen -b 2048 -t rsa -f {{TEMP_DIRECTORY}}/sshkey -q -N '' <<<y 2>&1 >/dev/null"
-        - "ssh-keygen -y -f {{TEMP_DIRECTORY}}/sshkey > {{TEMP_DIRECTORY}}/sshkey.pub"
+        - "-b 2048 -t rsa -f {{TEMP_DIRECTORY}}/sshkey -q -N '' <<<y 2>&1 >/dev/null 2>&1 >/dev/null"
+        - "-y -f {{TEMP_DIRECTORY}}/sshkey > {{TEMP_DIRECTORY}}/sshkey.pub"
     - name: Copy manifests
       become: true
       copy:
         src: ./manifests/
         dest: "{{TEMP_DIRECTORY}}"
         directory_mode: yes
-        mode: 0777
         owner: vagrant
     - name: Templating pass
       become: true
@@ -89,6 +91,8 @@
       command: helm repo add jenkins https://charts.jenkins.io
       notify: Update helm repository
     - name: Deploy helm charts
+      args:
+        executable: /usr/bin/bash
       shell:
         cmd: |
           helm upgrade --install \
@@ -97,7 +101,7 @@
             {{ release_name }} \
             jenkins/jenkins
     - name: Create ldap secret
-      command: "kubectl patch --namespace=jenkins StatefulSet jenkins --patch $(cat {{TEMP_DIRECTORY}}/{{item}})"
+      shell: "kubectl patch StatefulSet/jenkins --namespace=jenkins --patch \"$(cat {{TEMP_DIRECTORY}}/{{item}})\""
       with_items:
         - gerrit-ssh.patch
         - ldap-password.patch
@@ -109,8 +113,12 @@
     - name: Get public key
       command: "cat {{TEMP_DIRECTORY}}/sshkey.pub"
       register: sshkey_pub
+    - name: Get gerrit server
+      command: "kubectl get service --namespace=gerrit gerrit-gerrit-service --output=jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+      register: gerrit_server
+      # FIXME: Not working
     - name: Act on gerrit
-      command: "curl --method POST --show-error --header 'Authorization: Basic {{basic_auth.stdout}}' --header 'Conent-Type: {{item.header}}' --data '{{item.data}}' {{GERRIT_SERVER}}/{{item.url}}"
+      command: "curl --request POST --show-error --header 'Authorization: Basic {{basic_auth.stdout}}' --header 'Conent-Type: {{item.header}}' --data '{{item.data}}' {{gerrit_server.stdout}}/{{item.url}}"
       with_items:
         - header: application:x-www-form-urlencoded
           data: username={{jenkins_ldap_username}}&password={{jenkins_ldap_password}}
