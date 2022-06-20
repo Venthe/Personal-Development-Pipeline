@@ -108,6 +108,17 @@ function PUT_security_realms_active() {
          ${@:2}
 }
 
+function GET_roles() {
+    _call GET /v1/security/roles
+}
+
+function POST_roles() {
+    _call POST /v1/security/roles \
+         --header 'content-type: application/json' \
+         --data "${1}" \
+         ${@:2}
+}
+
 function wait_for_nexus() {
     until [[ $(_call GET /v1/blobstores --output /dev/null --silent --head --fail; echo $?) == 0 ]]; do
         printf '.'
