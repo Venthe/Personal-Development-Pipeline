@@ -21,12 +21,16 @@ storageClasses:
     node-stage-secret:
     node-publish-secret:
     controller-expand-secret:
-volumeSnapshotClasses: []
+
+  # if your cluster supports snapshots you may enable below
+  volumeSnapshotClasses: []
+  #- name: zfs-local-dataset
+  #  secrets:
+  #    snapshotter-secret:
 
 controller:
   enabled: true
   strategy: node
-  
   externalProvisioner:
     extraArgs:
     - --leader-election=false
@@ -42,40 +46,28 @@ controller:
     enabled: false
   # distributed support is not yet ready
   externalSnapshotter:
-    enabled: false
+    enabled: true
     extraArgs:
-    - --node-deployment
-    # snapshot controller option
-    #- --enable-distributed-snapshotting=true
-
-  driver:
-    image: democraticcsi/democratic-csi:next
-    imagePullPolicy: Always
-    logLevel: debug
-
-node:
-  driver:
-    image: democraticcsi/democratic-csi:next
-    imagePullPolicy: Always
-    logLevel: debug
+    - --leader-election=false
+    - --node-deployment=true
 
 driver:
   config:
     driver: zfs-local-dataset
-    csi:
-      access_modes:
-      - UNKNOWN
-      - SINGLE_NODE_WRITER
-      - SINGLE_NODE_SINGLE_WRITER
-      - SINGLE_NODE_MULTI_WRITER
-      - SINGLE_NODE_READER_ONLY
-      - MULTI_NODE_READER_ONLY
-      - MULTI_NODE_SINGLE_WRITER
-      - MULTI_NODE_MULTI_WRITER
-
+    # csi:
+    #   access_modes:
+    #   - UNKNOWN
+    #   - SINGLE_NODE_WRITER
+    #   - SINGLE_NODE_SINGLE_WRITER
+    #   - SINGLE_NODE_MULTI_WRITER
+    #   - SINGLE_NODE_READER_ONLY
+    #   - MULTI_NODE_READER_ONLY
+    #   - MULTI_NODE_SINGLE_WRITER
+    #   - MULTI_NODE_MULTI_WRITER
     zfs:
       datasetParentName: main/k8s/zfs-local/volumes
       detachedSnapshotsDatasetParentName: main/k8s/zfs-local/snapshots
-
+      datasetProperties:
+        # key: value
       datasetEnableQuotas: true
       datasetEnableReservation: false

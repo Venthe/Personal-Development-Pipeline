@@ -52,47 +52,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             mainNode.vm.disk :disk, name: "main-node-cephfs", size: "100GB"
         end
 
-        mainNode.vm.provision "baremetal" , type: "ansible" do |ansible|
-            ansible.playbook = "core/1.1_baremetal.yaml"
-        end
-        mainNode.vm.provision "cri", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.2_cri-containerd.yaml"
+        # TODO: Inventory file
+        mainNode.vm.provision "control-plane", type: "ansible" do |ansible|
+            ansible.playbook = "provision-kubernetes.yml"
             ansible.extra_vars = {
                 containerd_version: "#{CONTAINERD_VERSION}"
-            }
-        end
-        mainNode.vm.provision "kubernetes", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.3_kubernetes.yaml"
-            ansible.extra_vars = {
                 kubernetes_version: "#{KUBERNETES_VERSION}"
-            }
-        end
-        mainNode.vm.provision "control-plane", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.4a_control-plane.yml"
-            ansible.extra_vars = {
                 taint: MAIN_NODE_TAINT,
                 node:  "#{MAIN_NODE_NAME}",
                 adapter_id: MAIN_NODE_ADAPTER_ID
             }
         end
-        mainNode.vm.provision "helm", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.5_helm.yml"
-        end
-        
-        mainNode.vm.provision "cni", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.6_cni-calico.yml"
-        end
-        mainNode.vm.provision "csi", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.7_csi-rook.yml"
+        mainNode.vm.provision "rook", type: "ansible" do |ansible|
+            ansible.playbook = "deprecated/1.7_csi-rook.yml"
             ansible.extra_vars = {
                 rook_version: "release-1.5",
                 reset: false,
                 namespace: "rook-ceph"
             }
-        end
-        
-        mainNode.vm.provision "jq", type: "ansible" do |ansible|
-            ansible.playbook = "core/1.8_jq.yml"
         end
     end
 
@@ -116,23 +93,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             workerNode.vm.hostname = "#{WORKER_NODE_NAME}-#{i}"
             workerNode.vm.disk :disk, name: "worker-node-cephfs-#{i}", size: "100GB"
             
-            workerNode.vm.provision "baremetal" , type: "ansible" do |ansible|
-                ansible.playbook = "core/1.1_baremetal.yaml"
-            end
-            workerNode.vm.provision "cri", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.2_cri-containerd.yaml"
+            # TODO: Inventory file
+            workerNode.vm.provision "worker-node" , type: "ansible" do |ansible|
+                ansible.playbook = "provision-kubernetes.yml"
                 ansible.extra_vars = {
                     containerd_version: "#{CONTAINERD_VERSION}"
-                }
-            end
-            workerNode.vm.provision "kubernetes", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.3_kubernetes.yaml"
-                ansible.extra_vars = {
                     kubernetes_version: "#{KUBERNETES_VERSION}"
                 }
-            end
-            workerNode.vm.provision "worker_node", type: "ansible" do |ansible|
-                ansible.playbook = "core/1.4b_worker-node.yml"
             end
         end
     end
