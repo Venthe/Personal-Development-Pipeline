@@ -121,7 +121,7 @@
       become: true
       ansible.builtin.lineinfile:
         path: /etc/containerd/config.toml
-        regexp:  "{{ item.regexp }}"
+        regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
         backrefs: yes
       with_items:
