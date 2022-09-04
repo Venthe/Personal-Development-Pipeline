@@ -730,29 +730,30 @@
 - name: Install ingress
   gather_facts: false
   hosts: main
+  vars:
+    tld_hostname: home.arpa
+    ingress_namespace: ingress
+    ingress_release: ingress
+    ingress_repository:
+      name: ingress-nginx
+      url: https://kubernetes.github.io/ingress-nginx
   tasks:
-    - name: "Delete namespace"
-      k8s:
-        state: absent
-        kind: Namespace
-        name: ingress
-        api_version: v1
     - kubernetes.core.helm_repository:
-        name: ngress-nginx
-        repo_url: https://kubernetes.github.io/ingress-nginx
-    - kubernetes.core.helm:
-        name: ingress
+        name: "{{ingress_repository.name}}"
+        repo_url: "{{ingress_repository.url}}"
+    - name: Install ingress
+      kubernetes.core.helm:
+        update_repo_cache: true
+        name: "{{ingress_release}}"
         create_namespace: true
-        chart_ref: ingress-nginx/ingress-nginx
-        release_namespace: ingress
-        values:
-          controller:
-            service:
-              annotations:
-                external-dns.alpha.kubernetes.io/hostname: "home.arpa"
+        chart_ref: "{{ingress_repository.name}}/ingress-nginx"
+        release_namespace: "{{ ingress_namespace }}"
     - name: Instructions
       debug:
-        msg: "To use, add the 'kubernetes.io/ingress.class: nginx' annotation to ingress"
+        msg: |
+          To use, add the annotation to ingress
+            kubernetes.io/ingress.class: nginx
+            external-dns.alpha.kubernetes.io/hostname: "{{ tld_hostname }}"
 - name: Install dashboard
   gather_facts: false
   hosts: main
