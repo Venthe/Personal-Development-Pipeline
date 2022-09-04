@@ -508,6 +508,8 @@
         values: "{{ lookup('template', './values/democratic-csi-freenas-api-nfs.yaml') | from_yaml }}"
 - name: Set up local ZFS CSI
   hosts: zfs
+  vars:
+    storageClass: zfs-local-dataset
   tasks:
     - kubernetes.core.helm_repository:
         name: democratic-csi
@@ -523,7 +525,7 @@
     - name: Deploy latest version of zfs-local-dataset chart inside democratic-csi namespace with values
       kubernetes.core.helm:
         create_namespace: true
-        name: zfs-local-dataset
+        name: "{{ storageClass }}"
         chart_ref: democratic-csi/democratic-csi
         release_namespace: democratic-csi
         values: "{{ lookup('template', './values/csi-democratic-csi-zfs-local.yaml') | from_yaml }}"
