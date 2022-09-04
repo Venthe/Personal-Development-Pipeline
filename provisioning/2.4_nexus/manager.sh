@@ -7,14 +7,15 @@ NEXUS_URL="${BASE_URL:=localhost:8081}/service/rest"
 
 function _call() {
     local METHOD=$1
-    >&2 echo "* Calling with ${METHOD} ${@:2}"
+    local URL=$2
+    shift 2
+    >&2 echo "* Calling with ${METHOD} ${URL}"
     curl --user "${NEXUS_USERNAME}:${NEXUS_PASSWORD}" \
          --request "${METHOD}" \
          --show-error \
          --fail \
-         --silent \
-         --insecure \
-         "${NEXUS_URL}${@:2}"
+         "${NEXUS_URL}${URL}" "${@}"
+    >&2 echo -e ""
 }
 
 function GET_documentation() {
@@ -112,6 +113,10 @@ function GET_roles() {
     _call GET /v1/security/roles
 }
 
+function DELETE_roles() {
+    _call DELETE "/v1/security/roles/${1}"
+}
+
 function POST_roles() {
     _call POST /v1/security/roles \
          --header 'content-type: application/json' \
@@ -199,6 +204,10 @@ function POST_ldap() {
          --header 'content-type: application/json' \
          --data "${1}" \
          ${@:2}
+}
+
+function DELETE_ldap() {
+    _call DELETE /v1/security/ldap/${1}
 }
 
 function wait_for_nexus() {

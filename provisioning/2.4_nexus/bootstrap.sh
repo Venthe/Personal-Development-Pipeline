@@ -5,7 +5,27 @@ set -e
 . ./.env
 . ./manager.sh
 
-GET_repositorySettings | jq
+# GET_documentation | yq --prettyPrint > documentation.yaml
+
+PUT_security_realms_active @manifests/security-active-realms.json
+PUT_anonymous_access true
+
+roles=`GET_roles | jq -r '.[]|select(.id | startswith("5")) | .id'`
+
+for role in $roles; do
+  DELETE_roles $role || true
+done
+
+# TODO: More granular authority
+POST_roles @manifests/security-roles-administrators.json
+POST_roles @manifests/security-roles-non-interactive-users.json
+POST_roles @manifests/security-roles-docker-push.json
+
+DELETE_ldap Ldap || true
+
+POST_ldap @manifests/ldap-configuration-home.arpa.json
+
+# GET_repositorySettings | jq
 
 # Delete defaults
 DELETE_repositories "nuget.org-proxy" || true
@@ -35,15 +55,27 @@ POST_repositories docker/proxy @manifests/repository-docker-proxy-k8s.gcr.io.jso
 POST_repositories docker/group @manifests/repository-docker-group.json
 
 # Maven
-DELETE_repositories maven-proxy-maven.org || true
-DELETE_repositories maven-hosted-snapshots || true
-DELETE_repositories maven-hosted-releases || true
-DELETE_repositories maven-group || true
+repositories_to_delete=(
+  maven-group
+  maven-hosted-snapshots
+  maven-hosted-releases
+  maven-proxy-maven.org
+  maven-proxy-spring-release
+  maven-proxy-spring-snapshot
+  maven-proxy-spring-milestone
+  maven-proxy-spring-release-2
+  maven-proxy-spring-snapshot-2
+  maven-proxy-spring-milestone-2
+  maven-proxy-jrs-ce-releases
+  maven-proxy-jaspersoft-clients-releases
+)
+for i in ${!repositories_to_delete[@]}; do
+  DELETE_repositories ${repositories_to_delete[$i]} || true
+done
 DELETE_blobstores maven-default || true
 DELETE_blobstores maven-hosted || true
 POST_blobstores_file maven-default
 POST_blobstores_file maven-hosted
-POST_repositories maven/proxy @manifests/repository-maven-proxy-maven.org.json
 POST_repositories maven/hosted @manifests/repository-maven-hosted-releases.json
 POST_repositories maven/hosted @manifests/repository-maven-hosted-snapshots.json
 POST_repository_maven_proxy maven.org https://repo1.maven.org/maven2/
@@ -125,96 +157,86 @@ POST_repositories npm/proxy @manifests/repository-npm-proxy-npmjs.org.json
 POST_repositories npm/hosted @manifests/repository-npm-hosted.json
 POST_repositories npm/group @manifests/repository-npm-group.json
 
+# # apt
+# POST_blobstores_file apt-hosted
+# POST_blobstores_file apt
 
- # apt
- POST_blobstores_file apt-hosted
- POST_blobstores_file apt
+# kubectl patch --namespace=nexus service/nexus-nexus-repository-manager  --patch='
+# spec:
+#  ports:
+#  - name: docker-group
+#    port: 5001
+#    protocol: TCP
+#  - name: docker-hosted
+#    port: 5000
+#    protocol: TCP
+#  - name: nexus-ui
+#    port: 8081
+#    protocol: TCP
+#    targetPort: 8081
+# '
 
-PUT_security_realms_active @manifests/security-active-realms.json
-PUT_anonymous_access true
+# kubectl patch --namespace=nexus deployment/nexus-nexus-repository-manager --patch='
+# spec:
+#  template:
+#    spec:
+#      containers:
+#      - name: nexus-repository-manager
+#        ports:
+#        - containerPort: 5001
+#          name: docker-group
+#          protocol: TCP
+#        - containerPort: 5000
+#          name: docker-hosted
+#          protocol: TCP
+#        - containerPort: 8081
+#          name: nexus-ui
+#          protocol: TCP
+# '
 
-# TODO: More granular authority
-POST_roles @manifests/security-roles-administrators.json
-POST_roles @manifests/security-roles-non-interactive-users.json
-POST_roles @manifests/security-roles-docker-push.json
-POST_ldap @manifests/ldap-configuration-home.arpa.json
-
-kubectl patch --namespace=nexus service/nexus-nexus-repository-manager  --patch='
-spec:
- ports:
- - name: docker-group
-   port: 5001
-   protocol: TCP
- - name: docker-hosted
-   port: 5000
-   protocol: TCP
- - name: nexus-ui
-   port: 8081
-   protocol: TCP
-   targetPort: 8081
-'
-
-kubectl patch --namespace=nexus deployment/nexus-nexus-repository-manager --patch='
-spec:
- template:
-   spec:
-     containers:
-     - name: nexus-repository-manager
-       ports:
-       - containerPort: 5001
-         name: docker-group
-         protocol: TCP
-       - containerPort: 5000
-         name: docker-hosted
-         protocol: TCP
-       - containerPort: 8081
-         name: nexus-ui
-         protocol: TCP
-'
-
-nexus-nexus-repository-manager
-kubectl patch --namespace=nexus ingress/nexus-nexus-repository-manager --patch='
-metadata:
- annotations:
-   cert-manager.io/cluster-issuer: ca-issuer
-   nginx.ingress.kubernetes.io/proxy-body-size: "0"
-   nginx.org/client-max-body-size: "0"
-spec:
- tls:
- - hosts:
-   - docker-proxy.home.arpa
-   - docker.home.arpa
-   - nexus.home.arpa
-   secretName: nexus-tls
- rules:
- - host: docker-proxy.home.arpa
-   http:
-     paths:
-     - path: "/"
-       pathType: ImplementationSpecific
-       backend:
-         service:
-           name: nexus-nexus-repository-manager
-           port:
-             number: 5001
- - host: docker.home.arpa
-   http:
-     paths:
-     - path: "/"
-       pathType: ImplementationSpecific
-       backend:
-         service:
-           name: nexus-nexus-repository-manager
-           port:
-             number: 5000
- - host: nexus.home.arpa
-   http:
-     paths:
-     - backend:
-         service:
-           name: nexus-nexus-repository-manager
-           port:
-             number: 8081
-       path: "/"
-       pathType: Prefix
-'
+# # nexus-nexus-repository-manager
+# kubectl patch --namespace=nexus ingress/nexus-nexus-repository-manager --patch='
+# metadata:
+#  annotations:
+#    cert-manager.io/cluster-issuer: ca-issuer
+#    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+#    nginx.org/client-max-body-size: "0"
+# spec:
+#  tls:
+#  - hosts:
+#    - docker-proxy.home.arpa
+#    - docker.home.arpa
+#    - nexus.home.arpa
+#    secretName: nexus-tls
+#  rules:
+#  - host: docker-proxy.home.arpa
+#    http:
+#      paths:
+#      - path: "/"
+#        pathType: ImplementationSpecific
+#        backend:
+#          service:
+#            name: nexus-nexus-repository-manager
+#            port:
+#              number: 5001
+#  - host: docker.home.arpa
+#    http:
+#      paths:
+#      - path: "/"
+#        pathType: ImplementationSpecific
+#        backend:
+#          service:
+#            name: nexus-nexus-repository-manager
+#            port:
+#              number: 5000
+#  - host: nexus.home.arpa
+#    http:
+#      paths:
+#      - backend:
+#          service:
+#            name: nexus-nexus-repository-manager
+#            port:
+#              number: 8081
+#        path: "/"
+#        pathType: Prefix
+# '

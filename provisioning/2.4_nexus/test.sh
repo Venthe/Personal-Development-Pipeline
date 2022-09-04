@@ -108,22 +108,25 @@ function login() {
 #     pod_exec docker push docker.home.arpa/alpine:3
 #     cat <<EOF | kubectl apply -f -
 # ---
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: test-alpine3
-# spec:
-#   selector:
-#     matchLabels:
-#       container: test-alpine3
-#   template:
-#     metadata:
-#       labels:
-#         container: test-alpine3
-#     spec:
-#       containers:
-#         - name: test-alpine3
-#           image: nexus.nexus:5000/alpine:3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-alpine3
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      container: test-alpine3
+  template:
+    metadata:
+      labels:
+        container: test-alpine3
+    spec:
+      containers:
+        - name: test-alpine3
+          image: nexus.nexus:5000/alpine:3
+        - name: test-git
+          image: nexus.nexus:5000/git:3
 # ...
 # EOF
 # }

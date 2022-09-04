@@ -18,13 +18,10 @@
       default: "nexus"
       private: no
     - name: nexus_version
-      default: "38.0.0"
+      default: "41.1.3"
     - name: domain_name
       default: "home.arpa"
       prompt: Domain
-      private: no
-    - name: chown_user
-      default: "vagrant"
       private: no
   tasks:
     - name: Delete old releases
@@ -38,13 +35,12 @@
       file:
         path: "{{ TEMP_DIRECTORY }}"
         state: directory
+        mode: "0777"
     - name: Templating pass
-      become: true
       template:
         src: "./templates/{{item}}.j2"
         dest: "{{ TEMP_DIRECTORY }}/{{item}}"
-        owner: "{{ chown_user }}"
-        mode: '0777'
+        mode: "0777"
       with_items:
         - values.yml
     - name: Add helm repository
