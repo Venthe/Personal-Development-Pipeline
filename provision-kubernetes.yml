@@ -252,11 +252,8 @@
 - name: Set up control plane
   gather_facts: true
   hosts: main
-  vars_prompt:
-    - name: taint_control_plane
-      prompt: Should taint node?
-      private: false
-      default: true
+  vars:
+    taint_control_plane: false
   tasks:
     - set_fact:
         ip: "{{ item }}"
