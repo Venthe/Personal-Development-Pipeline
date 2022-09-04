@@ -244,6 +244,11 @@
     #       kind: Policy
     #       rules:
     #       - level: Metadata
+# RESET
+# sudo kubeadm init phase certs all
+# sudo ip route flush proto bird
+# sudo rm -rf /var/etcd/calico-data/*
+# sudo cp /etc/kubernetes/pki/ca.crt /usr/local/share/ca-certificates/kubernetes.crt && sudo update-ca-certificates
 - name: Set up control plane
   gather_facts: true
   hosts: main
