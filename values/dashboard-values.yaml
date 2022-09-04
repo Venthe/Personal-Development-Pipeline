@@ -1,13 +1,14 @@
 service:
   type: NodePort
-ingress:
-  enabled: true
-  annotations:
-    cert-manager.io/cluster-issuer: ca-issuer
-    kubernetes.io/ingress.class: nginx
-  hosts:
-    - "{{ deployment_name }}.{{ tld_hostname }}"
-  tls:
-    - hosts:
-      - "{{ deployment_name }}.{{ tld_hostname }}"
-      secretName: dashboard-tls
+# Ingress is not namespaced in the helm chart
+# ingress:
+#   enabled: true
+#   annotations:
+#     cert-manager.io/cluster-issuer: ca-issuer
+#     kubernetes.io/ingress.class: nginx
+#   hosts:
+#     - "{{ dashboard.name }}.{{ tld_hostname }}"
+#   tls:
+#     - hosts:
+#       - "{{ dashboard.name }}.{{ tld_hostname }}"
+#       secretName: dashboard-tls

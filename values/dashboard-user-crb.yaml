@@ -10,4 +10,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: admin-user
-    namespace: "{{ deployment_namespace }}"
+    namespace: "{{ dashboard.namespace }}"

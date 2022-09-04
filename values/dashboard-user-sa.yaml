@@ -3,4 +3,4 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: admin-user
-  namespace: "{{ deployment_namespace }}"
+  namespace: "{{ dashboard.namespace }}"
