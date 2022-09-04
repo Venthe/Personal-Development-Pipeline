@@ -898,4 +898,40 @@
         path: "{{ tempdir.path }}"
         state: absent
       when: tempdir.path is defined
+- name: Deploy Gerrit
+  gather_facts: false
+  hosts: main
+  vars:
+    HTTPD_LISTEN_URL: "proxy-https://*:8080/"
+    TEMP_DIRECTORY: "/tmp/gerrit"
+    LDAP_SERVER: "ldap://openldap.ldap"
+    LDAP_DC: "dc=home,dc=arpa"
+    gerrit:
+      release_name: gerrit
+      namespace: gerrit
+    tld_hostname: home.arpa
+    storageClass: freenas-nfs-csi
+  tasks:
+    - ansible.builtin.tempfile:
+        state: directory
+        suffix: certs
+      register: tempdir
+    - ansible.builtin.git:
+        repo: https://github.com/GerritCodeReview/k8s-gerrit.git
+        dest: "{{tempdir.path}}"
+    - kubernetes.core.helm:
+        create_namespace: true
+        name: "{{gerrit.release_name}}"
+        chart_ref: "{{tempdir.path}}/helm-charts/gerrit"
+        release_namespace: "{{ gerrit.namespace }}"
+        values: "{{ lookup('template', './values/gerrit-values.yml') | from_yaml }}"
+    - name: Annotate service with external hostname
+      command: |
+        kubectl annotate Service {{gerrit.release_name}}-gerrit-service \
+          --namespace={{ gerrit.namespace }} \
+          --overwrite external-dns.alpha.kubernetes.io/hostname="ssh.{{gerrit.release_name}}.{{tld_hostname}}"
+    - ansible.builtin.file:
+        path: "{{ tempdir.path }}"
+        state: absent
+      when: tempdir.path is defined
 ...

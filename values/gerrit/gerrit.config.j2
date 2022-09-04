@@ -6,8 +6,8 @@
     # LoadBalancer's external IP. This can only be done manually after installing
     # the chart, when you know the external IP the LoadBalancer got from the
     # cluster.
-    canonicalWebUrl = https://{{ release_name }}.{{ domain }}/
-    canonicalGitUrl = git://{{ release_name }}.{{ domain }}/
+    canonicalWebUrl = https://{{gerrit.release_name}}.{{ tld_hostname }}/
+    canonicalGitUrl = git://{{gerrit.release_name}}.{{ tld_hostname }}/
     disableReverseDnsLookup = true
     ui = POLYGERRIT
 [index]
@@ -31,12 +31,12 @@
     requestLog = true
 [sshd]
     listenAddress = *:29418
-    advertisedAddress = ssh.{{ release_name }}.{{ domain }}:29418
+    advertisedAddress = ssh.{{ gerrit.release_name }}.{{ tld_hostname }}:29418
 [transfer]
     timeout = 120 s
 [user]
     name = Gerrit Code Review
-    email = gerrit@{{ domain }}
+    email = gerrit@{{ tld_hostname }}
     anonymousCoward = Unnamed User
 [cache]
     directory = cache
