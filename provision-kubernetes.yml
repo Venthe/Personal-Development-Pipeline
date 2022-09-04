@@ -689,11 +689,11 @@
   gather_facts: false
   hosts: main
   vars:
-    bits_in_secret: 512
-    metallb_version: v0.12.1
+    metallb:
+      namespace: loadbalancer
     address_range:
-      from: 172.22.10.1
-      to: 172.22.15.254
+      from: 172.22.3.1
+      to: 172.22.4.254
   tasks:
     - command: kubectl get configmap kube-proxy --namespace kube-system -o yaml
       register: configmap
@@ -702,31 +702,44 @@
       k8s:
         state: present
         definition: "{{configmap.stdout | replace ('strictARP: false','strictARP: true') | replace ('mode: \"\"','mode: \"ipvs\"') }}"
-    - k8s:
+    - kubernetes.core.k8s:
         state: present
-        definition: |
+        definition:
           apiVersion: v1
           kind: Namespace
           metadata:
-            name: loadbalancer
+            name: "{{metallb.namespace}}"
             labels:
               pod-security.kubernetes.io/enforce: privileged
               pod-security.kubernetes.io/audit: privileged
               pod-security.kubernetes.io/warn: privileged
+    - kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: metallb.io/v1beta1
+          kind: L2Advertisement
+          metadata:
+            name: advertisement
+            namespace: "{{metallb.namespace}}"
+    - kubernetes.core.k8s:
+       state: present
+       definition:
+         apiVersion: metallb.io/v1beta1
+         kind: IPAddressPool
+         metadata:
+           name: first-pool
+           namespace: "{{metallb.namespace}}"
+         spec:
+           addresses:
+           - 192.168.3.1-192.168.4.255
     - kubernetes.core.helm_repository:
         name: bitnami
         repo_url: https://charts.bitnami.com/bitnami
     - kubernetes.core.helm:
         name: metallb
         chart_ref: bitnami/metallb
-        release_namespace: loadbalancer
-        values:
-          configInline:
-            address-pools:
-            - name: default
-              protocol: layer2
-              addresses:
-              - "{{ address_range.from }}-{{ address_range.to }}"
+        release_namespace: "{{metallb.namespace}}"
+        update_repo_cache: true
 - name: Install ingress
   gather_facts: false
   hosts: main
