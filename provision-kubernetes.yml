@@ -167,14 +167,16 @@
 - name: Set containerd snapshotter to work with ZFS
   hosts: zfs
   tasks:
-  - name: Creates directory
-    file:
-      path: /var/lib/containerd/io.containerd.snapshotter.v1.zfs/
-      state: directory
+    #- name: Creates directory
+    #  become: "true"
+    #  file:
+    #    path: "/var/lib/containerd/io.containerd.snapshotter.v1.zfs/"
+    #    state: directory
   - name: Create a zvol for snapshots
     become: "true"
     community.general.zfs:
-      name: "main/containerd-snapshots"
+        #-snapshots
+        name: "main/containerd"
       state: present
       extra_zfs_properties:
         mountpoint: /var/lib/containerd/io.containerd.snapshotter.v1.zfs
