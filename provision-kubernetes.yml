@@ -335,7 +335,7 @@
         state: directory
         mode: '0700'
         owner: "{{ ansible_env.LOGNAME }}"
-    - name: Setup kubeconfig for vagrant user
+    - name: Setup kubeconfig for user
       become: true
       copy:
         src: /etc/kubernetes/admin.conf
