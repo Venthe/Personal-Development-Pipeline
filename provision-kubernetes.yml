@@ -160,7 +160,8 @@
           debug: false
     - name: Restart containerd
       become: true
-      service:
+      ansible.builtin.service:
+        enabled: true
         name: containerd
         state: restarted
 - name: Set containerd snapshotter to work with ZFS
@@ -296,7 +297,8 @@
           ...
     - name: Restart kubelet
       become: true
-      service:
+      ansible.builtin.service:
+        enabled: true
         name: kubelet
         daemon_reload: true
         state: restarted
