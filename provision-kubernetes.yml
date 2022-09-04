@@ -262,21 +262,17 @@
         ip: "{{ item }}"
       with_items: "{{ ansible_all_ipv4_addresses }}"
       when: "item.startswith('192') or item.startswith('172')"
-    - name: Disable fail on swap for kubelet
+    - name: Prepare init configuration
       become: true
       blockinfile:
         create: yes
         backup: yes
-        dest: /etc/default/kubelet
+        dest: /var/lib/kubelet/config.init.yaml
         block: |
-          KUBELET_EXTRA_ARGS="--fail-swap-on=false --node-ip={{ ip }}"
-    - name: Update kubelet config with cgroup
-      become: true
-      blockinfile:
-        create: yes
-        backup: yes
-        dest: /var/lib/kubelet/config.yaml
-        block: |
+          apiVersion: kubeadm.k8s.io/v1beta2
+          kind: ClusterConfiguration
+          # --control-plane-endpoint
+          controlPlaneEndpoint: {{ ip }}:6443
           ---
           apiVersion: kubelet.config.k8s.io/v1beta1
           kind: KubeletConfiguration
@@ -286,6 +282,14 @@
           featureGates:
             NodeSwap: true
           failSwapOn: false
+          networking:
+            # --pod-network-cidr
+            podSubnet: "10.244.0.0/16" 
+          localAPIEndpoint:
+            # --apiserver-advertise-address
+            advertiseAddress: {{ ip }}
+            bindPort: 6443
+          ...
     - name: Restart kubelet
       become: true
       service:
@@ -316,13 +320,16 @@
       #  control plane will automatically allocate CIDRs for every node.
       # --service-dns-domain="{{ cluster_domain }}" \
       shell:
+        #--apiserver-cert-extra-sans="{{ ip }},127.0.0.1,localhost,{{ansible_hostname}}" \
+        # --service-cidr=10.196.0.0/16 \
+        # calico pod network cidr: 192.168.0.0/16.
+        # --apiserver-cert-extra-sans="127.0.0.1" \
+        # --apiserver-cert-extra-sans="127.0.0.1" \
+        # --apiserver-cert-extra-sans="127.0.0.1" \
         cmd: |
           kubeadm init \
+              --config=/var/lib/kubelet/config.init.yaml \
               --node-name={{ ansible_hostname }} \
-              --apiserver-advertise-address={{ ip }} \
-              --apiserver-cert-extra-sans="{{ ip }},127.0.0.1,localhost" \
-              --pod-network-cidr=10.0.0.0/16 \
-              --service-cidr=10.196.0.0/16 \
               --skip-token-print
     - name: Create .kube directory for user
       become: true
@@ -352,7 +359,7 @@
         mode: '0777'
         dest: "./join-command"
     - name: Untaint node
-      command: "kubectl taint node {{ node }} {{ item }}-"
+      command: "kubectl taint node {{ ansible_hostname }} {{ item }}-"
       when: not taint_control_plane
       with_items:
         - node-role.kubernetes.io/control-plane
