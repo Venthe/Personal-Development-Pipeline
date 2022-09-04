@@ -455,6 +455,50 @@
       become: true
       apt:
         name: "jq"
+- name: "Deploy CSI: NFS"
+  gather_facts: false
+  hosts: nfs
+  vars_prompt:
+    - name: nfsServer.apiKey
+      private: true
+    - name: nfsServer.ssh.key
+      private: true
+    - name: nfsServer.host
+      default: truenas
+  vars:
+    nfsServer:
+      ssh:
+        username: root
+      namespace: csi
+      username: root
+  tasks:
+    # TODO: Do ZFS configuration
+    # - name: Create a zvol for snapshots
+    #   become: "true"
+    #   community.general.zfs:
+    #     #-snapshots
+    #     name: "{{item}}"
+    #     state: present
+    #   with_items:
+    #     - main/k8s
+    #     - main/k8s/snapshots
+    #     - main/k8s/volumes
+    - name: Install CIFS utils
+      become: true
+      apt:
+        name: "nfs-common"
+        state: present
+        update_cache: true
+    - kubernetes.core.helm_repository:
+        name: democratic-csi
+        repo_url: https://democratic-csi.github.io/charts/
+    - kubernetes.core.helm:
+        create_namespace: true
+        update_repo_cache: true
+        name:  truenas-zfs-csi
+        chart_ref: democratic-csi/democratic-csi
+        release_namespace: "{{ nfsServer.namespace }}"
+        values: "{{ lookup('template', './values/democratic-csi-freenas-api-nfs.yaml') | from_yaml }}"
 - name: Set up local ZFS CSI
   hosts: zfs
   tasks:
