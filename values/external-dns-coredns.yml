@@ -1,0 +1,50 @@
+serviceAccount:
+  create: true
+deployment:
+  enabled: true
+isClusterService: false
+extraSecrets:
+  - name: etcd-client-tls
+    mountPath: /etc/coredns/tls/etcd
+
+servers:
+  - zones:
+      - zone: "{{tld_hostname}}"
+    port: 53
+    plugins:
+      - name: prometheus
+        parameters: 0.0.0.0:9153
+      - name: health
+        configBlock: |-
+          lameduck 5s
+      - name: etcd
+        parameters: "{{tld_hostname}}"
+        configBlock: |-
+          stubzones
+          path /skydns
+          endpoint https://etcd:2379
+          tls /etc/coredns/tls/etcd/client.pem /etc/coredns/tls/etcd/client-key.pem /etc/coredns/tls/etcd/ca.pem
+      - name: log
+      - name: errors
+      - name: ready
+      - name: loop
+      - name: cache
+        parameters: 30s
+      - name: loadbalance
+      - name: reload
+        parameters: 5s
+  - zones:
+      - zone: .
+    port: 53
+    plugins:
+      - name: forward
+        parameters: . /etc/resolv.conf
+      - name: log
+      - name: errors
+      - name: ready
+      - name: loop
+      - name: cache
+        parameters: 30s
+      - name: loadbalance
+      - name: reload
+        parameters: 5s

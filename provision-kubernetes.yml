@@ -751,6 +751,102 @@
         update_cache: yes
     - name: 'Install External DNS: mDND manifest'
       command: kubectl apply -f https://raw.githubusercontent.com/tsaarni/k8s-external-mdns/master/external-dns-with-avahi-mdns.yaml
+- name: Install ExternalDNS (CoreDNS)
+  gather_facts: false
+  hosts: main-coredns
+  vars:
+    externaldns:
+      namespace: external-dns
+    tld_hostname: home.arpa
+  tasks:
+    - name: "Create namespace"
+      k8s:
+        state: present
+        kind: Namespace
+        name: "{{ externaldns.namespace }}"
+        api_version: v1
+    - kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: etcd-client-tls
+            namespace: external-dns
+          data:
+            client.pem: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUR5akNDQXJLZ0F3SUJBZ0lVRlA1K01lQzVsZzBkakEzZUVKVDRLdGJYQWR3d0RRWUpLb1pJaHZjTkFRRUwKQlFBd1N6RU1NQW9HQTFVRUJoTURTVTVVTVE0d0RBWURWUVFJRXdWRWRXMXRlVEVPTUF3R0ExVUVCeE1GUkhWdApiWGt4R3pBWkJnTlZCQU1URWt4dlkyRnNJR05zZFhOMFpYSWdSVlJEUkRBZUZ3MHlNakEzTVRNeE9EVXlNREJhCkZ3MHpNakEzTVRBeE9EVXlNREJhTUE4eERUQUxCZ05WQkFNVEJISnZiM1F3Z2dFaU1BMEdDU3FHU0liM0RRRUIKQVFVQUE0SUJEd0F3Z2dFS0FvSUJBUURsWEZrYTZ1U3l1TURvMGdUN2JXYUdLTU83N2lZMk13U2lTT3hoNHo0NgphOFJIa3lqRUJISHRSTm9VZTFpUVhkR3NidGZSTVhQVW92NUhPbGw3VHNuUEtLR0Jyd0M4Y2MvQndhSDIrSWVmCnJiaFdxMitPSkxxdDJsTEVydFM3TElTenovdkQ2SkdCa3IzY1BBZVNucVBpQzhCdzcvL05oZmYzcVFzWjU1ZnUKdVZuZUZKZVdsMlF2c1p0bEJjVi9oWVliTUE4aEllbnhVODVxd1UyVGllbHBjK2tBNWd0QkNOcEdGMHVpUmFROQpLNXBIRk5QMTgwNDEwMldTbG5lQzdkbi9tTE5pM3FXaEwxUVlWVHNiR3lsTlR5d2RhRGxlL2Q2czFtak5Ed0x1CjgxWUFya1JtTlcxS3c5NmJkM3VHQU5scElpK1BlRk94K3lmaDZtNU9tVzlsQWdNQkFBR2pnZUV3Z2Q0d0RnWUQKVlIwUEFRSC9CQVFEQWdXZ01CMEdBMVVkSlFRV01CUUdDQ3NHQVFVRkJ3TUJCZ2dyQmdFRkJRY0RBakFNQmdOVgpIUk1CQWY4RUFqQUFNQjBHQTFVZERnUVdCQlRGV0ozaWEvNllncklvZ3pFTFNGbktsUDV2blRBZkJnTlZIU01FCkdEQVdnQlNLelB4V0xOeHZGbzU0SC9FV3BKS1ZHajdSV2pCZkJnTlZIUkVFV0RCV2dnUmxkR05rZ2cxbGRHTmsKTFdobFlXUnNaWE56Z2dsc2IyTmhiR2h2YzNTQ0xpb3VaWFJqWkMxb1pXRmtiR1Z6Y3k1bGVIUmxjbTVoYkMxawpibk11YzNaakxtTnNkWE4wWlhJdWJHOWpZV3lIQkg4QUFBRXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQ0VCCldBRllLeTBaSTUrcm9SdHlqV2hrdy9LNlNEVVI2K2VYaklKRnBjem1KUVQvWXF4bVd1WmlRYXBtam9Lc2wwOEYKZXBBNEJwOWNxbk1Sa3pUN1Fwb2JQeUZYYjRZNU91L3NJUUwvUDFvUUdFODhWZEJuZEl0YjBOa3FLRGNmbkQ2SAo3NzIyMGt3eFZuL3RLTjRWeFdiMHVjU3pPQUM1YzZPdFJSZUl1Rkx1NWZ2OFJ3dmtFT0toU1BDdThiTlJKRFVTCkNuVkdYaTRaaU9TblhCVk1QbFlPN0FmaGwrOUJLc2ZpRzdQUXVPVXRpbVVGR01PNnI5RWFldkR4MnBSRWFCRVoKNUtpSStNenJPMXgyOHg0QUJPTmJ6amwwUmRyQmRGZEdtTnE2NzdsZTI4Y0E4Tmd6UTBaMmZpaWdJVUNxSWxkbQpYc3FhOFVIZWY2TDFCcEVJcTY0PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+            ca.pem: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURaakNDQWs2Z0F3SUJBZ0lVQTIrMDhyZEp2cWU2eFJvZGN3VzRIdWJtVFNVd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1N6RU1NQW9HQTFVRUJoTURTVTVVTVE0d0RBWURWUVFJRXdWRWRXMXRlVEVPTUF3R0ExVUVCeE1GUkhWdApiWGt4R3pBWkJnTlZCQU1URWt4dlkyRnNJR05zZFhOMFpYSWdSVlJEUkRBZUZ3MHlNakEzTVRNeE9EVXlNREJhCkZ3MHlOekEzTVRJeE9EVXlNREJhTUVzeEREQUtCZ05WQkFZVEEwbE9WREVPTUF3R0ExVUVDQk1GUkhWdGJYa3gKRGpBTUJnTlZCQWNUQlVSMWJXMTVNUnN3R1FZRFZRUURFeEpNYjJOaGJDQmpiSFZ6ZEdWeUlFVlVRMFF3Z2dFaQpNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3Z2dFS0FvSUJBUURLa0wrVEExdWppQlZ1bUtWQWRBR09KQWJ0ClRaNk9aR3k5ZEVMUWJsWGF4M2MzaG16SGVZL2tYKytub29pWHJIamFndWt5RWVUb0xMV1E0VjRFa0I4M3ZUaTMKWDV3NkJzckluTld3d21RaCtkM3NTeW1LOW9PZkt4NXRBazNWcGNqYng2d2YyR1hNTm1uUE04WWU0SWlxV0JOcwptQkRNREFURDhVek5xU2hGUEkyUE9SUlRqOUp4bkZUVGtsWm9mQmlXNGt2aUZGT1NrQzhjK25mMWkzZjU2WG1iCmNEdzBsTTVTeWJ0blo5RnlpK01pOEt1RUo3ZjlnSHdqd2wvWG53c1hFWUcrRFJvekJRSG5NdWhqWFBKckNPWFMKWDVYM0xCd0VkcUQ5UG8zRnBrUkZSallvUENzR0U2d2pjTVV6M25WT29yQklkN09zcXF3Z0ZtM1p4Tm16QWdNQgpBQUdqUWpCQU1BNEdBMVVkRHdFQi93UUVBd0lCQmpBUEJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXCkJCU0t6UHhXTE54dkZvNTRIL0VXcEpLVkdqN1JXakFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBaGZ3RHlHNEIKMkZRQVA3cUlPWE10YmxJNjdOeHF0Y0ZNZWZjcnllNWE1bjRkelV0L1d3TDNiYXc3NU1CN0swU0NZQTBRdG5PQgpvWUNKNlpIWEpNclFnZTM1TlhrTVpvUTRCOHJnSi81Y1RwRlkyNmpMdWl5T1RYTUFIVlk1Y0dLQmZHRzNGbXprCklNNVBaZW5nMFRMSmlONVE2WGJqRk42L1dwNW96QzFuU2pNYTBQbkZiUE9lQTFjNG0xT29nZ21FZ2VHdGdlQk8KenUzbmgzM2t2aUMvS0Q2UmprbS8wbEZBYmF5WGpSam93djBoRW9HV3ZLK2hGZFdxRWYxM2QxRnV3Yzg0MlZKeAo0bVoycTNoamhCdVNONFJ2OHlNZzU3MXlLTXQ5NUVwUmdYSUVjNngzeEMwQ29jbjNOaEtBNTBNU1ZBZXZDL2ZiClJzdzArZjFkL0RobkZBPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+            client-key.pem: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBNVZ4Wkd1cmtzcmpBNk5JRSsyMW1oaWpEdSs0bU5qTUVva2pzWWVNK09tdkVSNU1vCnhBUng3VVRhRkh0WWtGM1JyRzdYMFRGejFLTCtSenBaZTA3Snp5aWhnYThBdkhIUHdjR2g5dmlIbjYyNFZxdHYKamlTNnJkcFN4SzdVdXl5RXM4Lzd3K2lSZ1pLOTNEd0hrcDZqNGd2QWNPLy96WVgzOTZrTEdlZVg3cmxaM2hTWApscGRrTDdHYlpRWEZmNFdHR3pBUElTSHA4VlBPYXNGTms0bnBhWFBwQU9ZTFFRamFSaGRMb2tXa1BTdWFSeFRUCjlmTk9OZE5sa3BaM2d1M1ovNWl6WXQ2bG9TOVVHRlU3R3hzcFRVOHNIV2c1WHYzZXJOWm96UThDN3ZOV0FLNUUKWmpWdFNzUGVtM2Q3aGdEWmFTSXZqM2hUc2ZzbjRlcHVUcGx2WlFJREFRQUJBb0lCQVFDbWFHc3AwWFRlaXBkRQpGR1NTK3h2Z2lLRUNyOVcvaXlKNGtBb1pOMk9GeFh5aUpZMzFNZmhxbW9MVFMyN0ZSNXlCeStYL25DNmEveXNZCkNLaTFnME4rYnM5SEpPNld5c2hlbnB0aGNZNE05MkNBV1YvVnRLWlF6czh3Ymx4ZjlQdk83ajZQTkNTbDZ3NmYKUkZxR01WMWIrd1REckExZlV5ekczam4wc0lnV0picUkzSGtsUU12Q1RqRC82WUU1Y1IyL3JGcGFPRVo2SnQyMwpEeVBTdzVTWnozcDR1ckZ3R09ZWGM1VlRzZTNyUDdXWXlqQWQvWEtLZ28wSVFjdGJzRlNaamJvUDNkZFY4QWtaCmFsUG9MdVFXL1R3aExMd1laR252Y3EyemVxRzVIbGhGUTJ5bE96Q1dTNlBEZ2dydWI1TmxnTUlwM1VvMyt5VFoKcEZ3L0JJQ2hBb0dCQVA5Z0I2aEJZdGlramVxaXlSNEtPdHpxRjB0ajlMbmNuYU52Q1NJbVhzQm9tRXJIeFZEcQozZEFJSUVHYktWMWFjTW5RWkU0bm45Vmtad3VlcjU5SHlNWDlyTzQyK2lLZk1laTdXUVlTYmd2Y1BtWnd1eVlTCjNtTHVkYS9vRWdtcFE2bFlZeVRVS2w0TDhZNks5M01TTldrMTFwREpOTFFMdUl0S0YvdmtoMER0QW9HQkFPWHMKQmIzdjFPMDJjSnArNUdPdzZVMXQ3SGlReXlIU2JhV3dSOXlZZVlRSnRzai9UYnlPVDFEYkRFa0tLQWcxNHVvaApxRFhkVS9oRU5UcFc0dE12QnYzREEzVEZLdjgzUzByTjRqaitZMzVxMzB4MjBPb29lK3hyU05QZCtKeVZnS0lPCi9rejRORGNZTlBPRG1wOHdVTFoxeVRVUzhlUFFWV1dvSE5ld2NMRlpBb0dCQUt5bUxLY1pCWTIzdW1aZUJhQTAKaEZVa1FmbHJLMkdZZ0U2azI4VGxzZnRjKzFEYlBGQVhhVHlpc2NRSTlXOHluTHdrRWh3d2Q4T1o3SHlUbk9JUApjdkpBTFhDalpIcVJxL2xPNThIT0plNEl5WHNTVGNSUXoxNk5IcTE5Tk95cExhQklyRWFTMWMzZFAwTUNPb2JtClVZdStwVUFmZDIwZDIzYjM4YjBQWkUyRkFvR0FFRWtSZHd5ZnhsV08wRUtncHJjSEwyYlQwdzVlZFB6VXEyRzcKRlZMdmVIeS9wNmo5dHBkVjR1SkJFb05YcG8wNmoxN203VG5LRXRHeCszbmdBeGxYbzIzR3R1U29VUDkzbzhyRgpkVWYvZ0JyTnlqcTRQWDIwbVdCWC9qbkF2RWFTbitmejl6dTFaeG1kMW9uQnovaTZIdEprK0E5cGRydHc4UXhoClRwMit2YkVDZ1lBbWErbGFnRWdrUTZNNzBpUVJWYmxMNmdLRFJtRE12NGgwYm11RERhL1dOeUQ0UWZZbStFTVMKM0VOVkNpRjVIMVdxZS9DQUpkSXZNcHl1aDRpNUI0Z3poVS9PL3Q2alNyNi9JQXh2VHhpdm95V2Vnc0cyQWE5WgpuQm5oSU1pNkFjWlMrNGsyZjFqV3lydHU2Zm5MYkIzNTUzRjBCdTdiUUdHbWcrcGVjcXhOTnc9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+    - kubernetes.core.helm_repository:
+        name: "{{ item.name }}"
+        repo_url: "{{ item.repo }}"
+      with_items:
+        - name: bitnami
+          repo: https://charts.bitnami.com/bitnami
+        - name: coredns
+          repo: https://coredns.github.io/helm
+    - kubernetes.core.helm:
+        name: dummy
+        namespace: kube-system
+        state: absent
+        update_repo_cache: true
+    - kubernetes.core.helm:
+        name: "{{ item.name }}"
+        create_namespace: true
+        chart_ref: "{{ item.chart }}"
+        release_namespace: "{{ externaldns.namespace }}"
+        values: "{{ lookup('template', './values/external-dns-' + item.value + '.yml') | from_yaml }}"
+      with_items:
+        - value: coredns
+          chart: coredns/coredns
+          name: coredns
+        - value: external-dns
+          chart: bitnami/external-dns
+          name: external-dns
+        - value: etcd
+          chart: bitnami/etcd
+          name: etcd
+    - kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            namespace: "{{ externaldns.namespace }}"
+            name: external-dns-public
+            annotations:
+              kubernetes.io/ingress.class: nginx
+          spec:
+            type: LoadBalancer
+            ports:
+              - port: 53
+                targetPort: 53
+                protocol: UDP
+                name: udp
+            selector:
+              app.kubernetes.io/name: coredns
+    # Rewrite as Ansible
+    - ansible.builtin.shell: |
+        #!/bin/bash
+        mkdir /tmp/coredns
+        kubectl get \
+            --namespace=kube-system \
+            --output=jsonpath='{.data.Corefile}' \
+            configmap/coredns  \
+            > /tmp/coredns/Corefile
+        echo "{{ tld_hostname }}:53 {
+            errors
+            cache 30
+            forward . $(kubectl get service \
+              --namespace="{{ externaldns.namespace }}" \
+              --output=jsonpath='{.status.loadBalancer.ingress[0].ip}' \
+              external-dns-public)
+        }" >> /tmp/coredns/Corefile
+        kubectl patch \
+            --namespace=kube-system \
+            configmap/coredns \
+            --patch="{\"data\":{\"Corefile\":\"$(cat /tmp/coredns/Corefile | awk -v ORS='\\n' '1')\"}}"
+        rm -rf /tmp/coredns
 - name: Install ingress
   gather_facts: false
   hosts: main
