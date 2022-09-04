@@ -1,0 +1,120 @@
+livenessProbe:
+  initialDelaySeconds: 380
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki:3100
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server:80
+      isDefault: true
+      access: proxy
+    - name: Kubernetes
+      type: devopsprodidy-kubegraf-datasource
+      access: proxy
+      url: http://localhost:8001
+      jsonData:
+        prom_name: Prometheus
+
+#extraContainers: |
+#  - name: kubectl-proxy
+#    image: bitnami/kubectl:1.19.3
+#    args: ["proxy"]
+#    ports:
+#      - name: proxy
+#        containerPort: 8001
+
+dashboardProviders:
+ dashboardproviders.yaml:
+   apiVersion: 1
+   providers:
+   - name: 'default'
+     orgId: 1
+     folder: ''
+     type: file
+     disableDeletion: false
+     options:
+       path: /var/lib/grafana/dashboards/default
+   - name: 'kubernetes'
+     orgId: 1
+     folder: 'kubernetes'
+     type: file
+     disableDeletion: false
+     options:
+       path: /var/lib/grafana/dashboards/kubernetes
+
+dashboards:
+  default:
+    loki-quicksearch:
+      json: |
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/loki-dashboard-quick-search_rev2.json') }}{% endfilter %}
+    grafana-metrics:
+      json: |
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/grafana-metrics.json') }}{% endfilter %}
+    prometheus-2-0-stats:
+      json: |
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/prometheus-2-0-stats.json') }}{% endfilter %}
+    prometheus-stats:
+      json: |
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/prometheus-stats.json') }}{% endfilter %}
+
+rbac:
+  extraClusterRoleRules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+
+plugins:
+  - grafana-clock-panel
+  - grafana-simple-json-datasource
+  - vonage-status-panel
+  - grafana-synthetic-monitoring-app
+  - grafana-polystat-panel
+  - grafana-worldmap-panel
+  - grafana-kubernetes-app
+  #- devopsprodigy-kubegraf-app
+  - grafana-piechart-panel
+
+grafana.ini:
+  auth.ldap:
+    enabled: true
+    allow_sign_up: true
+    config_file: /etc/grafana/ldap.toml
+
+ldap:
+  enabled: true
+  config: |-
+    verbose_logging = true
+
+    [[servers]]
+    host = "openldap.ldap"
+    port = 389
+    use_ssl = false
+    start_tls = false
+    ssl_skip_verify = true
+    bind_dn = "cn=readonly,dc=home,dc=arpa"
+    bind_password = 'readonly'
+    search_filter = "(|(uid=%s)(mail=%s))"
+    search_base_dns = ["ou=people,dc=home,dc=arpa"]
+    group_search_filter = "(&(objectClass=posixGroup)(memberUid=%s))"
+    group_search_base_dns = ["ou=groups,dc=home,dc=arpa"]
+    group_search_filter_user_attribute = "uid"
+
+    [servers.attributes]
+    name = "givenName"
+    surname = "sn"
+    username = "uid"
+    email =  "mail"
+  
+persistence:
+  enabled: true

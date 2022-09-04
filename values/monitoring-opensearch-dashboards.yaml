@@ -1,0 +1,22 @@
+config:
+  # Default OpenSearch Dashboards configuration from docker image of Dashboards
+   opensearch_dashboards.yml: |
+    server:
+      name: dashboards
+      host: 0.0.0.0
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: ca-issuer
+  hosts:
+    - host: "opensearch.{{ tld_hostname }}"
+      paths:
+      - backend:
+          serviceName: "opensearch-dashboards"
+          servicePort: 5601
+        path: /
+  tls:
+  - hosts:
+      - "opensearch.{{ tld_hostname }}"
+    secretName: "opensearch-dashboards-tls"
