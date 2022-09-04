@@ -184,6 +184,13 @@
       regexp: '^(\s*snapshotter)\s*=\s*.*$'
       line: '\1 = "zfs"'
       backrefs: yes
+    - name: Restart containerd
+      become: true
+      ansible.builtin.service:
+        enabled: true
+        name: containerd
+        daemon_reload: true
+        state: restarted
 - name: Install kubernetes
   gather_facts: false
   become: true
