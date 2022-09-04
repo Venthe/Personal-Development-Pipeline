@@ -1,0 +1,4 @@
+env:
+  PHPLDAPADMIN_LDAP_HOSTS: "{{ ldap.openldap.releaseName }}"
+image:
+  tag: 0.9.0
