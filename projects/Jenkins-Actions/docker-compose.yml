@@ -1,0 +1,43 @@
+---
+version: "3.0"
+services:
+  dependencies:
+    image: httpd:2.4
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./dependencies:/usr/local/apache2/htdocs/
+  actions:
+    image: httpd:2.4
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./Jenkins-Actions/Pipeline/src/main/groovy/eu/venthe/jenkins:/usr/local/apache2/htdocs/
+  project:
+    image: httpd:2.4
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./Sample-Project:/usr/local/apache2/htdocs/
+  jenkins:
+    build:
+      context: ./Jenkins-Actions
+    container_name: jenkins
+    user: root
+    privileged: true
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    restart: on-failure
+    environment:
+      CASC_JENKINS_CONFIG: /var/jenkins_home/casc_configs
+    volumes:
+      - "./Jenkins-Actions/configuration.jcasc.yml:/var/jenkins_home/casc_configs/jenkins.yml:ro"
+      - "jenkins-jenkins_home:/var/jenkins_home"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./Sample-Project:/var/jenkins_home/workspace/Workflow"
+      - "./Sample-Project:/var/jenkins_home/workspace/Workflow@2"
+      - "./Sample-Project:/var/jenkins_home/workspace/Workflow@3"
+      - "./Jenkins-Actions/Pipeline/src/main/groovy/eu/venthe/jenkins/actions:/var/jenkins_home/actions:ro"
+volumes:
+  jenkins-jenkins_home: {}
