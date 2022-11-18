@@ -13,3 +13,5 @@ auth:
 extraEnvVars:
   - name: ETCD_LOG_LEVEL
     value: debug
+persistence:
+  enabled: false
