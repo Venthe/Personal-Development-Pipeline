@@ -47,12 +47,12 @@ driver:
     instance_id: abcd-efgh
     httpConnection:
       protocol: http
-      host: "{{ nfsServer.host }}"
+      host: "{{ nfsServer_host }}"
       port: 80
       # use only 1 of apiKey or username/password
       # if both are present, apiKey is preferred
       # apiKey is only available starting in TrueNAS-12
-      apiKey: "{{nfsServer.apiKey}}"
+      apiKey: "{{nfsServer_apiKey}}"
       #username: "{{nfsServer.username}}"
       ## password:
       allowInsecure: true
@@ -60,14 +60,14 @@ driver:
       # leave unset for auto-detection
       apiVersion: 2
     sshConnection:
-      host: "{{ nfsServer.host }}"
+      host: "{{ nfsServer_host }}"
       port: 22
       username: "{{nfsServer.ssh.username}}"
       # use either password or key
-      # password: "{{nfsServer.username}}"
+      # password: "{\{nfsServer_username}}"
       privateKey: |
-        {% filter indent(width=8) %}{{ nfsServer.ssh.key }}{% endfilter %}
-    
+        {% filter indent(width=8) %}{{ nfsServer_ssh_key }}{% endfilter %}
+
     zfs:
       # can be used to override defaults if necessary
       # the example below is useful for TrueNAS 12
@@ -103,7 +103,7 @@ driver:
 
     nfs:
       #shareCommentTemplate: "{\{ parameters.[csi.storage.k8s.io/pvc/namespace] }\}-{\{ parameters.[csi.storage.k8s.io/pvc/name] }\}"
-      shareHost: "{{ nfsServer.host }}"
+      shareHost: "{{ nfsServer_host }}"
       shareAlldirs: false
       shareAllowedHosts: []
       shareAllowedNetworks: []

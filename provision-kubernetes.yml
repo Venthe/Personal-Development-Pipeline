@@ -470,11 +470,11 @@
   gather_facts: false
   hosts: nfs
   vars_prompt:
-    - name: nfsServer.apiKey
+    - name: nfsServer_apiKey
       private: true
-    - name: nfsServer.ssh.key
+    - name: nfsServer_ssh_key
       private: true
-    - name: nfsServer.host
+    - name: nfsServer_host
       default: truenas
   vars:
     nfsServer:
