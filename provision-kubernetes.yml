@@ -735,7 +735,7 @@
            namespace: "{{metallb.namespace}}"
          spec:
            addresses:
-           - 192.168.3.1-192.168.4.255
+             - "{{address_range.from}}-{{address_range.to}}"
     - kubernetes.core.helm_repository:
         name: bitnami
         repo_url: https://charts.bitnami.com/bitnami
