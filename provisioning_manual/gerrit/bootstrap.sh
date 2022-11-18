@@ -24,7 +24,7 @@ function rest() {
 }
 
 function login() {
-    rest POST "login/" \
+    rest POST "login/%2F" \
         --header 'Content-Type: application:x-www-form-urlencoded' \
         --data "username=${GERRIT_USER}&password=${GERRIT_PASSWORD}"
 }
@@ -84,7 +84,7 @@ function create_user() {
     login
 }
 
-login
+# login
 
 set_ldap_subgroup "Administrators" "Administrators"
 create_group "Integrators" "Administrators" "contains all integrators"

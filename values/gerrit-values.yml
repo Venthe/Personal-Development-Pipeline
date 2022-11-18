@@ -24,7 +24,7 @@ gerrit:
     - "delete-project"
     - "codemirror-editor"
   service:
-    type: LoadBalancer
+    #type: LoadBalancer
     ssh:
       enabled: true
       port: 29418
