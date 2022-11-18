@@ -4,6 +4,7 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: docker.io/venthe/ubuntu-runner:22.10
     steps:
+      - uses: actions/git-checkout@v1
       - run: ls
       - uses: actions/setup-java@v1
         with:

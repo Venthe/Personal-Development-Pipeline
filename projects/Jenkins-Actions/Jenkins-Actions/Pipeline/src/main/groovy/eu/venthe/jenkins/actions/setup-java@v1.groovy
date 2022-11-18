@@ -1,7 +1,7 @@
 package eu.venthe.jenkins.actions
 
-def distribution = with['distribution']
-def javaVersion = with['java-version']
+def distribution = with?.('distribution') ?: ""
+def javaVersion = with?.('java-version') ?: ""
 
 if (!distribution.equalsIgnoreCase("temurin")) {
     return [status: "not_ok"]

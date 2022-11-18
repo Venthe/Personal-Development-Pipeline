@@ -26,10 +26,10 @@ jenkins:
       configurations:
         - displayNameAttributeName: cn
           inhibitInferRootDN: false
-          managerDN: 'cn={{ldap_user}},{{root_dn}}'
-          managerPasswordSecret: ${ldap-password}
-          rootDN: '{{root_dn}}'
-          server: {{LDAP_SERVER}}
+          managerDN: 'cn={{jenkins.ldap.ldap_user}},{{jenkins.ldap.root_dn}}'
+          managerPasswordSecret: {{ldap_password}}
+          rootDN: '{{jenkins.ldap.root_dn}}'
+          server: {{jenkins.ldap.server}}
       disableMailAddressResolver: false
       disableRolePrefixing: true
       groupIdStrategy: caseInsensitive

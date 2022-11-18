@@ -23,9 +23,9 @@ jenkins:
           resourceRequestMemory: "512Mi"
           workingDir: "/home/jenkins"
         - args: |
-            --insecure-registry=http://nexus-sonatype-nexus.nexus:5000 \
-            --insecure-registry=http://nexus-sonatype-nexus.nexus:5001 \
-            --registry-mirror=http://nexus-sonatype-nexus.nexus:5001 \
+            --insecure-registry=http://nexus-sonatype-nexus.infrastructure:5000 \
+            --insecure-registry=http://nexus-sonatype-nexus.infrastructure:5001 \
+            --registry-mirror=http://nexus-sonatype-nexus.infrastructure:5001 \
             --debug
           image: "docker:20.10.0-dind"
           livenessProbe:

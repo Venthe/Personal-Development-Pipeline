@@ -4,5 +4,5 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: docker.io/venthe/ubuntu-runner:22.10
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${event_name} event."
+      - run: echo "🎉 The job was automatically triggered by a ${EVENT_NAME} event."
       - run: ls
