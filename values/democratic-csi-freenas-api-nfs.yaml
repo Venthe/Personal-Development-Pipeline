@@ -13,11 +13,11 @@ storageClasses:
     # for block-based storage can be ext3, ext4, xfs
     # for nfs should be nfs
     fsType: nfs
-      
+
     # if true, volumes created from other snapshots will be
     # zfs send/received instead of zfs cloned
     # detachedVolumesFromSnapshots: "false"
-    
+
     # if true, volumes created from other volumes will be
     # zfs send/received instead of zfs cloned
     # detachedVolumesFromVolumes: "false"
@@ -80,7 +80,7 @@ driver:
       #    zpool: /usr/local/sbin/zpool
       #    sudo: /usr/local/bin/sudo
       #    chroot: /usr/sbin/chroot
-      
+
       # can be used to set arbitrary values on the dataset/zvol
       # can use handlebars templates with the parameters from the storage class/CO
       #datasetProperties:

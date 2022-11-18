@@ -291,7 +291,7 @@
           failSwapOn: false
           networking:
             # --pod-network-cidr
-            podSubnet: "10.244.0.0/16" 
+            podSubnet: "10.244.0.0/16"
           localAPIEndpoint:
             # --apiserver-advertise-address
             advertiseAddress: {{ ip }}
@@ -506,7 +506,7 @@
     - kubernetes.core.helm:
         create_namespace: true
         update_repo_cache: true
-        name:  truenas-zfs-csi
+        name: truenas-zfs-csi
         chart_ref: democratic-csi/democratic-csi
         release_namespace: "{{ nfsServer.namespace }}"
         values: "{{ lookup('template', './values/democratic-csi-freenas-api-nfs.yaml') | from_yaml }}"
@@ -757,7 +757,7 @@
       command: kubectl apply -f https://raw.githubusercontent.com/tsaarni/k8s-external-mdns/master/external-dns-with-avahi-mdns.yaml
 - name: Install ExternalDNS (CoreDNS)
   gather_facts: false
-  hosts: main-coredns
+  hosts: "main-coredns"
   vars:
     externaldns:
       namespace: infrastructure
@@ -1129,15 +1129,15 @@
         chdir: "{{ tempdir.path }}"
         cmd: |
           #!/bin/bash
-          
+
           set -e
-          
+
           CA_PATH="/etc/kubernetes/pki"
-          
+
           # Generate key for intermediate CA
           #  -aes256 to protect it with passphrase
           openssl genrsa -out "{{INTERMEDIATE_CA_FILENAME}}.key" 4096
-          
+
           cat <<EOF > openssl.cnf
           [req]
           req_extensions = v3_req
@@ -1146,12 +1146,12 @@
           x509_extensions = v3_intermediate_ca
           distinguished_name = req_distinguished_name
           prompt = no
-          
+
           [ v3_req ]
           extendedKeyUsage = serverAuth, clientAuth, codeSigning, emailProtection
           basicConstraints = critical,CA:TRUE
           keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-          
+
           [req_distinguished_name]
           countryName            = PL
           stateOrProvinceName    = Mazovia
@@ -1159,14 +1159,14 @@
           organizationName       = Home
           commonName             = home.arpa intermediate CA
           emailAddress           = jacek.lipiec.bc@gmail.com
-          
+
           [ v3_intermediate_ca ]
           subjectKeyIdentifier = hash
           authorityKeyIdentifier = keyid:always,issuer
           basicConstraints = critical,CA:true,pathlen:0
           keyUsage = critical,digitalSignature,cRLSign, keyCertSign
           EOF
-          
+
           # Generate itermediate CSR for home.arpa
           openssl req \
               -config openssl.cnf \
@@ -1176,7 +1176,7 @@
               -nodes \
               -key "{{INTERMEDIATE_CA_FILENAME}}.key" \
               -out "{{INTERMEDIATE_CA_FILENAME}}.csr"
-          
+
           # Sign request with kubernetes
           openssl x509 \
               -req \
@@ -1189,7 +1189,7 @@
               -out "{{INTERMEDIATE_CA_FILENAME}}.crt" \
               -days 500 \
               -sha512
-          
+
           cat "{{INTERMEDIATE_CA_FILENAME}}.crt" "${CA_PATH}/ca.crt" > chain.crt
           chown {{ansible_env.LOGNAME}} chain.crt "{{INTERMEDIATE_CA_FILENAME}}.key"
     - ansible.builtin.shell:

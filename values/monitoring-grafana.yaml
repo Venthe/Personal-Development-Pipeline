@@ -115,6 +115,6 @@ ldap:
     surname = "sn"
     username = "uid"
     email =  "mail"
-  
+
 persistence:
   enabled: true
