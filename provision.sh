@@ -12,7 +12,7 @@ echo "Inventory: ${INVENTORY}"
 function provision() {
     PLAYBOOK_PATH=${1}
     shift
-    
+
     ansible-playbook ./$PLAYBOOK_PATH --key-file ./.vagrant/machines/$MACHINE_NAME/$PROVIDER/private_key --user vagrant --inventory $INVENTORY, $@
 }
 
