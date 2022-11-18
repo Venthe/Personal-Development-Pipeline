@@ -1,0 +1,50 @@
+- name: Add repository
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: https://argoproj.github.io/argo-helm
+- name: Deploy chart
+  kubernetes.core.helm:
+    chart_version: "5.13.9"
+    create_namespace: true
+    update_repo_cache: true
+    name: argocd
+    chart_ref: argo/argo-cd
+    release_namespace: "{{ argocd.namespace }}"
+    values: "{{ lookup('template', './values.yml') | from_yaml }}"
+- name: Add LDAP support
+  kubernetes.core.k8s:
+    namespace: "{{ argocd.namespace }}"
+    name: argocd-cm
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      data:
+        dex.config: |
+          {{ lookup('template', './dex.config.yaml') }}
+    state: patched
+- name: Patch secret to add LDAP passwords
+  kubernetes.core.k8s:
+    namespace: "{{ argocd.namespace }}"
+    name: argocd-secret
+    state: patched
+    definition:
+      apiVersion: v1
+      kind: Secret
+      data:
+        dex.ldap.bindPW: "{{ 'readonly' | b64encode }}"
+        dex.ldap.bindDN: "{{ 'cn=readonly,dc=home,dc=arpa' | b64encode }}"
+- name: Map LDAP roles
+  kubernetes.core.k8s:
+    namespace: "{{ argocd.namespace }}"
+    name: argocd-rbac-cm
+    state: patched
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      data:
+        policy.csv: |
+          p, role:none, *, *, */*, deny
+          g, Administrators, role:admin
+        policy.default: role:none
+        scopes: '[groups, uid]'
+        

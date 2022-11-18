@@ -1241,4 +1241,20 @@
         path: "{{ tempdir.path }}"
         state: absent
       when: tempdir.path is defined
-...
+- name: Deploy services
+  gather_facts: false
+  hosts: main
+  vars:
+    ldap:
+      server: openldap
+      port: "389"
+    tld_hostname: home.arpa
+    infrastructure:
+      namespace: "infrastructure"
+  tasks:
+    - name: Install ArgoCD
+      vars:
+        argocd:
+          namespace: "{{infrastructure.namespace}}"
+      include_role:
+        name: argocd
