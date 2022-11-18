@@ -11,7 +11,7 @@
       private: no
     - name: namespace
       prompt: Namespace
-      default: "nexus"
+      default: "infrastructure"
       private: no
     - name: release_name
       prompt: Release name

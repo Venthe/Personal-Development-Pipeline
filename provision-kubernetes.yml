@@ -480,7 +480,7 @@
     nfsServer:
       ssh:
         username: root
-      namespace: csi
+      namespace: infrastructure
       username: root
   tasks:
     # TODO: Do ZFS configuration
@@ -694,7 +694,7 @@
   hosts: main
   vars:
     metallb:
-      namespace: loadbalancer
+      namespace: infrastructure
     address_range:
       from: 172.22.3.1
       to: 172.22.4.254
@@ -760,7 +760,7 @@
   hosts: main-coredns
   vars:
     externaldns:
-      namespace: external-dns
+      namespace: infrastructure
     tld_hostname: home.arpa
   tasks:
     - name: "Create namespace"
@@ -856,7 +856,7 @@
   hosts: main
   vars:
     tld_hostname: home.arpa
-    ingress_namespace: ingress
+    ingress_namespace: infrastructure
     ingress_release: ingress
     ingress_repository:
       name: ingress-nginx
@@ -883,7 +883,7 @@
   hosts: main
   vars:
     dashboard:
-      namespace: dashboard
+      namespace: infrastructure
       name: dashboard
     tld_hostname: home.arpa
   tasks:
@@ -951,7 +951,7 @@
     tld_hostname: home.arpa
     ldap:
       ldif: "{{ lookup('template', './values/ldap.ldif') }}"
-      namespace: ldap
+      namespace: infrastructure
       organization: "My Company"
       openldap:
         releaseName: openldap
@@ -1018,7 +1018,7 @@
   hosts: main
   vars:
     monitoring:
-      namespace: monitoring
+      namespace: infrastructure
     opensearch:
       opensearch-dashboards:
         name: opensearch
@@ -1093,7 +1093,7 @@
   vars:
     INTERMEDIATE_CA_FILENAME: company-intermediate-ca
     certmanager:
-      namespace: "cert-manager"
+      namespace: "infrastructure"
       name: cert-manager
   tasks:
     - kubernetes.core.helm_repository:
@@ -1211,11 +1211,11 @@
   vars:
     HTTPD_LISTEN_URL: "proxy-https://*:8080/"
     TEMP_DIRECTORY: "/tmp/gerrit"
-    LDAP_SERVER: "ldap://openldap.ldap"
+    LDAP_SERVER: "ldap://openldap"
     LDAP_DC: "dc=home,dc=arpa"
     gerrit:
       release_name: gerrit
-      namespace: gerrit
+      namespace: infrastructure
     tld_hostname: home.arpa
     storageClass: freenas-nfs-csi
   tasks:

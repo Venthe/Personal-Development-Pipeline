@@ -2,7 +2,7 @@
 
 docker run \
     --interactive \
-    --env "NAMESPACE=external-dns" \
+    --env "NAMESPACE=infrastructure" \
     --tty \
     --rm \
     "docker.io/venthe/cfssl-k8s:latest"
