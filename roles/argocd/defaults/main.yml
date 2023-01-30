@@ -1,0 +1,8 @@
+ldap:
+  server: openldap
+  port: "389"
+tld_hostname: home.arpa
+infrastructure:
+  namespace: "infrastructure"
+argocd:
+  namespace: "{{infrastructure.namespace}}"

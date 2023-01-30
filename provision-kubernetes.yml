@@ -20,22 +20,6 @@
    - gerrit
    # TODO: Allow for replays
    - jenkins
-- name: Deploy services
-  gather_facts: false
-  hosts: main
-  vars:
-    ldap:
-      server: openldap
-      port: "389"
-    tld_hostname: home.arpa
-    infrastructure:
-      namespace: "infrastructure"
-  tasks:
-    - name: Install ArgoCD
-      vars:
-        argocd:
-          namespace: "{{infrastructure.namespace}}"
-      include_role:
-        name: argocd
+   - argocd
 
 ## CERTS=/opt/bitnami/etcd/certs/client; etcdctl --cacert=${CERTS}/ca.pem --key=${CERTS}/client-key.pem --cert=${CERTS}/client.pem get / --prefix
