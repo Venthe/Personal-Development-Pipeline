@@ -1,0 +1,7 @@
+- name: Install Avahi
+  become: true
+  apt:
+    name: "avahi-daemon"
+    update_cache: yes
+- name: 'Install External DNS: mDND manifest'
+  command: kubectl apply -f https://raw.githubusercontent.com/tsaarni/k8s-external-mdns/master/external-dns-with-avahi-mdns.yaml
