@@ -1,0 +1,9 @@
+HTTPD_LISTEN_URL: "proxy-https://*:8080/"
+TEMP_DIRECTORY: "/tmp/gerrit"
+LDAP_SERVER: "ldap://openldap"
+LDAP_DC: "dc=home,dc=arpa"
+gerrit:
+  release_name: gerrit
+  namespace: infrastructure
+tld_hostname: home.arpa
+storageClass: freenas-nfs-csi
