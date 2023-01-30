@@ -1,0 +1,96 @@
+
+- name: Update APT cache
+  become: true
+  apt:
+    update_cache: true
+- name: Install packages that allow apt to be used over HTTPS
+  become: true
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: false
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+- name: Add an apt signing key for Docker repository
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+    state: present
+- name: Add apt repository for Docker
+  become: true
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+    state: present
+    filename: docker
+- name: Install containerd
+  become: true
+  apt:
+    name: "containerd.io={{ containerd_version }}"
+    state: present
+    update_cache: true
+- name: Create directory for containerd configuration
+  become: true
+  file:
+    mode: '0755'
+    path: /etc/containerd/
+    state: directory
+- name: Prepare default containerd configuration
+  command: containerd config default
+  register: default_containerd_config
+- name: Save containerd configuration
+  become: true
+  copy:
+    mode: '0755'
+    content: "{{ default_containerd_config.stdout_lines | join('\n') }}"
+    dest: /etc/containerd/config.toml
+- name: Set containerd configuration
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: yes
+  with_items:
+    - regexp: '^(disabled_plugins\s*=\s*\[s*)(\"cri\")(\s*\])$'
+      line: '\1\3'
+    - regexp: '^(\s*config_path)\s*=\s*.*$'
+      line: '\1 = "/etc/containerd/certs.d"'
+    - regexp: '^(\s*SystemdCgroup)\s*=\s*.*$'
+      line: \1 = true
+- name: Add an apt signing key for opensuse repository
+  become: true
+  apt_key:
+    url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/Debian_11/Release.key
+    state: present
+- name: Add devel:kubic:libcontainers:stable
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Debian_11/ /"
+    state: present
+    filename: "devel:kubic:libcontainers:stable"
+- name: Install crictl
+  become: true
+  apt:
+    name: cri-tools
+    state: present
+    update_cache: true
+- name: Configure crictl to use containerd
+  become: true
+  copy:
+    mode: '0644'
+    dest: "/etc/crictl.yaml"
+    content: |
+      runtime-endpoint: unix:///var/run/containerd/containerd.sock
+      image-endpoint: unix:///var/run/containerd/containerd.sock
+      timeout: 10
+      debug: false
+- name: Restart containerd
+  become: true
+  ansible.builtin.service:
+    enabled: true
+    name: containerd
+    state: restarted
