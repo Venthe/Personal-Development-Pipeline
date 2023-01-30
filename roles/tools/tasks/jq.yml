@@ -1,0 +1,4 @@
+- name: Install jq
+  become: true
+  apt:
+    name: "jq"

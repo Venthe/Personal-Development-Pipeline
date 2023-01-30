@@ -8,36 +8,7 @@
    - baremetal-containerd
    - baremetal-kubernetes
    - cni
-- name: Install Helm
-  gather_facts: false
-  hosts: all
-  tasks:
-    - name: Add helm repository signing key
-      become: true
-      apt_key:
-        url: https://baltocdn.com/helm/signing.asc
-        # state: present
-    - name: Add helm apt repository
-      become: true
-      apt_repository:
-        repo: deb https://baltocdn.com/helm/stable/debian/ all main
-        filename: helm
-    - name: Install Helm
-      become: true
-      apt:
-        name: "helm"
-    - name: Install Helm diff plugin
-      kubernetes.core.helm_plugin:
-        plugin_path: https://github.com/databus23/helm-diff
-        state: present
-- name: Install jq
-  gather_facts: false
-  hosts: all
-  tasks:
-    - name: Install jq
-      become: true
-      apt:
-        name: "jq"
+   - tools
 - name: "Deploy CSI: NFS"
   gather_facts: false
   hosts: nfs
