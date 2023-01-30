@@ -1,0 +1,21 @@
+- name: Create temporary directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: temporary
+  register: temporary
+# sudo mkdir -p /opt/bin && sudo wget https://github.com/flannel-io/flannel/releases/download/v0.19.0/flanneld-amd64 --quiet --output-file=/opt/bin/flanneld && sudo chmod +x /opt/bin/flanneld
+- name: Download manifest to the cluster.
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+    dest: "{{ temporary.path }}/flannel.yaml"
+    mode: '0664'
+# Fixme: Run this only when necessary
+- name: Install pod network
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ temporary.path }}/flannel.yaml"
+- name: Use the registered var and the file module to remove the temporary file
+  ansible.builtin.file:
+    path: "{{ temporary.path }}"
+    state: absent
+  when: temporary.path is defined

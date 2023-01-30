@@ -1,0 +1,8 @@
+- name: "Install CNI: flannel"
+  tags:
+    - flannel
+  import_tasks: flannel.yml
+- name: "Install CNI: calico"
+  tags:
+    - calico
+  import_tasks: calico.yml
