@@ -1,0 +1,45 @@
+- command: kubectl get configmap kube-proxy --namespace kube-system -o yaml
+  register: configmap
+# If you’re using kube-proxy in IPVS mode, since Kubernetes v1.14.2 you have to enable strict ARP mode.
+- name: Enable strict ARP
+  k8s:
+    state: present
+    definition: "{{configmap.stdout | replace ('strictARP: false','strictARP: true') | replace ('mode: \"\"','mode: \"ipvs\"') }}"
+- kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{metallb.namespace}}"
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
+          pod-security.kubernetes.io/audit: privileged
+          pod-security.kubernetes.io/warn: privileged
+- kubernetes.core.helm_repository:
+    name: bitnami
+    repo_url: https://charts.bitnami.com/bitnami
+- kubernetes.core.helm:
+    name: metallb
+    chart_ref: bitnami/metallb
+    release_namespace: "{{metallb.namespace}}"
+    update_repo_cache: true
+- kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        name: advertisement
+        namespace: "{{metallb.namespace}}"
+- kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: first-pool
+        namespace: "{{metallb.namespace}}"
+      spec:
+        addresses:
+          - "{{address_range.from}}-{{address_range.to}}"
