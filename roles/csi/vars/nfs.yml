@@ -1,0 +1,7 @@
+
+- name: nfsServer_apiKey
+  private: true
+- name: nfsServer_ssh_key
+  private: true
+- name: nfsServer_host
+  default: truenas

@@ -1,0 +1,18 @@
+- kubernetes.core.helm_repository:
+    name: democratic-csi
+    repo_url: https://democratic-csi.github.io/charts/
+- name: Create a zvol for dataset
+  become: true
+  community.general.zfs:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - main/k8s/zfs-local/volumes
+    - main/k8s/zfs-local/snapshots
+- name: Deploy latest version of zfs-local-dataset chart inside democratic-csi namespace with values
+  kubernetes.core.helm:
+    create_namespace: true
+    name: "{{ storageClass }}"
+    chart_ref: democratic-csi/democratic-csi
+    release_namespace: democratic-csi
+    values: "{{ lookup('template', './csi-democratic-csi-zfs-local.yaml') | from_yaml }}"
