@@ -1,0 +1,61 @@
+# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+- name: Add an apt signing key for Kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+# sudo add-apt-repository 'deb https://apt.kubernetes.io/ kubernetes-xenial main'
+- name: Adding apt repository for Kubernetes
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes
+# sudo apt install kubelet kubeadm kubectl=2-00 kubectl=1.24.0-00
+# Truenas: sudo apt --fix-broken -o Dpkg::Options::="--force-overwrite" install
+- name: Install Kubernetes binaries
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  vars:
+    packages:
+      - "kubeadm={{ kubernetes_version }}"
+      - "kubelet={{ kubernetes_version }}"
+      - "kubectl={{ kubernetes_version }}"
+# sudo apt-mark hold kubeadm kubelet kubectl
+- name: APT Hold kebernetes packages
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items:
+    - kubeadm
+    - kubelet
+    - kubectl
+# TODO: Set up audit logs
+# # Preparation for audit logs
+# - name: Create a directory if it does not exist
+#   file:
+#     mode: '0644'
+#     owner: 'root'
+#     path: "{{ item }}"
+#     state: directory
+#   with_items:
+#     - /var/log/kubernetes/audit
+#     - /etc/kubernetes
+# - name: Set up audit policy
+#   copy:
+#     mode: '0644'
+#     owner: 'root'
+#     dest: "/etc/kubernetes/audit-policy.yaml"
+#     content: |
+#       apiVersion: audit.k8s.io/v1beta1
+#       kind: Policy
+#       rules:
+#       - level: Metadata
+- name: Set up control plane
+  tags:
+    - control_plane
+  import_tasks: control-plane.yml
+- name: Set up worker node
+  tags:
+    - worker_node
+  import_tasks: worker-node.yml
