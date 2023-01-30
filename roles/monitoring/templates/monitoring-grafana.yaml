@@ -51,16 +51,16 @@ dashboards:
   default:
     loki-quicksearch:
       json: |
-        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/loki-dashboard-quick-search_rev2.json') }}{% endfilter %}
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './loki-dashboard-quick-search_rev2.json') }}{% endfilter %}
     grafana-metrics:
       json: |
-        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/grafana-metrics.json') }}{% endfilter %}
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './grafana-metrics.json') }}{% endfilter %}
     prometheus-2-0-stats:
       json: |
-        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/prometheus-2-0-stats.json') }}{% endfilter %}
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './prometheus-2-0-stats.json') }}{% endfilter %}
     prometheus-stats:
       json: |
-        {% filter indent(width=8,blank=True) %}{{ lookup('file', './values/grafana-dashboards/prometheus-stats.json') }}{% endfilter %}
+        {% filter indent(width=8,blank=True) %}{{ lookup('file', './prometheus-stats.json') }}{% endfilter %}
 
 rbac:
   extraClusterRoleRules:
