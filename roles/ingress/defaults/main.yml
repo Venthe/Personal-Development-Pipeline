@@ -1,0 +1,6 @@
+tld_hostname: home.arpa
+ingress_namespace: infrastructure
+ingress_release: ingress
+ingress_repository:
+  name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx

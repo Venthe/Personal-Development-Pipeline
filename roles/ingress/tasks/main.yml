@@ -1,0 +1,16 @@
+- kubernetes.core.helm_repository:
+    name: "{{ingress_repository.name}}"
+    repo_url: "{{ingress_repository.url}}"
+- name: Install ingress
+  kubernetes.core.helm:
+    update_repo_cache: true
+    name: "{{ingress_release}}"
+    create_namespace: true
+    chart_ref: "{{ingress_repository.name}}/ingress-nginx"
+    release_namespace: "{{ ingress_namespace }}"
+- name: Instructions
+  debug:
+    msg: |
+      To use, add the annotation to ingress
+        kubernetes.io/ingress.class: nginx
+        external-dns.alpha.kubernetes.io/hostname: "{{ tld_hostname }}"
