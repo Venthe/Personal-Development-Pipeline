@@ -1,0 +1,4 @@
+INTERMEDIATE_CA_FILENAME: company-intermediate-ca
+certmanager:
+  namespace: "infrastructure"
+  name: cert-manager
