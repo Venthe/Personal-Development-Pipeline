@@ -1,0 +1,13 @@
+LDAP_BASE_DN: "{{'{{ LDAP_BASE_DN }}'}}"
+LDAP_DOMAIN: "{{'{{ LDAP_DOMAIN }}'}}"
+LDAP_READONLY_USER_USERNAME: "{{'{{ LDAP_READONLY_USER_USERNAME }}'}}"
+LDAP_READONLY_USER_PASSWORD_ENCRYPTED: "{{'{{ LDAP_READONLY_USER_PASSWORD_ENCRYPTED }}'}}"
+tld_hostname: home.arpa
+ldap:
+  ldif: "{{ lookup('template', './values/ldap.ldif') }}"
+  namespace: infrastructure
+  organization: "My Company"
+  openldap:
+    releaseName: openldap
+  phpldapadmin:
+    releaseName: phpldapadmin
