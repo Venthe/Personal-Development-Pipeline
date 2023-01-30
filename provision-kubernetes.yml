@@ -3,15 +3,8 @@
 - name: Prepare for elasticsearch containers
   # gather_facts: true
   hosts: all
-  tasks:
-    - name: Raise "vm.max_map_count"
-      become: true
-      ansible.posix.sysctl:
-        name: "vm.max_map_count"
-        value: "262144"
-        state: present
-        sysctl_set: true
-        reload: true
+  roles:
+   - baremetal-elasticsearch
 - name: "Install and configure prerequisites for containerd CRI: Forwarding IPv4 and letting iptables see bridged traffic"
   # gather_facts: false
   # become: true
