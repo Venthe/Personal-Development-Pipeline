@@ -1,0 +1,17 @@
+- name: Create temporary build directory
+  ansible.builtin.tempfile:
+      state: directory
+      suffix: build
+  register: TEMP_DIRECTORY
+- name: Prepare SSH keys for gerrit/jenkins interaction
+  import_tasks: keys.yml
+- name: Install Jenkins
+  import_tasks: jenkins.yml
+- name: Link to Gerrit
+  import_tasks: gerrit.yml
+- name: Clean temp path
+  file:
+    state: absent
+    path: "{{ TEMP_DIRECTORY.path }}"
+  when: TEMP_DIRECTORY.path is defined
+

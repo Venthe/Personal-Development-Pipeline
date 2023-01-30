@@ -48,3 +48,6 @@
     # Has to be lower than 'gerrit.resources.limits.memory'. Also
     # consider memories used by other applications in the container.
     javaOptions = -Xmx4g
+[sendemail]
+    # Reenable on Sendmail server. Enabled because SSH set via API require mail to be sent
+    enable = false

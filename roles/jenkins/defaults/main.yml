@@ -1,0 +1,16 @@
+# GERRIT_SERVER: "gerrit-service-gerrit.gerrit"
+tld_hostname: "home.arpa"
+cluster_zone: cluster.local
+jenkins:
+  namespace: "infrastructure"
+  release_name: "jenkins"
+  ldap:
+    server: "ldap://openldap"
+    root_dn: "dc=home,dc=arpa"
+    user: "readonly"
+    password: "readonly"
+  user: "jenkins"
+  password: "jenkins"
+gerrit:
+  url: gerrit.home.arpa
+  sshUrl: ssh://jenkins@gerrit-gerrit-service.infrastructure:29418

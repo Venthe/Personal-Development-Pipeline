@@ -1,0 +1,266 @@
+@Library('shared')
+
+def runOn(environment, body) {
+    if (params.EXECUTION_ENVIRONMENT != environment) {
+        return
+    }
+    body.call()
+}
+
+def globalExecutor(body) {
+    runOn("kubernetes") {
+        podTemplate {
+            node(POD_LABEL) {
+                ansiColor('xterm') {
+                    body.call()
+                }
+            }
+        }
+    }
+    node {
+        runOn("docker") {
+            docker.image("docker.io/venthe/ubuntu-runner:22.10").inside("--entrypoint=''") {
+                ansiColor('xterm') {
+                    body.call()
+                }
+            }
+        }
+    }
+}
+
+def runner(image, body) {
+    runOn("kubernetes") {
+        podTemplate(yaml: """\
+                    kind: Pod
+                    spec:
+                      containers:
+                        - name: runner
+                          image: ${image}
+                          imagePullPolicy: Always
+                          securityContext:
+                            privileged: true
+                          command:
+                            - sleep
+                          args:
+                            - 9999999""".stripMargin().stripIndent()) {
+            node(POD_LABEL) {
+                container("runner") {
+                    ansiColor('xterm') {
+                        body.call()
+                    }
+                }
+            }
+        }
+    }
+    runOn("docker") {
+        def volumes = ""
+        docker.image(image).inside("""--entrypoint='' --interactive --tty ${volumes}""") {
+            ansiColor('xterm') {
+                body.call()
+            }
+        }
+    }
+}
+
+def runOnNode(jobName, workflow) {
+    def envs = [
+            "VPIPELINE_BUILD_ID=${env.BUILD_ID}",
+          "VPIPELINE_GERRIT_URL=${env.GERRIT_URL}",
+          "VPIPELINE_JOB_NAME=${jobName}",
+          "VPIPELINE_NEXUS_URL=http://host.docker.internal:8081",
+          "VPIPELINE_SECRET_NAME=pipeline",
+          "VPIPELINE_VAULT_TOKEN=vault_development_token",
+          "VPIPELINE_VAULT_URL=http://host.docker.internal:8200/v1",
+          "VPIPELINE_DOCKER_URL=http://host.docker.internal:5000",
+          "VPIPELINE_WORKFLOW=${workflow}"
+    ]
+    withEnv(envs) {
+        sh 'node /runner/index.js'
+    }
+}
+
+static def handles(events, input) {
+    if (events == null) {
+        return false
+    }
+
+    println "handles " + events.inspect()
+
+    return events
+            .collect { it.toLowerCase() }
+            .contains(input["type"].toLowerCase())
+}
+
+//def withEnvironmentVariables(workflowFile, jobName) {
+//    // FIXME: Rewrite as withEnv
+//    //  With env is not working on docker node?
+//    writeFile file: "ci.env", text: [
+//            'GERRIT_SSH'       : "${params.GERRIT_URL}",
+//            'GIT_SSH_COMMAND'  : "${params.GIT_SSH_COMMAND2}",
+//            'GIT_SSH_VARIANT'  : "ssh",
+//            "PIPELINE_WORKFLOW": "${workflowFile}",
+//            "PIPELINE_JOB_NAME": "${jobName}",
+//            "NEXUS_URL"        : "${params.NEXUS_URL}",
+//            "NEXUS_USERNAME"   : "${params.NEXUS_USERNAME}",
+//            "NEXUS_PASSWORD"   : "${params.NEXUS_PASSWORD}"
+//    ].collect { "${it.key}=${it.value}" }
+//            .join('\n')
+//}
+
+def prepareWorkflow(workflowFile, input) {
+    try {
+        println "Loading workflow: ${workflowFile.toString()}"
+        def file = readFile workflowFile.toString()
+        def workflow = shared.parseYaml(file)
+        if (workflow == null) {
+            throw new Exception("Workflow should not be null")
+        }
+
+        def workflowName = workflow['name'] ? "${workflow['name']} - ${workflowFile.name}" : workflowFile.name
+        def on = workflow['on']
+
+        if (on == null) {
+            println "We are not handling this due to lack of ON"
+            throw new Exception("There is no \"on\" property, this workflow will never run")
+        }
+        if (Map.isAssignableFrom(on.getClass())) {
+            def events = on['event']
+            if (events != null) {
+                println "We are handling a map" + on.inspect()
+
+                if (Collection.isAssignableFrom(events.getClass())) {
+                    if (!handles(events, input)) {
+                        print "Event ${input['type']} not handled in ${workflow['on']}"
+                        return
+                    }
+                } else {
+                    if (!handles([events], input)) {
+                        print "Event ${input['type']} not handled in ${workflow['on']}"
+                        return
+                    }
+                }
+            } else {
+                throw new Exception("Should not happen, as we always should handle those events" + on.inspect())
+            }
+
+        } else if (Collection.isAssignableFrom(on.getClass())) {
+            println "We are handling a list" + workflow['on'].inspect()
+            if (!handles(workflow['on'], input)) {
+                print "Event ${input['type']} not handled in ${workflow['on']}"
+                return
+            }
+        } else {
+            throw new Exception("2 On unrecognized. Should not happen ${on.getClass()} ${on.getClass() instanceof LinkedHashMap}")
+        }
+
+        def action = {
+            workflow['jobs'].each { jobName, job ->
+                runner(job['runs-on']) {
+                    cleanWs()
+                    unstash 'INPUT'
+                    //withEnvironmentVariables(workflowFile.toString(), jobName)
+                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'gerrit',                \
+                                                                    keyFileVariable: 'SSH_KEY_FOR_ABC',                \
+                                                                    passphraseVariable: '',                \
+                                                                    usernameVariable: '')]) {
+                        sh "mkdir -p /root/.ssh && cp ${SSH_KEY_FOR_ABC} /root/.ssh/id_rsa"
+                    }
+                    sh "chmod u=rwx,g=,o= ~/.ssh/*"
+                    sh "cp INPUT /runner/metadata/INPUT"
+                    stage("[${workflow['name']}/${jobName}]") {
+                        runOnNode(jobName, workflowFile.toString())
+                    }
+                }
+            }
+        }
+        return ["${workflowName}": action]
+    } catch (Exception e) {
+        return ["${workflowFile.toString()}": {
+            stage("${workflowFile.toString()}") {
+                error("File content:\n${readFile(workflowFile.toString())}\n\n${e.getMessage()}\n${printStackTrace(e)}")
+            }
+        }]
+    }
+}
+
+// FIXME: Rewrite as standard Jenkins log
+//  to have a stack pretty printed, we use our own stack trace prettifier
+def printStackTrace(exception) {
+    StringWriter writer = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(writer);
+    exception.printStackTrace(printWriter);
+    printWriter.flush();
+
+    return writer.toString();
+}
+
+def checkoutProperties(project1, branch1, ref1) {
+    return [$class           : 'GitSCM',
+            branches         : [
+                    [name: "${ref1}"]
+            ],
+            extensions       : [
+                    [$class: 'LocalBranch', localBranch: "**"],
+                    [$class: 'BuildSingleRevisionOnly'],
+                    [$class: 'CloneOption', shallow: true, honorRefspec: true],
+                    [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [
+                            [$class: 'SparseCheckoutPath', path: '.pipeline/']
+                    ]]
+            ],
+            userRemoteConfigs: [
+                    [credentialsId: 'gerrit',
+                     refspec      : "+${branch1}:refs/remotes/origin/${branch1} +${ref1}:refs/remotes/origin/${ref1}",
+                     url          : "${params.GERRIT_URL}/${"${project1}"}"
+                    ]
+            ]
+    ]
+}
+
+// TODO: Rewrite passwords as vault
+properties([parameters([
+        string(name: 'EXECUTION_ENVIRONMENT', defaultValue: 'kubernetes', description: ''),
+        stashedFile(name: 'INPUT', default: null, description: ''),
+//text(name: 'INPUT_TEST', default: null, description: ''),
+        string(name: 'GERRIT_URL', defaultValue: '{{ gerrit.sshUrl }}'),
+])])
+
+if("${SEED_JOB}" != null) {
+    currentBuild.result = 'ABORTED'
+    currentBuild.displayName = "#${BUILD_NUMBER} Aborted"
+    error('Stopping early…')
+}
+
+globalExecutor {
+    def input
+    stage("Load input") {
+        cleanWs()
+ //       if (!((INPUT_TEST?.trim()).isEmpty())) {
+//            println "Stashing debug input: \"${INPUT_TEST}\" ${INPUT_TEST?.getClass()}"
+//            writeJSON file: 'INPUT', json: INPUT_TEST
+//            stash 'INPUT'
+//        }
+        unstash 'INPUT'
+        input = readJSON file: "INPUT"
+        // TODO: Null check INPUT
+    }
+    def workflows
+    stage("Prepare workflows") {
+        println "Checking out actions"
+        def branch1 = "${input['change']['branch']}"
+        def ref1 = "${input['patchSet']['ref']}"
+        def project1 = "${input['change']['project']}"
+        def type1 = "${input['type']}"
+        currentBuild.displayName = "#${BUILD_NUMBER} [${project1}] ${type1}: +${branch1}:${ref1}"
+        currentBuild.description = "The best description."
+
+        checkout(checkoutProperties(project1, branch1, ref1))
+        workflows = findFiles(glob: '.pipeline/workflows/*.y*ml')
+                .collect { prepareWorkflow(it, input) }
+                .findAll { it != null }
+                .collectEntries { it }
+        workflows.failFast = false
+    }
+    stage("Run jobs") {
+        parallel workflows
+    }
+}

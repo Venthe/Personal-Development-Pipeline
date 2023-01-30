@@ -1,0 +1,14 @@
+# ssh-keygen -b 2048 -t rsa -f ./sshkey -q -N '' <<<y && ssh-keygen -y -f ./sshkey > ./sshkey.pub
+- name: Generate SSH key
+  shell: "ssh-keygen {{item}}"
+  args:
+    executable: /usr/bin/bash
+  with_items:
+    - "-m PEM -t rsa -b 4096 -f {{TEMP_DIRECTORY.path}}/sshkey -q -N '' <<<y 2>&1 >/dev/null"
+    - "-y -f {{TEMP_DIRECTORY.path}}/sshkey > {{TEMP_DIRECTORY.path}}/sshkey.pub"
+- name: Register public key
+  command: "cat {{TEMP_DIRECTORY.path}}/sshkey.pub"
+  register: sshkey_pub
+- name: Register private key
+  command: "cat {{TEMP_DIRECTORY.path}}/sshkey"
+  register: sshkey
