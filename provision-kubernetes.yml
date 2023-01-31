@@ -1,6 +1,6 @@
 # ansible-galaxy collection install community.general ansible.posix kubernetes.core
 ---
-- name: Prepare for elasticsearch containers
+- name: Set up Kubernetes cloud
   # gather_facts: true
   hosts: all
   roles:
