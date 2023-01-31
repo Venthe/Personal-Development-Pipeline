@@ -1,0 +1,15 @@
+- name: Set sysctl values
+  become: true
+  ansible.posix.sysctl:
+    name: "{{item.key}}"
+    value: "{{item.value}}"
+    state: present
+    sysctl_set: true
+    reload: true
+  with_items:
+    - key: fs.inotify.max_user_instances
+      value: 8192
+    - key: fs.inotify.max_user_watches
+      value: 524288
+    - key: fs.file-max
+      value: 500000
