@@ -14,6 +14,7 @@
    - loadbalancer
    - externaldns
    - ingress
+   - dns
    - dashboard
    - ldap
    - monitoring
@@ -22,7 +23,6 @@
    # TODO: Allow for replays
    - jenkins
    - argocd
-   - dns
    - vault
 
 ## CERTS=/opt/bitnami/etcd/certs/client; etcdctl --cacert=${CERTS}/ca.pem --key=${CERTS}/client-key.pem --cert=${CERTS}/client.pem get / --prefix
