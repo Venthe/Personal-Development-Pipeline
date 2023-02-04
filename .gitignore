@@ -11,5 +11,3 @@
 .vagrant.d/
 join-command
 facts.json
-provision-*.sh
-*inventory.yml
