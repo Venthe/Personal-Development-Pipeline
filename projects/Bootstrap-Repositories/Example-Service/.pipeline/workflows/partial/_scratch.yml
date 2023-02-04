@@ -1,0 +1,89 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  #workflow_run:
+  #  workflows: ["Build"]
+  #  types: [requested]
+  #  branches:
+  #    - 'releases/**'
+  #    - '!releases/**-alpha'
+  pull_request:
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - main
+      - "mona/octocat"
+      - "releases/**"
+    branches-ignore:
+      - "mona/octocat"
+      - "releases/**-alpha"
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - main
+      - "mona/octocat"
+      - "releases/**"
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - v2
+      - v1.*
+    paths:
+      - "**.js"
+    paths-ignore:
+      - "docs/**"
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron: "30 5,17 * * *"
+env:
+  JAVA_VERSION: 17
+  JAVA_DISTRIBUTION: 17
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  Explore-GitHub-Actions:
+    name: My first job
+    steps:
+      - run: echo "Works"
+      - uses: actions/checkout@v1
+      - run: ls -lah
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: "${{ env.JAVA_VERSION }}"
+          distribution: "${{ env.JAVA_DISTRIBUTION }}"
+      - run: ls -lah
+      - name: Set up Gradle
+        uses: actions/setup-gradle@v1
+      - run: ls -lah
+      - name: Cache build
+        id: gradle-build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.type }}-gradle
+      - run: gradle build --console=plain
+        if: steps.gradle-build.outputs.cache-hit != 'true'
+      - run: ls -lah
+      - run: docker build .
+      - uses: actions/upload-artifact@v1
+        with:
+          name: test/run.sh
+          path: run.sh
+      - uses: actions/download-artifact@v1
+        with:
+          name: test/run.sh
+      - run: echo "Should not run"
+        if: "!always()"
+      - run: echo "Should not run"
+        if: "rest"
+      - name: Fail
+        run: exit 1
+      - run: echo "This should've not been seen"
+        name: Shold not run
+      - run: echo "Has run"
+        name: "Should run"
+        if: always()
+  AnotherGithubAction:
+    env:
+      test: 1234
+    needs: Explore-GitHub-Actions

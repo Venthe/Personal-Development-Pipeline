@@ -1,0 +1,47 @@
+name: Build
+on: [push,patchsetCreated]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: docker.io/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@v1
+      - run: ls
+      - uses: actions/setup-java@v1
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Show java
+        run: java --version
+      - uses: actions/setup-gradle@v1
+        with:
+          version: '7.4.2'
+      - uses: actions/setup-docker@v1
+        name: Install docker
+      - run: gradle bootJar --no-daemon --console=plain -Porg.gradle.welcome=never
+      - run: docker build . --tag venthe/example:latest
+      - uses: actions/docker-login@v1
+        with:
+          username: venthe
+          password: ${env.DOCKER_PASSWORD}
+      - run: docker push venthe/example:latest
+      - uses: actions/upload-artifact@v1
+        with:
+          path: build/libs/local_cluster_example-0.0.1-SNAPSHOT.jar
+      - uses: actions/setup-kubectl@v1
+      - run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: static-web
+            labels:
+              role: myrole2
+          spec:
+            containers:
+              - name: web
+                image: nginx
+                ports:
+                  - name: web
+                    containerPort: 80
+                    protocol: TCP
+          EOF
