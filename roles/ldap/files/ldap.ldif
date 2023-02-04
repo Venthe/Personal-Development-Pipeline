@@ -38,6 +38,7 @@ dn: cn=Non-Interactive Users,ou=Groups,{{ LDAP_BASE_DN }}
 cn: Non-Interactive Users
 gidnumber: 503
 memberuid: jenkins
+memberuid: system
 objectclass: posixGroup
 objectclass: top
 
@@ -82,3 +83,12 @@ objectclass: top
 sn: jenkins
 uid: jenkins
 userpassword: {SSHA}HzKpcVqFfreZhyuBOSEVRU/k1vgwuGw0
+
+dn: cn=System,ou=People,{{ LDAP_BASE_DN }}
+cn: System user
+mail: system@{{ LDAP_DOMAIN }}
+objectclass: inetOrgPerson
+objectclass: top
+sn: System
+uid: system
+userpassword: {SSHA}CbwUta8nMTBiGZxpzvf/DflOxeTw3Z7A
