@@ -1,0 +1,61 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'java'
+//	id 'pmd'
+//	id 'checkstyle'
+//	id "com.github.spotbugs" version "5.0.13"
+//	id "org.owasp.dependencycheck" version "7.3.0"
+}
+
+group = 'eu.venthe'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task showClasspath {
+	doLast {
+		buildscript.configurations.classpath.each { println it.name }
+	}
+}
+
+task compileClasspath {
+	doLast {
+		println sourceSets.main.compileClasspath.asPath
+	}
+}
+
+task printProjectName {
+	doLast {
+		println project.name
+	}
+}
+
+task listPlugins {
+	doLast {
+		project.plugins.each {
+			println it
+		}
+	}
+}
