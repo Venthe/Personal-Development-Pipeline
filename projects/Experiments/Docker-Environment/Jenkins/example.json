@@ -1,0 +1,177 @@
+{
+  "author": {
+    "name": "Administrator",
+    "email": "admin@example.com",
+    "username": "admin"
+  },
+  "approvals": [
+    {
+      "type": "Code-Review",
+      "description": "Code-Review",
+      "value": "0"
+    }
+  ],
+  "comment": "Patch Set 3:\n\n(1 comment)",
+  "patchSet": {
+    "number": 3,
+    "revision": "1f1f0e8527737151bb6643c8750169ab917b35e9",
+    "parents": [
+      "f6d6bf07f5832590f11f2b93b4a45b0bb60fd8e3"
+    ],
+    "ref": "refs/changes/03/3/3",
+    "uploader": {
+      "name": "Administrator",
+      "email": "admin@example.com",
+      "username": "admin"
+    },
+    "createdOn": 1671669742,
+    "author": {
+      "name": "Administrator",
+      "email": "admin@example.com",
+      "username": "admin"
+    },
+    "kind": "REWORK",
+    "sizeInsertions": 10,
+    "sizeDeletions": 1
+  },
+  "change": {
+    "project": "Example",
+    "branch": "main",
+    "topic": "ExampleTopic",
+    "id": "I6ed5e24c862974505b843b3d0ca1a93505d30335",
+    "number": 3,
+    "subject": "Test",
+    "owner": {
+      "name": "Administrator",
+      "email": "admin@example.com",
+      "username": "admin"
+    },
+    "url": "http://gerrit/c/Example/+/3",
+    "commitMessage": "Test\n\nChange-Id: I6ed5e24c862974505b843b3d0ca1a93505d30335\n",
+    "createdOn": 1671662988,
+    "status": "NEW"
+  },
+  "project": {
+    "name": "Example"
+  },
+  "refName": "refs/heads/main",
+  "changeKey": {
+    "key": "I6ed5e24c862974505b843b3d0ca1a93505d30335"
+  },
+  "type": "comment-added",
+  "eventCreatedOn": 1672003652,
+  "additionalProperties": {
+    "commit": {
+      "commit": "1f1f0e8527737151bb6643c8750169ab917b35e9",
+      "parents": [
+        {
+          "commit": "f6d6bf07f5832590f11f2b93b4a45b0bb60fd8e3",
+          "subject": "."
+        }
+      ],
+      "author": {
+        "name": "Administrator",
+        "email": "admin@example.com",
+        "date": "2022-12-21 22:49:48.000000000",
+        "tz": 0
+      },
+      "committer": {
+        "name": "Administrator",
+        "email": "admin@example.com",
+        "date": "2022-12-22 00:42:22.000000000",
+        "tz": 0
+      },
+      "subject": "Test",
+      "message": "Test\n\nChange-Id: I6ed5e24c862974505b843b3d0ca1a93505d30335\n"
+    },
+    "files": {
+      ".pipeline/workflows/build.yml": {
+        "lines_inserted": 1,
+        "lines_deleted": 1,
+        "size_delta": 14,
+        "size": 1409
+      },
+      ".pipeline/workflows/merge.yml": {
+        "status": "D",
+        "size_delta": 0,
+        "size": 0
+      },
+      "/COMMIT_MSG": {
+        "status": "A",
+        "lines_inserted": 9,
+        "size_delta": 253,
+        "size": 253
+      },
+      ".pipeline/workflows/performanceTest.yml": {
+        "status": "D",
+        "size_delta": 0,
+        "size": 0
+      },
+      ".pipeline/workflows/deploy.yml": {
+        "status": "D",
+        "size_delta": 0,
+        "size": 0
+      }
+    },
+    "change": {
+      "id": "Example~main~I6ed5e24c862974505b843b3d0ca1a93505d30335",
+      "project": "Example",
+      "branch": "main",
+      "topic": "ExampleTopic",
+      "hashtags": [],
+      "change_id": "I6ed5e24c862974505b843b3d0ca1a93505d30335",
+      "subject": "Test",
+      "status": "NEW",
+      "created": "2022-12-21 22:49:48.000000000",
+      "updated": "2022-12-25 21:27:32.000000000",
+      "submit_type": "MERGE_IF_NECESSARY",
+      "insertions": 1,
+      "deletions": 1,
+      "total_comment_count": 100,
+      "unresolved_comment_count": 0,
+      "has_review_started": true,
+      "meta_rev_id": "4b2bdf3a6ccdd7325f5393f7a4d7ff84e131784f",
+      "_number": 3,
+      "owner": {
+        "_account_id": 1000000
+      },
+      "current_revision": "1f1f0e8527737151bb6643c8750169ab917b35e9",
+      "requirements": [],
+      "submit_records": [
+        {
+          "rule_name": "gerrit~DefaultSubmitRule",
+          "status": "NOT_READY",
+          "labels": [
+            {
+              "label": "Code-Review",
+              "status": "NEED"
+            }
+          ]
+        }
+      ],
+      "revision": {
+        "kind": "REWORK",
+        "_number": 3,
+        "created": "2022-12-22 00:42:22.000000000",
+        "uploader": {
+          "_account_id": 1000000
+        },
+        "ref": "refs/changes/03/3/3",
+        "fetch": {
+          "ssh": {
+            "url": "ssh://admin@gerrit:29418/Example",
+            "ref": "refs/changes/03/3/3"
+          },
+          "anonymous http": {
+            "url": "http://gerrit/Example",
+            "ref": "refs/changes/03/3/3"
+          },
+          "http": {
+            "url": "http://admin@gerrit/a/Example",
+            "ref": "refs/changes/03/3/3"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+node('built-in') {
+    stage('Load pipeline') {
+        load("/var/jenkins_home/pipeline/ActionsWorkflow.jenkinsfile")
+    }
+}
