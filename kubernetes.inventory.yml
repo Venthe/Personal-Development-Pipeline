@@ -1,0 +1,4 @@
+# Customize for your own system
+all:
+  hosts:
+    kubernetes-node-a: ~
