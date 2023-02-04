@@ -1,0 +1,7 @@
+replicaCount: 2
+resources:
+  requests:
+    memory: 500Mi
+    cpu: 250m
+env:
+  _JAVA_OPTIONS: "-Xms768M -Xmx768M"

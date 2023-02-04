@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: LocalClusterExample
+  namespace: "${{ global.namespace }}"
+spec:
+  destination:
+    name: "${{ global.argocd.destination.name }}"
+    namespace: "${{ global.namespace }}"
+    server: "${{ global.argocd.destination.server }}"
+  source:
+    path: ''
+    repoURL: ${{ global.links.helm }}/LocalClusterExample
+    targetRevision: 1.0.0
+    chart: example
+    helm:
+      releaseName: payer-manager
+      values: ~
+    #directory:
+    #  jsonnet:
+    #    extVars: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

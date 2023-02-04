@@ -1,0 +1,9 @@
+global:
+  namespace: integration
+  links:
+    gerrit: https://gerrit.home.arpa
+    helm: https://helm.nexus.home.arpa
+  argocd:
+    destination:
+      name: in-cluster
+      server: ''

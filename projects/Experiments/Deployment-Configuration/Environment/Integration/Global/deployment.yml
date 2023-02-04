@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: environment-manifests
+  namespace: "${{ global.namespace }}"
+spec:
+  destination:
+    name: "${{ global.argocd.destination.name }}"
+    namespace: "${{ global.namespace }}"
+    server: "${{ global.argocd.destination.server }}"
+  project: default
+  source:
+    repoURL: ${{ global.links.gerrit }}/Deployment
+    path: "Environment/${{ global.namespace }}/Global/manifests"
+    targetRevision: main
+    directory:
+      recurse: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
