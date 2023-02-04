@@ -1,0 +1,13 @@
+---
+- name: Add Vault Helm repository
+  kubernetes.core.helm_repository:
+    name: hashicorp
+    repo_url: https://helm.releases.hashicorp.com
+- name: Render Vault template
+  kubernetes.core.helm:
+    chart_version: "{{ vault.chart.version }}"
+    chart_ref: hashicorp/vault
+    release_namespace: "{{ vault.namespace }}"
+    update_repo_cache: true
+    name: vault
+    values: "{{ lookup('template', './files/values.yml') | from_yaml }}"

@@ -1,0 +1,10 @@
+---
+vault:
+  namespace: infrastructure
+  chart:
+    version: "0.23.0"
+ldap:
+  url: ldap://openldap
+  userdn: cn=people,dc=home,dc=arpa
+  groupdn: cn=groups,dc=home,dc=arpa
+tld_hostname: home.arpa
