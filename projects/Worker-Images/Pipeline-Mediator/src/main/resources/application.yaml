@@ -1,0 +1,39 @@
+server:
+  port: 80
+  shutdown: graceful
+openapi:
+  gerrit:
+    base-path: /
+
+jenkins:
+  user: admin
+  jobName: Actions-Workflow
+  token: 115d1580f28ed13a8bfd8445a1c85bf26b
+  uri: http://localhost:8082
+
+gerrit:
+  username: admin
+  password: secret
+  url: http://localhost:8080
+  ignoredEvents:
+    - ref-updated
+    - project-created
+  binding:
+    topic: "gerrit-dev"
+
+spring:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+  main:
+    banner-mode: off
+logging:
+  level:
+    org.apache.kafka.clients.producer.ProducerConfig: DEBUG
+    org.apache.kafka.common.utils.AppInfoParser: DEBUG
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web:
+#          client:
+#            RestTemplate: TRACE

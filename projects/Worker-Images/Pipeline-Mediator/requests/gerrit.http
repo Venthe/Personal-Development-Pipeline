@@ -1,0 +1,154 @@
+
+
+### List Projects
+
+GET {{url}}/a/projects/?d
+Authorization: Basic {{username}} {{password}}
+
+### Get Project
+
+GET {{url}}/a/projects/{{project}}
+Authorization: Basic {{username}} {{password}}
+
+### List Branches
+
+GET {{url}}/a/projects/{{project}}/branches
+Authorization: Basic {{username}} {{password}}
+
+### Get Branch
+
+GET {{url}}/a/projects/{{project}}/branches/HEAD
+Authorization: Basic {{username}} {{password}}
+
+### List Tags
+### TODO: Use with versioning
+
+GET {{url}}/a/projects/{{project}}/tags
+Authorization: Basic {{username}} {{password}}
+
+### Limit(n)
+
+GET {{url}}/a/projects/{{project}}/tags?n=2
+Authorization: Basic {{username}} {{password}}
+
+### Substring(m)
+
+GET {{url}}/a/projects/{{project}}/tags?m=v
+Authorization: Basic {{username}} {{password}}
+
+### Regex(r)
+
+GET {{url}}/a/projects/{{project}}/tags?r=v.*
+Authorization: Basic {{username}} {{password}}
+
+### Get Commit
+
+GET {{url}}/a/projects/{{project}}/commits/{{commit-id}}
+Authorization: Basic {{username}} {{password}}
+
+### List Files
+
+GET {{url}}/a/projects/{{project}}/commits/{{commit-id}}/files/
+Authorization: Basic {{username}} {{password}}
+
+### Query Changes
+
+GET {{url}}/a/changes/
+Authorization: Basic {{username}} {{password}}
+
+### Get Change
+### TODO: !SSH
+
+GET {{url}}/a/changes/{{change-id}}?o=ALL_REVISIONS
+Authorization: Basic {{username}} {{password}}
+
+### Get Change Detail
+
+GET {{url}}/a/changes/{{change-id}}/detail?o=ALL_REVISIONS
+Authorization: Basic {{username}} {{password}}
+
+### Get Commit
+### TODO: !Author, commiter
+
+GET {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/commit
+Authorization: Basic {{username}} {{password}}
+
+### List Files
+### TODO: !Use with events
+
+GET {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/files
+Authorization: Basic {{username}} {{password}}
+
+### List Robot Comments
+
+GET {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/robotcomments
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json; charset=UTF-8
+
+### Delete Comment
+
+DELETE {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/comments/{{comment-id}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json; charset=UTF-8
+
+### Set Review
+### TODO: Use with actions, sarif
+### TODO: Set reviews
+
+POST {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/review
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json; charset=UTF-8
+
+{
+  "tag": "pmd",
+  "message": "Result of a PMD test",
+  "labels": {
+    "Code-Review": -1
+  },
+  "robot_comments": {
+    "/COMMIT_MSG": [
+      {
+        "side": "REVISION",
+        "range": {
+          "start_line": 1,
+          "start_character": 2,
+          "end_line": 1,
+          "end_character": 4
+        },
+        "message": "Test first line comment comment",
+        "robot_id": "PMD",
+        "robot_run_id": "123",
+        "fix_suggestions": [
+          {
+            "description": "Suggestion description",
+            "replacements": [
+              {
+                "path": "/COMMIT_MSG",
+                "range": {
+                  "start_line": 7,
+                  "start_character": 0,
+                  "end_line": 7,
+                  "end_character": 0
+                },
+                "replacement": "JIRA-XXXX"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "side": "REVISION",
+        "line": 0,
+        "message": "Test file comment",
+        "robot_id": "PMD",
+        "robot_run_id": "123",
+        "url": "http://sss"
+      }
+    ]
+  }
+}
+
+### Get OAuth Access Token
+
+GET {{url}}/a/accounts/self/oauthtoken
+Authorization: Basic {{username}} {{password}}

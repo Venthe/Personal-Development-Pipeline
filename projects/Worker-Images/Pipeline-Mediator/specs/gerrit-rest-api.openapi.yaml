@@ -1,0 +1,376 @@
+openapi: 3.0.4
+info:
+  title: "Gerrit"
+  version: v3.7.0-520-g6045f9f5a7
+  description: |-
+    Provides a portal into the major events occurring on the server, outputting activity data in real-time to the client. Events are filtered by the caller`s access permissions, ensuring the caller only receives events for changes they can view on the web, or in the project repository.
+
+    Event output is in JSON, one event per line.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  # termsOfService:
+  contact:
+    email: jacek.lipiec.bc@gmail.com
+# externalDocs:
+#   description:
+#   url:
+servers:
+  - url: http://localhost/
+  - url: https://localhost/
+tags:
+  - name: gerrit
+    description: Gerrit Code review
+    externalDocs:
+      description: Find out more
+      url: https://www.gerritcodereview.com/about.html
+paths:
+#  /a/projects/?d:
+#    get: {}
+#  /a/projects/{project-name}:
+#    get: {}
+#  /a/projects/{project-name}/branches:
+#    get: {}
+#  /a/projects/{project-name}/branches/{branch-id}:
+#    get: {}
+#  /a/projects/{project-name}/tags:
+#    get:
+#      parameters:
+#        - in: query
+#          description: num
+#          name: n
+#          required: false
+#          schema:
+#            type: integer
+#        - in: query
+#          description: match
+#          name: m
+#          required: false
+#          schema:
+#            type: integer
+#        - in: query
+#          name: v
+#          description: regexp
+#          required: false
+#          schema:
+#            type: integer
+#  /a/projects/{project-name}/commits/{commit-id}:
+#    get: {}
+#  /a/projects/{project-name}/commits/{commit-id}/files/:
+#    get: {}
+#  /a/changes/:
+#    get:
+#      parameters:
+#        - in: query
+#          name: o
+#          $ref: '#/components/parameters/query/changeOptionalElements'
+  /a/changes/{change-id}:
+    get:
+      responses:
+        $ref: '#/components/responses'
+      parameters:
+        - in: header
+          name: X-Gerrit-Trace
+          description: >
+            For each REST endpoint tracing can be enabled by setting the trace=<trace-id> request parameter. It is recommended to use the ID of the issue that is being investigated as trace ID.
+            It is also possible to omit the trace ID and get a unique trace ID generated.
+            Alternatively request tracing can also be enabled by setting the X-Gerrit-Trace header:
+        - in: query
+          name: o
+          $ref: '#/components/parameters/query/changeOptionalElements'
+#  /a/changes/{change-id}/detail:
+#    get:
+#      parameters:
+#        - in: query
+#          name: o
+#          $ref: '#/components/schemas/parameters/query/changeOptionalElements'
+  /a/changes/{change-id}/revisions/{revision-id}/commit:
+    get: {}
+  /a/changes/{change-id}/revisions/{revision-id}/files:
+    get: {}
+#  /a/changes/{change-id}/revisions/{revision-id}/robotcomments:
+#    get: {}
+components:
+  responses:
+    "400":
+      description: >
+        “400 Bad Request” is returned if the request is not understood by the server due to malformed syntax.
+        E.g. “400 Bad Request” is returned if JSON input is expected but the 'Content-Type' of the request is not 'application/json' or the request body doesn’t contain valid JSON.
+        “400 Bad Request” is also returned if required input fields are not set or if options are set which cannot be used together.
+    "403":
+      description: >
+        “403 Forbidden” is returned if the operation is not allowed because the calling user does not have sufficient permissions.
+        E.g. some REST endpoints require that the calling user has certain global capabilities assigned.
+        “403 Forbidden” is also returned if self is used as account ID and the REST call was done without authentication.
+    "404":
+      description: >
+        “404 Not Found” is returned if the resource that is specified by the URL is not found or is not visible to the calling user. A resource cannot be found if the URL contains a non-existing ID or view.
+    "405":
+      description: >
+        “405 Method Not Allowed” is returned if the resource exists but doesn’t support the operation.
+        E.g. some of the /groups/ endpoints are only supported for Gerrit internal groups; if they are invoked for an external group the response is “405 Method Not Allowed”.
+    "409":
+      description: >
+        “409 Conflict” is returned if the request cannot be completed because the current state of the resource doesn’t allow the operation.
+        E.g. if you try to submit a change that is abandoned, this fails with “409 Conflict” because the state of the change doesn’t allow the submit operation.
+        “409 Conflict” is also returned if you try to create a resource but the name is already occupied by an existing resource.
+    "412":
+      description: >
+        “412 Precondition Failed” is returned if a precondition from the request header fields is not fulfilled, as described in the Preconditions section.
+    "422":
+      description: >
+        “422 Unprocessable Entity” is returned if the ID of a resource that is specified in the request body cannot be resolved.
+    "429":
+      description: >
+        “429 Too Many Requests” is returned if the request exhausted any set quota limits. Depending on the exhausted quota, the request may be retried with exponential backoff.
+
+  parameters:
+    query:
+      changeOptionalElements:
+        required: false
+        type: array
+        collectionFormat: multi
+        items:
+          type: string
+          enum:
+            # Includes the labels field which contains all information about labels and approvers that have granted (or rejected) that label. Does not include the permitted_voting_range attribute with the list of ApprovalInfo of the all attribute.
+            - LABELS
+            # Includes the labels field which contains all information about labels and approvers that have granted (or rejected) that label, including the permitted_voting_range attribute with the list of ApprovalInfo of the all attribute.
+            - DETAILED_LABELS
+            # detailed result of the evaluated submit requirements for this change.
+            - SUBMIT_REQUIREMENTS
+            # describe the current revision (patch set) of the change, including the commit SHA-1 and URLs to fetch from.
+            - CURRENT_REVISION
+            # describe all revisions, not just current.
+            - ALL_REVISIONS
+            # include the commands field in the FetchInfo for revisions. Only valid when the CURRENT_REVISION or ALL_REVISIONS option is selected.
+            - DOWNLOAD_COMMANDS
+            # parse and output all header fields from the commit object, including message. Only valid when the CURRENT_REVISION or ALL_REVISIONS option is selected.
+            - CURRENT_COMMIT
+            # parse and output all header fields from the output revisions. If only CURRENT_REVISION was requested then only the current revision’s commit data will be output.
+            - ALL_COMMITS
+            # list files modified by the commit and magic files, including basic line counts inserted/deleted per file. Only valid when the CURRENT_REVISION or ALL_REVISIONS option is selected.
+            - CURRENT_FILES
+            # list files modified by the commit and magic files, including basic line counts inserted/deleted per file. If only the CURRENT_REVISION was requested then only that commit’s modified files will be output.
+            - ALL_FILES
+            # include _account_id, email and username fields when referencing accounts.
+            - DETAILED_ACCOUNTS
+            # include updates to reviewers set as ReviewerUpdateInfo entities.
+            - REVIEWER_UPDATES
+            # include messages associated with the change.
+            - MESSAGES
+            # include information on available actions for the change and its current revision. Ignored if the caller is not authenticated.
+            - CURRENT_ACTIONS
+            # include information on available change actions for the change. Ignored if the caller is not authenticated.
+            - CHANGE_ACTIONS
+            # include the reviewed field if all of the following are true: the change is open, the caller is authenticated, the caller has commented on the change more recently than the last update from the change owner, i.e. this change would show up in the results of reviewedby:self.
+            - REVIEWED
+            # skip the 'insertions' and 'deletions' field in ChangeInfo. For large trees, their computation may be expensive.
+            - SKIP_DIFFSTAT
+            # include the submittable field in ChangeInfo, which can be used to tell if the change is reviewed and ready for submit.
+            - SUBMITTABLE
+            # include the web_links field in CommitInfo, therefore only valid in combination with CURRENT_COMMIT or ALL_COMMITS.
+            - WEB_LINKS
+            # include potential problems with the change.
+            - CHECK
+            # include the full commit message with Gerrit-specific commit footers in the RevisionInfo.
+            - COMMIT_FOOTERS
+            # include push certificate information in the RevisionInfo. Ignored if signed push is not enabled on the server.
+            - PUSH_CERTIFICATES
+            # include references to external tracking systems as TrackingIdInfo.
+            - TRACKING_IDS
+  schemas:
+    # {account-id}
+    AccountId:
+      type: string
+      description: >
+        Identifier that uniquely identifies one account.
+        
+        This can be:
+            self or me for the calling user
+            a bare account ID ("18419")
+            an account ID following a name in parentheses ("Full Name (18419)")
+            a string of the format "Full Name <email@example.com>"
+            just the email address ("email@example")
+            a full name ("Full Name")
+            a user name ("username")
+        
+        In all cases, accounts that are not visible to the calling user are not considered.
+        
+        In all cases except a bare account ID and self/me, inactive accounts are not considered. Inactive accounts should only be referenced by bare ID.
+        
+        If the input is a bare account ID, this will always resolve to exactly one account if there is a visible account with that ID, and zero accounts otherwise. (This is true even in corner cases like a user having a full name which is exactly a numeric account ID belonging to a different user; such a user cannot be identified by this number.)
+        
+        If the identifier is ambiguous or only refers to inactive accounts, the error message from the API should contain a human-readable description of how to disambiguate the request.
+
+        Note: Except as noted above, callers should not rely on the particular priorities of any of the identifiers in the account resolution algorithm. Any other formats may be subject to future deprecation. If callers require specific searching semantics, they should use the Query Account endpoint to resolve a string to one or more accounts, then access the API using the account ID.
+
+    ChangeInfo:
+      description: |-
+        Sent when the assignee of a change has been modified.
+      type: object
+      required:
+        - id
+        - project
+        - branch
+        - change_id
+        - subject
+        - status
+        - created
+        - updated
+        - insertions
+        - deletions
+        - _number
+        - owner
+        - submit_records
+      properties:
+        id:
+          description: >
+            The ID of the change in the format "'<project>~<branch>~<Change-Id>'", where 'project', 'branch' and 'Change-Id' are URL encoded. For 'branch' the refs/heads/ prefix is omitted.
+        project:
+          description: The name of the project.
+        branch:
+          description: >
+            The name of the target branch.
+            The refs/heads/ prefix is omitted.
+        topic:
+          description: The topic to which this change belongs.
+        attention_set:
+          description: The map that maps account IDs to AttentionSetInfo of that account. Those are all accounts that are currently in the attention set.
+        removed_from_attention_set:
+          description: >
+            The map that maps account IDs to AttentionSetInfo of that account. Those are all accounts that were in the attention set but were removed. The AttentionSetInfo is the latest and most recent removal of the account from the attention set.
+        assignee:
+          description: The assignee of the change as an AccountInfo entity.
+        hashtags:
+          description: List of hashtags that are set on the change.
+        change_id:
+          description: The Change-Id of the change.
+        subject:
+          description: The subject of the change (header line of the commit message).
+        status:
+          description: The status of the change (NEW, MERGED, ABANDONED).
+        created:
+          description: The timestamp of when the change was created.
+        updated:
+          description: The timestamp of when the change was last updated.
+        # only set for merged changes
+        submitted:
+          description: The timestamp of when the change was submitted.
+        # only set for merged changes
+        submitter:
+          description: The user who submitted the change, as an AccountInfo entity.
+        # not set if false
+        starred:
+          description: Whether the calling user has starred this change with the default label.
+        stars:
+          description: A list of star labels that are applied by the calling user to this change. The labels are lexicographically sorted.
+        # not set if false
+        reviewed:
+          description: Whether the change was reviewed by the calling user. Only set if reviewed is requested.
+        submit_type:
+          description: >
+            The submit type of the change.
+            Not set for merged changes.
+        mergeable:
+          description: >
+            Whether the change is mergeable.
+            Only set for open changes if change.mergeabilityComputationBehavior is API_REF_UPDATED_AND_CHANGE_REINDEX.
+        submittable:
+          description: >
+            Whether the change has been approved by the project submit rules.
+            Only set if requested.
+        insertions:
+          description: Number of inserted lines.
+        deletions:
+          description: Number of deleted lines.
+        total_comment_count:
+          description: Total number of inline comments across all patch sets. Not set if the current change index doesn’t have the data.
+        unresolved_comment_count:
+          description: Number of unresolved inline comment threads across all patch sets. Not set if the current change index doesn’t have the data.
+        _number:
+          description: The numeric ID of the change. (The underscore is just a relict of a prior attempt to deprecate the numeric ID.)
+        owner:
+          description: The owner of the change as an AccountInfo entity.
+        actions:
+          description: Actions the caller might be able to perform on this revision. The information is a map of view name to ActionInfo entities.
+        submit_records:
+          description: List of the SubmitRecordInfo containing the submit records for the change at the latest patchset.
+        requirements:
+          description: List of the requirements to be met before this change can be submitted. This field is deprecated in favour of submit_requirements.
+        submit_requirements:
+          description: List of the SubmitRequirementResultInfo containing the evaluated submit requirements for the change. Only set if SUBMIT_REQUIREMENTS is requested.
+        labels:
+          description: >
+            The labels of the change as a map that maps the label names to LabelInfo entries.
+            Only set if labels or detailed labels are requested.
+        permitted_labels:
+          description: >
+            A map of the permitted labels that maps a label name to the list of values that are allowed for that label.
+            Only set if detailed labels are requested.
+        removable_reviewers:
+          description: >
+            The reviewers that can be removed by the calling user as a list of AccountInfo entities.
+            Only set if labels or detailed labels are requested.
+        reviewers:
+          description: >
+            The reviewers as a map that maps a reviewer state to a list of AccountInfo entities. Possible reviewer states are REVIEWER, CC and REMOVED.
+            REVIEWER: Users with at least one non-zero vote on the change.
+            CC: Users that were added to the change, but have not voted.
+            REMOVED: Users that were previously reviewers on the change, but have been removed.
+            Only set if labels or detailed labels are requested.
+        pending_reviewers:
+          description: >
+            Updates to reviewers that have been made while the change was in the WIP state. Only present on WIP changes and only if there are pending reviewer updates to report. These are reviewers who have not yet been notified about being added to or removed from the change.
+            Only set if labels or detailed labels are requested.
+        reviewer_updates:
+          description: >
+            Updates to reviewers set for the change as ReviewerUpdateInfo entities. Only set if reviewer updates are requested.
+        messages:
+          description: >
+            Messages associated with the change as a list of ChangeMessageInfo entities.
+            Only set if messages are requested.
+        current_revision:
+          description: >
+            The commit ID of the current patch set of this change.
+            Only set if the current revision is requested or if all revisions are requested.
+        revisions:
+          description: >
+            All patch sets of this change as a map that maps the commit ID of the patch set to a RevisionInfo entity.
+            Only set if the current revision is requested (in which case it will only contain a key for the current revision) or if all revisions are requested.
+        meta_rev_id:
+          description: The SHA-1 of the NoteDb meta ref.
+        tracking_ids:
+          description: >
+            A list of TrackingIdInfo entities describing references to external tracking systems. Only set if tracking ids are requested.
+        # not set if false
+        _more_changes:
+          description: >
+            Whether the query would deliver more results if not limited.
+            Only set on the last change that is returned.
+        problems:
+          description: A list of ProblemInfo entities describing potential problems with this change. Only set if CHECK is set.
+        # not set if false
+        is_private:
+          description: When present, change is marked as private.
+        # not set if false
+        work_in_progress:
+          description: When present, change is marked as Work In Progress.
+        # not set if false
+        has_review_started:
+          description: When present, change has been marked Ready at some point in time.
+        revert_of:
+          description: The numeric Change-Id of the change that this change reverts.
+        submission_id:
+          description: >
+            ID of the submission of this change. Only set if the status is MERGED. This ID is equal to the numeric ID of the change that triggered the submission. If the change that triggered the submission also has a topic, it will be "<id>-<topic>" of the change that triggered the submission. The callers must not rely on the format of the submission ID.
+        cherry_pick_of_change:
+          description: The numeric Change-Id of the change that this change was cherry-picked from. Only set if the cherry-pick has been done through the Gerrit REST API (and not if a cherry-picked commit was pushed).
+        cherry_pick_of_patch_set:
+          description: The patchset number of the change that this change was cherry-picked from. Only set if the cherry-pick has been done through the Gerrit REST API (and not if a cherry-picked commit was pushed).
+        # not set if false
+        contains_git_conflicts:
+          description: >
+            Whether the change contains conflicts.
+            If true, some of the file contents of the change contain git conflict markers to indicate the conflicts.
+            Only set if this change info is returned in response to a request that creates a new change or patch set and conflicts are allowed. In particular this field is only populated if the change info is returned by one of the following REST endpoints: Create Change, Create Merge Patch Set For Change, Cherry Pick Revision, Cherry Pick Commit, Rebase Change

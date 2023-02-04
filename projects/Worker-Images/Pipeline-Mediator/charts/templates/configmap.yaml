@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pipeline-mediator.fullname" . }}
+  labels:
+    {{- include "pipeline-mediator.labels" . | nindent 4 }}
+data:
+  application.yaml: |
+    jenkins:
+      user: admin
+      jobName: Actions-Workflow
+      token: 11e7407d262f78e2fe34655cfba62d76e0
+      uri: http://jenkins.infrastructure
+
+    gerrit:
+      username: admin
+      password: secret
+      url: http://gerrit-gerrit-service.infrastructure
