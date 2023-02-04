@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine
+  namespace: default
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: 'readonly-infrastructure'
+    vault.hashicorp.com/agent-inject-secret-nexus: secret/infrastructure/nexus
+    vault.hashicorp.com/agent-inject-template-nexus: |
+      {{- with secret "secret/infrastructure/nexus" -}}
+      nexus:
+        username: {{.Data.username}}
+        password: {{.Data.password}}
+      {{- end }}
+    vault.hashicorp.com/secret-volume-path-nexus: /app/secrets/
+    vault.hashicorp.com/agent-inject-file-nexus: nexus.yml
+    vault.hashicorp.com/agent-inject-secret-docker: secret/infrastructure/docker
+    vault.hashicorp.com/secret-volume-path-docker: /app/secrets/
+    vault.hashicorp.com/agent-inject-file-docker: docker.env
+    vault.hashicorp.com/agent-inject-template-docker: |
+      {{- with secret "secret/infrastructure/docker" -}}
+      export USERNAME={{.Data.username}}
+      export PASSWORD={{.Data.password}}
+      {{- end }}
+spec:
+  containers:
+    - image: alpine:3.2
+      command:
+        - /bin/sh
+        - "-c"
+      args:
+        - "source /app/secrets/docker.env && echo \"${USERNAME}\" && sleep 60m"
+      imagePullPolicy: IfNotPresent
+      name: alpine
+  restartPolicy: Always
