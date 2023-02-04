@@ -19,16 +19,6 @@
     definition:
       spec:
         rules:
-          #- host: ssh.gerrit.home.arpa
-          #  http:
-          #    paths:
-          #    - backend:
-          #        service:
-          #          name: gerrit-gerrit-service
-          #          port:
-          #            number: 29418
-          #      path: /
-          #      pathType: ImplementationSpecific
           - host: gerrit.home.arpa
             http:
               paths:
@@ -42,7 +32,6 @@
         tls:
           - hosts:
               - gerrit.home.arpa
-            #- ssh.gerrit.home.arpa
             secretName: gerrit-tls
 - name: Annotate service with external hostname
   command: |
