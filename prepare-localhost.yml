@@ -9,6 +9,7 @@
       with_items:
         - ansible.posix
         - community.general
+        - kubernetes.core
     - name: Intall Python packages
       command: "pip3 install {{ item }}"
       with_items:
