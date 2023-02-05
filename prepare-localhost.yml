@@ -5,7 +5,7 @@
   gather_facts: false
   tasks:
     - name: Install ansible galaxy modules
-      command: "ansible-galaxy collection install {{ item }}"
+      command: "ansible-galaxy collection install --upgrade {{ item }}"
       with_items:
         - ansible.posix
         - community.general
