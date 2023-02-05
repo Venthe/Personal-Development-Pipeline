@@ -11,3 +11,5 @@
 .vagrant.d/
 join-command
 facts.json
+dist/
+node_modules/
