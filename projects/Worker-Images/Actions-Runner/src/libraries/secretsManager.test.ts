@@ -53,7 +53,7 @@ describe("Secrets manager without test containers", () => {
     test('Can read a secret', async () => {
         let data = await secretManager.retrieve();
 
-        expect(data.nexus.password)
+        expect(data.nexus.json.password)
             .toBe("secret");
         expect(data.docker.username)
             .toBe("docker");

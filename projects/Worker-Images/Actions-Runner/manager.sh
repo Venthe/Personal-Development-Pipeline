@@ -28,14 +28,15 @@ function buildContainer() {
 
 function test() {
   buildManager
+  buildContainer
 
   docker run \
     --rm \
-    --volume ${PWD}/test/INPUT:/runner/metadata/event.json \
+    --volume ${PWD}/test/INPUT:/runner/metadata/event.yaml \
+    --volume {/var/run/docker.sock:/var/run/docker.sock} \
     --volume ${PWD}/test/test.sh:/test.sh \
     --volume ${PWD}/dist/index.js:/runner/index.js \
     --volume ${PWD}/dist/sourcemap-register.js:/runner/sourcemap-register.js \
-    --volume /var/run/docker.sock:/var/run/docker.sock \
     --volume "${HOME}/.ssh/:/root/.ssh_test:ro" \
     --volume "${PWD}/test/env:/runner/metadata/env:ro" \
     --volume "${PWD}/test/secrets:/runner/metadata/secrets:ro" \
@@ -43,7 +44,7 @@ function test() {
     --env VPIPELINE_BUILD_ID="1" \
     --env VPIPELINE_GERRIT_URL="ssh://admin@host.docker.internal:29418" \
     --env VPIPELINE_JOB_NAME="Explore-GitHub-Actions" \
-    --env VPIPELINE_NEXUS_URL="http://host.docker.internal:8081" \
+    --env VPIPELINE_NEXUS_URL="http://host.docker.internal:8081/repository/raw" \
     --env VPIPELINE_SECRET_NAME="pipeline" \
     --env VPIPELINE_DOCKER_URL="http://host.docker.internal:5000" \
     --env VPIPELINE_WORKFLOW=".pipeline/workflows/build.yml" \
@@ -51,7 +52,7 @@ function test() {
     --interactive \
     --entrypoint bash \
     --tty \
-    "${DOCKER_IO_TAG}" \
+    "${LOCAL_DOCKER_TAG}" \
     /test.sh
 }
 

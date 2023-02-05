@@ -60,6 +60,7 @@ import {shell} from "libraries/process";
 import {Context} from "./configuration";
 import {StepDefinition, ActionStep as ActionStepType, ShellStep as ShellStepType} from "./types/steps";
 import {Actions} from "./actions";
+import * as process from "process";
 
 export class StepManager {
     constructor(private readonly context: Context) {
@@ -75,7 +76,8 @@ export class StepManager {
                 await el.run(this.context);
             } catch (e) {
                 console.error(e)
-                break
+                process.exit(1);
+                return
             }
         }
 

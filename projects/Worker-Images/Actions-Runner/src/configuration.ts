@@ -4,7 +4,7 @@ import {Dictionary, VentheActionsContext} from "./types";
 import {shellMany} from "./libraries/process";
 import * as process from "process";
 import {SecretsManager} from "./libraries/secretsManager";
-import envfile from "envfile"
+import * as envfile from "envfile"
 
 /*
 function getS() {
@@ -54,7 +54,7 @@ export const generateContext: () => Promise<Context> = async () => {
             machine: os.machine(),
         },
         links: {
-            nexus: supportedEnvironmentVariable.NEXUS_URL,
+            nexus.json: supportedEnvironmentVariable.NEXUS_URL,
             gerrit: supportedEnvironmentVariable.GERRIT_SSH
         }
     };
@@ -127,10 +127,10 @@ export class Context {
     private secrets: object = {};
 
     constructor(environmentVariables: ContextEnvironmentVariables, private readonly secretsManager: SecretsManager) {
-        console.log(environmentVariables)
+        // console.log(environmentVariables)
         this.environmentVariables = environmentVariables
 
-        this.event = JSON.parse(fs.readFileSync(`${this.environmentVariables.VPIPELINE_RUNNER_METADATA_DIRECTORY}/event.json`, 'utf8').toString());
+        this.event = yaml.load(fs.readFileSync(`${this.environmentVariables.VPIPELINE_RUNNER_METADATA_DIRECTORY}/event.yaml`, 'utf8').toString());
     }
 
     async postConstruct() {
@@ -162,17 +162,19 @@ export class Context {
         const secretsManager = SecretsManager.create(environmentVariables);
         const context = new Context(environmentVariables, secretsManager);
         await context.postConstruct();
-        return Promise.resolve(context)
 
+        return Promise.resolve(context)
     }
 
     private static loadEnvFiles(VPIPELINE_RUNNER_ENV_DIRECTORY: string) {
         const files = fs.readdirSync(VPIPELINE_RUNNER_ENV_DIRECTORY)
         files.forEach(file => {
-            let filename = file.replace(".env", "")
             let filepath = `${VPIPELINE_RUNNER_ENV_DIRECTORY}/${file}`
             let loadedFile = fs.readFileSync(filepath, "utf-8");
-            console.debug(envfile.parse(loadedFile))
+            let result = envfile.parse(loadedFile)
+            Object.keys(result).forEach((key) => {
+                process.env[key] = result[key]
+            })
         });
     }
 
@@ -214,10 +216,7 @@ export class Context {
                 binariesDirectory: this.environmentVariables.VPIPELINE_BINARIES_DIRECTORY
             },
             secrets: {
-                NEXUS_PASSWORD: this.secrets["nexus"].password,
-                NEXUS_USERNAME: this.secrets["nexus"].username,
-                DOCKER_PASSWORD: this.secrets["docker"].password,
-                DOCKER_USERNAME: this.secrets["docker"].username
+                ...(this.secrets as any)
             },
             addEnv: this.addEnv,
             addToPath: this.addToPath

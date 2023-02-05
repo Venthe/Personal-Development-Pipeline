@@ -32,11 +32,48 @@ def runner(image, body) {
     runOn("kubernetes") {
         podTemplate(yaml: """\
                     kind: Pod
+                    metadata:
+                      annotations:
+                        vault.hashicorp.com/agent-inject: "true"
+                        vault.hashicorp.com/role: 'readonly-infrastructure'
+                        vault.hashicorp.com/agent-inject-secret-nexus: secret/infrastructure/nexus
+
+                        # {%- raw %}
+                        vault.hashicorp.com/agent-inject-template-nexus: |
+                          {{- with secret "secret/infrastructure/nexus" -}}
+                          {
+                            "username": "{{.Data.username}}",
+                            "password": "{{.Data.password}}"
+                          }
+                          {{- end }}
+                        vault.hashicorp.com/secret-volume-path-nexus: /runner/metadata/secrets
+                        vault.hashicorp.com/agent-inject-file-nexus: nexus.json
+                        vault.hashicorp.com/agent-inject-secret-docker: secret/infrastructure/docker
+                        vault.hashicorp.com/agent-inject-template-docker: |
+                          {{- with secret "secret/infrastructure/docker" -}}
+                          {
+                            "username": "{{.Data.username}}",
+                            "password": "{{.Data.password}}"
+                          }
+                          {{- end }}
+                        # {%- endraw %}
+
+                        vault.hashicorp.com/secret-volume-path-docker: /runner/metadata/secrets
+                        vault.hashicorp.com/agent-inject-file-docker: docker.json
                     spec:
+                      serviceAccountName: admin-user
+                      volumes:
+                        - name: ca-cert
+                          secret:
+                            secretName: jenkins-tls
                       containers:
                         - name: runner
                           image: ${image}
                           imagePullPolicy: Always
+                          volumeMounts:
+                            - mountPath: "/usr/local/share/ca-certificates/kubernetes"
+                              name: ca-cert
+                              readOnly: true
                           securityContext:
                             privileged: true
                           command:
@@ -63,7 +100,8 @@ def runner(image, body) {
 }
 
 def runOnNode() {
-    sh 'NODE_OPTIONS=--enable-source-maps node /runner/index.js'
+    sh 'update-ca-certificates'
+    sh 'NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt NODE_OPTIONS=--enable-source-maps node /runner/index.js'
 }
 
 static def normalizeEventName(str) {
@@ -89,10 +127,10 @@ def prepareEnvFile(workflowFile, jobName) {
             "VPIPELINE_BUILD_ID"   : "${env.BUILD_ID}",
             "VPIPELINE_GERRIT_URL" : "${params.GERRIT_URL}",
             "VPIPELINE_JOB_NAME"   : "${jobName}",
-            "VPIPELINE_NEXUS_URL"  : "http://nexus-nexus-repository-manager.infrastructure",
+            "VPIPELINE_NEXUS_URL"  : "http://nexus-nexus-repository-manager.infrastructure:8081/repository/raw-hosted",
             "VPIPELINE_SECRET_NAME": "infrastructure",
             "VPIPELINE_VAULT_URL"  : "http://vault.infrastructure:8200/v1",
-            "VPIPELINE_DOCKER_URL" : "https://docker.home.arpa",
+            "VPIPELINE_DOCKER_URL" : "docker.home.arpa",
             "VPIPELINE_WORKFLOW"   : "${workflowFile}",
             "GIT_SSH_COMMAND"      : "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
     ].collect { "${it.key}=${it.value}" }
@@ -102,7 +140,7 @@ def prepareEnvFile(workflowFile, jobName) {
 
 def prepareWorkflow(workflowFile, input) {
     try {
-        println "Loading workflow: ${workflowFile.toString()}"
+        println "Parsing workflow: ${workflowFile.toString()}"
         def file = readFile workflowFile.toString()
         def workflow = shared.parseYaml(file)
         if (workflow == null) {
@@ -111,24 +149,32 @@ def prepareWorkflow(workflowFile, input) {
 
         def workflowName = workflow['name'] ? "${workflow['name']} - ${workflowFile.name}" : workflowFile.name
         def on = workflow['on']
+        // [
+        // "",
+        // [:],
+        // []
+        // ].each {
+        //     println "Value: ${it}"
+        //     println "String: ${String.isAssignableFrom(it.getClass())}"
+        //     println "Map: ${Map.isAssignableFrom(it.getClass())}"
+        //     println "Collection: ${Collection.isAssignableFrom(it.getClass())}"
+        //     println ""
+        // }
 
         if (on == null) {
-            println "We are not handling this due to lack of ON"
             throw new Exception("There is no \"on\" property, this workflow will never run")
         }
         if (Map.isAssignableFrom(on.getClass())) {
             def events = on['event']
             if (events != null) {
-                println "We are handling a map" + on.inspect()
+                //  println "We are handling a map" + on.inspect()
 
                 if (Collection.isAssignableFrom(events.getClass())) {
                     if (!handles(events, input)) {
-                        print "Event ${input['type']} not handled in ${workflow['on']}"
                         return
                     }
                 } else {
                     if (!handles([events], input)) {
-                        print "Event ${input['type']} not handled in ${workflow['on']}"
                         return
                     }
                 }
@@ -137,9 +183,9 @@ def prepareWorkflow(workflowFile, input) {
             }
 
         } else if (Collection.isAssignableFrom(on.getClass())) {
-            println "We are handling a list" + workflow['on'].inspect()
+            //println "We are handling a list" + workflow['on'].inspect()
             if (!handles(workflow['on'], input)) {
-                print "Event ${input['type']} not handled in ${workflow['on']}"
+                //print "Event ${input['type']} not handled in ${workflow['on']}"
                 return
             }
         } else {
@@ -159,7 +205,7 @@ def prepareWorkflow(workflowFile, input) {
                         sh "mkdir -p /root/.ssh && cp ${SSH_KEY_FOR_ABC} /root/.ssh/id_rsa"
                     }
                     sh "chmod u=rwx,g=,o= ~/.ssh/*"
-                    sh "mv INPUT /runner/metadata/event.json"
+                    sh "mv INPUT /runner/metadata/event.yaml"
                     stage("[${workflow['name']}/${jobName}]") {
                         runOnNode()
                     }

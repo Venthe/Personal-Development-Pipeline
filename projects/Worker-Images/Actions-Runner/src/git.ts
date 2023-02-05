@@ -1,6 +1,10 @@
-import {shell} from "./libraries/process";
+import {shell, shellMany} from "./libraries/process";
+import * as process from 'process'
 
 export const configureGit = async () => {
-    await shell(`git config --global init.defaultBranch main`)
-    await shell('git config --global advice.detachedHead false')
+    await shellMany([
+        'git config --global init.defaultBranch main',
+        'git config --global advice.detachedHead false',
+        `git config --global --add safe.directory ${process.cwd()}`
+    ])
 }

@@ -26,8 +26,6 @@ ENV RUNNER_MANAGER_DIRECTORY="/runner" \
     RUNNER_WORKDIR="/workdir"
 WORKDIR "$RUNNER_WORKDIR"
 
-ADD / "$RUNNER_MANAGER_DIRECTORY/"
-
 RUN mkdir -p \
     /runner/metadata/secrets \
     /runner/metadata/env \
@@ -38,3 +36,5 @@ RUN mkdir -p \
 ENTRYPOINT ["node"]
 
 CMD ["--enable-source-maps", "$RUNNER_MANAGER_DIRECTORY/index.ts"]
+
+ADD / "$RUNNER_MANAGER_DIRECTORY/"

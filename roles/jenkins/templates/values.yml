@@ -64,7 +64,7 @@ controller:
         jobs:
           - script: |
               def pipelineScript = '''\
-                    {% filter replace("${","^${")|replace("\"\"\"\\","\"\"\"\\\\")|replace("\\\"","\\\\\"")|replace("\\n","\\\\n")|indent(width=20,blank=True) -%}
+                    {% filter replace("{{- with secret", "{{`{{- with secret")|replace("{{- end }}", "{{- end }}`}}")|replace("${","^${")|replace("\"\"\"\\","\"\"\"\\\\")|replace("\\\"","\\\\\"")|replace("\\n","\\\\n")|indent(width=20,blank=True) -%}
                     {% include 'files/actions-workflow.jenkinsfile' %}
                     {% endfilter %}
                     '''.stripMargin().stripIndent()

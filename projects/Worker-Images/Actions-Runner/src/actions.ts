@@ -7,6 +7,7 @@ import {setupGradle} from "./actions/gradle";
 import {dockerLogin, setupDocker} from "./actions/docker";
 import {setupKubernetes} from "./actions/kubernetes";
 import {uploadArtifact} from "./actions/upload-artifact";
+import {downloadArtifact} from "./actions/download-artifact";
 
 export class Actions {
     constructor(readonly step: ActionStep) {
@@ -30,10 +31,12 @@ export class Actions {
                 return setupDocker
             case "actions/docker-login@v1":
                 return dockerLogin
-            case "actions/setup-kubernetes@v1":
+            case "actions/setup-kubectl@v1":
                 return setupKubernetes
             case "actions/upload-artifact@v1":
                 return uploadArtifact
+            case "actions/download-artifact@v1":
+                return downloadArtifact
             default:
                 throw Error("No action found for step definition")
         }

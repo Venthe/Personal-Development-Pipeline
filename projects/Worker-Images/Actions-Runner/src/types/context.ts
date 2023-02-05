@@ -451,12 +451,16 @@ export interface VentheActionsContext {
         /**
          * The value of a specific secret.
          */
-        [secretName: string]: string
+        [secretName: string]: string | object
 
-        NEXUS_USERNAME: string
-        NEXUS_PASSWORD: string
-        DOCKER_PASSWORD: string
-        DOCKER_USERNAME: string
+        nexus: {
+            username: string
+            password: string
+        }
+        docker: {
+            username: string
+            password: string
+        }
     }
     env: Dictionary<string>
     addToPath: (path: string) => void

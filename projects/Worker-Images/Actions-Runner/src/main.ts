@@ -3,6 +3,7 @@ import {configureGit} from "./git";
 import * as process from "process";
 import {keyValue} from "./libraries/utilities";
 import {StepManager} from "./steps";
+import {shell} from "./libraries/process";
 
 export const main = async () => {
     await configureGit()
