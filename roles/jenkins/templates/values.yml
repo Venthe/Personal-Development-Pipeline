@@ -7,6 +7,7 @@ controller:
     - method java.lang.Class isAssignableFrom java.lang.Class
     - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object
     - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods println java.lang.Object java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods invokeMethod java.lang.Object java.lang.String java.lang.Object
   # executorMode: "EXCLUSIVE"
   disableRememberMe: false
   # numExecutors: 1

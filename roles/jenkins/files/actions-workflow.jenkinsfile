@@ -62,21 +62,12 @@ def runner(image, body) {
     }
 }
 
-def runOnNode(jobName, workflow) {
-    def envs = [
-            "VPIPELINE_BUILD_ID=${env.BUILD_ID}",
-          "VPIPELINE_GERRIT_URL=${env.GERRIT_URL}",
-          "VPIPELINE_JOB_NAME=${jobName}",
-          "VPIPELINE_NEXUS_URL=http://host.docker.internal:8081",
-          "VPIPELINE_SECRET_NAME=pipeline",
-          "VPIPELINE_VAULT_TOKEN=vault_development_token",
-          "VPIPELINE_VAULT_URL=http://host.docker.internal:8200/v1",
-          "VPIPELINE_DOCKER_URL=http://host.docker.internal:5000",
-          "VPIPELINE_WORKFLOW=${workflow}"
-    ]
-    withEnv(envs) {
-        sh 'node /runner/index.js'
-    }
+def runOnNode() {
+    sh 'NODE_OPTIONS=--enable-source-maps node /runner/index.js'
+}
+
+static def normalizeEventName(str) {
+    return str.replace("-", "").toLowerCase()
 }
 
 static def handles(events, input) {
@@ -87,25 +78,27 @@ static def handles(events, input) {
     println "handles " + events.inspect()
 
     return events
-            .collect { it.toLowerCase() }
-            .contains(input["type"].toLowerCase())
+            .collect { normalizeEventName(it) }
+            .contains(normalizeEventName(input["type"]))
 }
 
-//def withEnvironmentVariables(workflowFile, jobName) {
-//    // FIXME: Rewrite as withEnv
-//    //  With env is not working on docker node?
-//    writeFile file: "ci.env", text: [
-//            'GERRIT_SSH'       : "${params.GERRIT_URL}",
-//            'GIT_SSH_COMMAND'  : "${params.GIT_SSH_COMMAND2}",
-//            'GIT_SSH_VARIANT'  : "ssh",
-//            "PIPELINE_WORKFLOW": "${workflowFile}",
-//            "PIPELINE_JOB_NAME": "${jobName}",
-//            "NEXUS_URL"        : "${params.NEXUS_URL}",
-//            "NEXUS_USERNAME"   : "${params.NEXUS_USERNAME}",
-//            "NEXUS_PASSWORD"   : "${params.NEXUS_PASSWORD}"
-//    ].collect { "${it.key}=${it.value}" }
-//            .join('\n')
-//}
+def prepareEnvFile(workflowFile, jobName) {
+    // FIXME: Rewrite as withEnv
+    //  With env is not working on docker node?
+    writeFile file: "ci.env", text: [
+            "VPIPELINE_BUILD_ID"   : "${env.BUILD_ID}",
+            "VPIPELINE_GERRIT_URL" : "${params.GERRIT_URL}",
+            "VPIPELINE_JOB_NAME"   : "${jobName}",
+            "VPIPELINE_NEXUS_URL"  : "http://nexus-nexus-repository-manager.infrastructure",
+            "VPIPELINE_SECRET_NAME": "infrastructure",
+            "VPIPELINE_VAULT_URL"  : "http://vault.infrastructure:8200/v1",
+            "VPIPELINE_DOCKER_URL" : "https://docker.home.arpa",
+            "VPIPELINE_WORKFLOW"   : "${workflowFile}",
+            "GIT_SSH_COMMAND"      : "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    ].collect { "${it.key}=${it.value}" }
+            .join('\n')
+    sh "mv ci.env /runner/metadata/env"
+}
 
 def prepareWorkflow(workflowFile, input) {
     try {
@@ -158,17 +151,17 @@ def prepareWorkflow(workflowFile, input) {
                 runner(job['runs-on']) {
                     cleanWs()
                     unstash 'INPUT'
-                    //withEnvironmentVariables(workflowFile.toString(), jobName)
-                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'gerrit',                \
-                                                                    keyFileVariable: 'SSH_KEY_FOR_ABC',                \
-                                                                    passphraseVariable: '',                \
-                                                                    usernameVariable: '')]) {
+                    prepareEnvFile(workflowFile.toString(), jobName)
+                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'gerrit',                    \
+                                                                        keyFileVariable: 'SSH_KEY_FOR_ABC',                    \
+                                                                        passphraseVariable: '',                    \
+                                                                        usernameVariable: '')]) {
                         sh "mkdir -p /root/.ssh && cp ${SSH_KEY_FOR_ABC} /root/.ssh/id_rsa"
                     }
                     sh "chmod u=rwx,g=,o= ~/.ssh/*"
-                    sh "cp INPUT /runner/metadata/INPUT"
+                    sh "mv INPUT /runner/metadata/event.json"
                     stage("[${workflow['name']}/${jobName}]") {
-                        runOnNode(jobName, workflowFile.toString())
+                        runOnNode()
                     }
                 }
             }
@@ -216,17 +209,16 @@ def checkoutProperties(project1, branch1, ref1) {
     ]
 }
 
-// TODO: Rewrite passwords as vault
 properties([parameters([
         string(name: 'EXECUTION_ENVIRONMENT', defaultValue: 'kubernetes', description: ''),
         stashedFile(name: 'INPUT', default: null, description: ''),
-//text(name: 'INPUT_TEST', default: null, description: ''),
+        // text(name: 'INPUT_TEST', default: null, description: ''),
         string(name: 'GERRIT_URL', defaultValue: '{{ gerrit.sshUrl }}'),
 ])])
 
-if("${SEED_JOB}" != null) {
+if (params.SEED_JOB != null) {
     currentBuild.result = 'ABORTED'
-    currentBuild.displayName = "#${BUILD_NUMBER} Aborted"
+    currentBuild.displayName = "#${BUILD_NUMBER} Aborted: Seeding job used to register actual parameters"
     error('Stopping early…')
 }
 
@@ -234,14 +226,8 @@ globalExecutor {
     def input
     stage("Load input") {
         cleanWs()
- //       if (!((INPUT_TEST?.trim()).isEmpty())) {
-//            println "Stashing debug input: \"${INPUT_TEST}\" ${INPUT_TEST?.getClass()}"
-//            writeJSON file: 'INPUT', json: INPUT_TEST
-//            stash 'INPUT'
-//        }
         unstash 'INPUT'
         input = readJSON file: "INPUT"
-        // TODO: Null check INPUT
     }
     def workflows
     stage("Prepare workflows") {
