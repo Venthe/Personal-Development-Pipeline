@@ -33,18 +33,14 @@ servers:
       - name: loadbalance
       - name: reload
         parameters: 5s
-  #- zones:
-  #    - zone: .
-  #  port: 53
-  #  plugins:
-  #    - name: forward
-  #      parameters: . /etc/resolv.conf
-  #    - name: log
-  #    - name: errors
-  #    - name: ready
-  #    - name: loop
-  #    - name: cache
-  #      parameters: 30s
-  #    - name: loadbalance
-  #    - name: reload
-  #      parameters: 5s
+  - zones:
+      - zone: .
+    port: 53
+    plugins:
+      - name: cache
+        parameters: 30s
+      - name: errors
+      - name: reload
+        parameters: 5s
+      - name: forward
+        parameters: . /etc/resolv.conf
