@@ -157,6 +157,12 @@ POST_repositories npm/proxy @manifests/repository-npm-proxy-npmjs.org.json
 POST_repositories npm/hosted @manifests/repository-npm-hosted.json
 POST_repositories npm/group @manifests/repository-npm-group.json
 
+# RAW
+DELETE_repositories raw || true
+DELETE_blobstores raw || true
+POST_blobstores_file raw
+POST_repositories npm/group @manifests/repository-npm-group.json
+
 # # apt
 # POST_blobstores_file apt-hosted
 # POST_blobstores_file apt

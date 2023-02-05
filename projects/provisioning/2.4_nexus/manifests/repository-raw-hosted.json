@@ -1,0 +1,8 @@
+{
+  "name" : "raw-hosted",
+  "storage": {
+    "blobStoreName": "raw",
+    "writePolicy": "allow"
+  },
+  "online": true
+}
