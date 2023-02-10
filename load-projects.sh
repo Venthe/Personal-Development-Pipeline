@@ -40,7 +40,7 @@ function loadProject() {
   git init
   git commit --allow-empty --message "Initial commit"
   git add --all
-  git commit --message "Add initial code"
+  git commit --message "Add initial code" || true
 
   echo >&2 "[${project_name}] Creating project in gerrit"
   actOnGerrit \
