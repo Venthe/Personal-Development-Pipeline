@@ -2,19 +2,17 @@
 
 ## To do
 
-- TODO-004 Add waiting for host being present
+- TODO-004 Add waiting for host being present in ansible
 - TODO-005 Review security
 - Security Certificates/RBAC per container
-- Vaulted passwords/secrets?
-- Scaling
-- Enable https-only transport protocols
+- Autoscaling
 - Backup management
-- Proxying
-- Gerrit
-    - LoadBalancer instead of ingress to address multiple ports on hostname
-    - Groups from LDAP
-- Dashboard
-    - Hostname
+- Why curl is 401 on actions?
+- Observability. Operator?
+- Auto unseal for vault
+- Action to link CI and CD
+- Add retry and a queue to mediator. Simple UI to retrigger?
+- Better handling of related NPM packages
 
 ## Services to deploy
 
@@ -27,5 +25,3 @@
 - LOKI
 - OnCall
 - SMTP
-
-### GERRIT SSH
