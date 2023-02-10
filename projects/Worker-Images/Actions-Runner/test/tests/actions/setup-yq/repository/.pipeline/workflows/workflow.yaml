@@ -1,0 +1,10 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-yq@main
+      - run: yq -P '.' test.json
+

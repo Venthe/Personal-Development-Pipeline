@@ -1,0 +1,15 @@
+{
+  "name": "@pipeline/types",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.d.ts",
+  "scripts": {
+    "tsc": "tsc",
+    "build": "(mkdir -p dist || true) && rm -rf dist/* && tsc --project tsconfig.json"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}

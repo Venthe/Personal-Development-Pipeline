@@ -1,0 +1,4 @@
+name: 'Setup Helm'
+description: 'Checkout a Git repository at a particular version'
+runs:
+  main: index.js

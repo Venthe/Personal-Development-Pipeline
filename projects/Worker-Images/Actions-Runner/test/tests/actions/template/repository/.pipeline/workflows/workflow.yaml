@@ -1,0 +1,7 @@
+name: Build
+on: [ push ]
+jobs:
+  TestedJob:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/template@main

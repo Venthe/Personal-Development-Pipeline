@@ -1,0 +1,20 @@
+name: 'Hello World'
+description: 'Greet someone'
+inputs:
+  whoToGreet: # id of input
+    description: 'Who to greet'
+    required: true
+    default: 'World'
+outputs:
+  randomNumber:
+    description: "Random number"
+    value: ${{ steps.randomNumberGenerator.outputs.randomNumber }}
+runs:
+  using: "composite"
+  steps:
+    - run: echo 'Hello ${{ inputs.whoToGreet }}.'
+      shell: bash
+    - id: randomNumberGenerator
+      run: echo "randomNumber=$(echo $RANDOM)" >> $ACTION_OUTPUT
+      shell: bash
+    - uses: actions/template@main

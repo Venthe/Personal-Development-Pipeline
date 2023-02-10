@@ -1,33 +1,30 @@
 name: Build
-on: [push,patchsetCreated]
+on: [push,patchsetCreated,comment-added]
 jobs:
   Explore-GitHub-Actions:
-    runs-on: docker.io/venthe/ubuntu-runner:22.10
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@main
       - run: ls
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@main
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Show java
         run: java --version
-      - uses: actions/setup-gradle@v1
+      - uses: actions/setup-gradle@main
         with:
           version: '7.4.2'
-      - uses: actions/setup-docker@v1
+      - uses: actions/setup-docker@main
         name: Install docker
       - run: gradle bootJar --no-daemon --console=plain -Porg.gradle.welcome=never
-      - run: docker build . --tag venthe/example:latest
-      - uses: actions/docker-login@v1
-        with:
-          username: venthe
-          password: ${env.DOCKER_PASSWORD}
-      - run: docker push venthe/example:latest
-      - uses: actions/upload-artifact@v1
+      - run: docker build . --tag docker.home.arpa/venthe/example:latest
+      - uses: actions/docker-login@main
+      - run: docker push docker.home.arpa/venthe/example:latest
+      - uses: actions/upload-artifact@main
         with:
           path: build/libs/local_cluster_example-0.0.1-SNAPSHOT.jar
-      - uses: actions/setup-kubectl@v1
+      - uses: actions/setup-kubectl@main
       - run: |
           cat <<EOF | kubectl apply -f -
           apiVersion: v1

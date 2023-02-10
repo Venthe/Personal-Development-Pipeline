@@ -1,0 +1,54 @@
+type: "PatchsetCreated"
+change:
+  private: null
+  project: "Test/ActionRunnerTestService"
+  branch: "main"
+  topic: null
+  id: "I3bec048a64f7ceebe006a62f98a3ffa884a635e9"
+  number: 61
+  subject: "gradlew"
+  owner:
+    name: "Administrator"
+    email: "admin@example.com"
+    username: "admin"
+  url: "http://gerrit/c/Example/+/22"
+  commitMessage: ".\n\nChange-Id: I3bec048a64f7ceebe006a62f98a3ffa884a635e9\n"
+  hashtags: null
+  createdOn: "1669891384"
+  lastUpdated: null
+  open: null
+  status: "NEW"
+  wip: true
+  comments: null
+  trackingIds: null
+  patchSet: null
+  patchSets: null
+  dependsOn: null
+  neededBy: null
+  submitRecords: null
+  allReviewers: null
+patchSet:
+  number: 2
+  revision: "5106fce1b6b6469beb0918b7487f20b4a3ab1ae1"
+  parents:
+    - "0ff4d340ef717af765f2d0c495b08bdf61269cde"
+  ref: "main"
+  uploader:
+    name: "Administrator"
+    email: "admin@example.com"
+    username: "admin"
+  author:
+    name: "Administrator"
+    email: "admin@example.com"
+    username: "admin"
+  createdOn: "1669914827"
+  kind: "REWORK"
+  approvals: null
+  comments: null
+  files: null
+  sizeInsertions: "14"
+  sizeDeletions: "2"
+uploader:
+  name: "Administrator"
+  email: "admin@example.com"
+  username: "admin"

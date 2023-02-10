@@ -1,0 +1,20 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-yq@main
+      - run: "echo '{\"a\":1}' | yq -P"
+      - uses: actions/setup-helm@main
+      - run: "helm list -ninfrastructure"
+      - uses: actions/setup-python@main
+      - run: python3 --version
+      - uses: actions/python-pip@main
+        with:
+          libraries:
+            - jinja2-cli
+      - name: Deploy environments
+        run: bash ./manager.sh deploy integration
+

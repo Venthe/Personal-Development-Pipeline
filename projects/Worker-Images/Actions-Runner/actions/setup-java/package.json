@@ -1,0 +1,32 @@
+{
+  "name": "@actions/setup-java",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "ncc": "ncc",
+    "jest": "jest",
+    "test": "jest --config=./jest.config.ts",
+    "build": "(mkdir -p dist || true) && rm -rf dist/* && ncc cache clean && ncc build src/index.ts --out dist --source-map --quiet --no-cache"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@pipeline/types": "*",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.19",
+    "@vercel/ncc": "^0.36.1",
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5"
+  },
+  "dependencies": {
+    "@pipeline/process": "*",
+    "@pipeline/core": "*"
+  },
+  "workspaces": [
+    "../../libraries/types",
+    "../../libraries/process",
+    "../../libraries/core"
+  ]
+}

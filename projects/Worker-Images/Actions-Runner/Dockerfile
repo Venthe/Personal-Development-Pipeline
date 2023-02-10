@@ -1,4 +1,4 @@
-FROM "${RUNNER_IMAGE:-docker.io/library/ubuntu:22.04}"
+FROM "${RUNNER_BASE_IMAGE:-docker.io/library/ubuntu:22.04}"
 
 RUN apt-get update \
     && apt-get install --assume-yes curl software-properties-common apt-utils \
@@ -6,9 +6,7 @@ RUN apt-get update \
     && add-apt-repository ppa:git-core/ppa \
     && apt-get update \
     && apt-get install --assume-yes git nodejs unzip \
-    && apt-get clean
-
-RUN apt-get install \
+    && apt-get install \
            ca-certificates \
            curl \
            gnupg \
@@ -22,19 +20,20 @@ RUN apt-get install \
     && apt-get install --assume-yes docker-ce docker-ce-cli containerd.io docker-compose-plugin \
     && apt-get clean
 
-ENV RUNNER_MANAGER_DIRECTORY="/runner" \
-    RUNNER_WORKDIR="/workdir"
-WORKDIR "$RUNNER_WORKDIR"
+ADD . "/runner"
+
+WORKDIR "/workdir"
 
 RUN mkdir -p \
-    /runner/metadata/secrets \
-    /runner/metadata/env \
-    /runner/cache \
-    /runner/bin \
-    /workdir@tmp
+    "/runner" \
+    "/runner/actions" \
+    "/runner/bin" \
+    "/runner/cache" \
+    "/runner/metadata" \
+    "/runner/metadata/pipeline" \
+    "/runner/metadata/env" \
+    "/runner/metadata/secrets" \
+    "/workdir"
 
 ENTRYPOINT ["node"]
-
-CMD ["--enable-source-maps", "$RUNNER_MANAGER_DIRECTORY/index.ts"]
-
-ADD / "$RUNNER_MANAGER_DIRECTORY/"
+CMD ["--enable-source-maps", "/runner/index.ts"]

@@ -1,0 +1,15 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    outputs:
+      output1: ${{ steps.randomNumberGenerator.outputs.randomNumber }}
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@main
+      - uses: ./.pipeline/actions/a
+        id: randomNumberGenerator
+        with:
+          whoToGreet: 'Mona the Octocat'
+      - uses: ./.pipeline/actions/b
+      - run: echo ${{ steps.randomNumberGenerator.outputs.randomNumber }}
