@@ -1,0 +1,32 @@
+{{- range $idx, $node := .Values.applications.helm }}
+{{- with $ -}}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $node.name }}-{{ .Values.global.namespace }}
+  labels:
+    {{- include "state-repository.labels" . | nindent 4 }}
+spec:
+  destination:
+    name: {{ .Values.global.argocd.destination.name }}
+    namespace: {{ .Values.global.namespace }}
+    server: ''
+  source:
+    repoURL: >-
+      {{ .Values.global.links.helm }}
+    targetRevision: {{ $node.chartRevision }}
+    helm:
+      releaseName: {{ $node.name }}
+      values: |
+        {{- toYaml $node.values | nindent 8 }}
+    chart: {{ $node.chart }}
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+{{- end }}

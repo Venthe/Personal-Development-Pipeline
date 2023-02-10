@@ -1,0 +1,12 @@
+global:
+  links:
+    gerrit: https://gerrit.home.arpa
+    helm: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-hosted/
+
+helm:
+  - name: argocd-example
+    path: JLBC/ArgocdExampleService
+    chart: argocd-example-service
+    chartRevision: 0.1.0
+    valueFiles:
+      - values.yml
