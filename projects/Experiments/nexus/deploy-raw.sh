@@ -28,6 +28,7 @@ function uploadAll() {
   upload "kubectl-linux-adm64-v1.26.0" kubernetes
   upload "zulu17.38.21-ca-jdk17.0.5-linux_x64.tar.gz" java/jdk
   upload "helm-v3.11.0-linux-amd64.tar.gz" kubernetes
+  upload "yq_linux_amd64.tar.gz" misc
 }
 
 function downloadAll() {
@@ -38,6 +39,7 @@ function downloadAll() {
   download "kubectl-linux-adm64-v1.26.0" kubernetes
   download "zulu17.38.21-ca-jdk17.0.5-linux_x64.tar.gz" java/jdk
   download "helm-v3.11.0-linux-amd64.tar.gz" kubernetes
+  download "yq_linux_amd64.tar.gz" misc
 }
 
 ${@}
