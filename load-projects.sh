@@ -57,5 +57,19 @@ function install_update() {
   loadProject "${1}/" "${2}"
 }
 
-install_update ./projects/Bootstrap-Repositories/Example-Service Example-Service
-install_update ./projects/Bootstrap-Repositories/jenkins/libraries Jenkins-Libraries
+if [[ ${#} -ne 0 ]]; then
+    if declare -f "$1" > /dev/null; then
+        # call arguments verbatim
+        "${@}"
+    else
+        # Show a helpful error
+        >&2 echo "'$1' is not a known function name"
+        exit 1
+    fi
+else
+  install_update ./projects/Bootstrap-Repositories/Example-Service Example-Service
+  install_update ./projects/Bootstrap-Repositories/jenkins/libraries Jenkins-Libraries
+  install_update ./projects/Experiments/Deployment-Configuration/ArgocdExampleService ArgocdExampleService
+  install_update ./projects/Experiments/Deployment-Configuration/State-Repository State-Repository
+fi
+
