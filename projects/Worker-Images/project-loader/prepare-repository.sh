@@ -19,7 +19,7 @@ chmod 600 ~/.ssh/id_rsa
 # git config --global diff.renames true
 # git config --global diff.algorithm histogram
 # git config --global feature.manyFiles true
-# git config --global init.defaultBranch main
+git config --global init.defaultBranch main
 
 echo "Preparing repository"
 cp -r /workdir/* /workcopy
