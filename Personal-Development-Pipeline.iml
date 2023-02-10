@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module type="JAVA_MODULE" version="4">
   <component name="CheckStyle-IDEA-Module" serialisationVersion="2">
     <option name="activeLocationsIds" />
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/python-pip/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-helm/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-python/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-yq/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/template/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/template/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-yq/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-helm/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/python-pip/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/core/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/core/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/process/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/process/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/types/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/types/dist" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
