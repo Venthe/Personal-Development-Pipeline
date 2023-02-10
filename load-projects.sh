@@ -35,7 +35,7 @@ function loadProject() {
   trap 'rm -rf -- "${temp_directory}"' EXIT
 
   echo >&2 "[${project_name}] Preparing repository from ${project_directory}"
-  cp -RT "${project_directory}" "${temp_directory}"
+  rsync --recursive -P --exclude=node_modules "${project_directory}" "${temp_directory}"
   cd ${temp_directory}
   git init
   git commit --allow-empty --message "Initial commit"
@@ -54,7 +54,7 @@ function loadProject() {
 
 function install_update() {
   deleteProject "${2}" || true
-  loadProject "${1}" "${2}"
+  loadProject "${1}/" "${2}"
 }
 
 install_update ./projects/Bootstrap-Repositories/Example-Service Example-Service
