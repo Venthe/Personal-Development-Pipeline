@@ -131,7 +131,7 @@ function build() {
 }
 
 function publishContainer() {
-  docker login "${_DOCKER_URL}"
+  # docker login "${_DOCKER_URL}"
   docker push "${RUNNER_IMAGE}"
 }
 
