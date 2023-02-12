@@ -163,4 +163,63 @@ describe('Custom functions', () => {
         .toEqual(false);
     });
   });
+
+  describe('contains', () => {
+    it('contains', () => {
+      const base = '${{ job.status | contains(\'cancelled\', {test: \'a\'}) }}';
+      const result = renderTemplate(base, { job: {status: 'cancelled' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(true);
+    });
+    it('!contains', () => {
+      const base = '${{ not (job.status | contains(\'cancelled\')) }}';
+      const result = renderTemplate(base, { job: {status: 'cancelled' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(false);
+    });
+    it('not contains', () => {
+      const base = '${{ job.status | contains(\'cancelled\') }}';
+      const result = renderTemplate(base, { job: {status: 'success' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(false);
+    });
+    it('case 1', () => {
+      const base = '${{ job.status | contains(\'SUCCESS\') }}';
+      const result = renderTemplate(base, { job: {status: 'success' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(false);
+    });
+    it('case 2', () => {
+      const base = '${{ job.status | contains(\'SUCCESS\', {ignoreCase: true}) }}';
+      const result = renderTemplate(base, { job: {status: 'success' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(true);
+    });
+    it('regexp 1', () => {
+      const base = '${{ job.status | contains(\'/^s.c.+$/i\') }}';
+      const result = renderTemplate(base, { job: {status: 'success' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(true);
+    });
+    it('regexp 2', () => {
+      const base = '${{ job.status | contains(\'/^d.c.+$/i\') }}';
+      const result = renderTemplate(base, { job: {status: 'success' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(false);
+    });
+    it('regexp 3', () => {
+      const base = '${{ job.status | contains(\'/^s.c.+$/i\') }}';
+      const result = renderTemplate(base, { job: {status: 'SUCCESS' } } as any as ContextSnapshot);
+
+      expect(result)
+        .toEqual(true);
+    });
+  });
 });

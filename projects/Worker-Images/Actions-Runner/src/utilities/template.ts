@@ -7,8 +7,46 @@ const env = new nunjucks.Environment(undefined, {
   tags: { variableStart: '${{' }
 });
 
+const isRegExp = (string) => {
+  try {
+    return new Function(`
+            "use strict";
+            try {
+                new RegExp(${string});
+                return true;
+            } catch (e) {
+                return false;
+            }
+        `)();
+  } catch(e) {
+    return false;
+  }
+};
+
+function stringToRegex(str) {
+  const match = str.match(/^([\/~@;%#'])(.*?)\1([gimsuy]*)$/);
+  return match ?
+    new RegExp(
+      match[2],
+      match[3]
+        // Filter redundant flags, to avoid exceptions
+        .split('')
+        .filter((char, pos, flagArr) => flagArr.indexOf(char) === pos)
+        .join('')
+    )
+    : new RegExp(str);
+}
+
 export const renderTemplate = (text: string, context: ContextSnapshot): any => {
   try {
+    env.addFilter('contains', (text, searchedText: string | RegExp, options?: { ignoreCase?: boolean }) => {
+      if (!isRegExp(searchedText)) {
+        const parser = value => options?.ignoreCase ? value.toLowerCase() : value;
+        return parser(text).includes(parser(searchedText));
+      } else {
+        return !!text.match(stringToRegex(searchedText))
+      }
+    });
     env.addGlobal('success', () => {
       const steps: StepsResultSnapshot = context.steps || {};
       return (Object.keys(steps).map(a => steps[a]).map(a => a.conclusion).filter(a => ['failure', 'cancelled'].includes(a)).length === 0);
