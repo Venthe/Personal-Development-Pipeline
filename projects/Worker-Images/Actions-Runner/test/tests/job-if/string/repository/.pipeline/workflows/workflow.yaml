@@ -1,0 +1,8 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    if: "${{ not (internal.event.additionalProperties.commit.commit | contains('Should trigger A')) }}"
+    steps:
+      - run: "exit 1"

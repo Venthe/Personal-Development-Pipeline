@@ -2,6 +2,7 @@ import { FinalStatus, JobDefinition, JobOutput, RemoteJobDefinition } from '@pip
 import { ContextManager } from '../context/contextManager';
 import { subtitle } from '@pipeline/utilities';
 import { StepRunner } from '../steps/stepRunner';
+import { renderTemplate } from '../utilities/template';
 
 export interface SingleJobResult {
   result: FinalStatus,
@@ -43,6 +44,11 @@ class LocalJobManager implements JobManager {
   }
 
   async run(): Promise<SingleJobResult> {
+    if (this.jobDefinition?.if && !renderTemplate(this.jobDefinition?.if, this.contextManager.contextSnapshot)) {
+      return {
+        result: 'skipped'
+      };
+    }
     return await this.stepRunner.run();
   }
 
