@@ -8,6 +8,6 @@ import { ActionStepDefinition } from '@pipeline/types';
     sourcePath: step1.with?.sourcePath ?? throwThis('Source path should be present'),
     targetPath: (step1.with?.targetPath ?? step1.with?.sourcePath?.split('/').pop()) || '',
     context: context,
-    type: RepositoryType.System
+    type: RepositoryType.User
   });
 })();

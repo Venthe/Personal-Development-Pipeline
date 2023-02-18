@@ -9,6 +9,17 @@ set -o pipefail
 #_DOCKER_URL="http://host.docker.internal:5000"
 #_DOCKER_TAG="host.docker.internal:5000"
 
+NAMESPACE="infrastructure"
+RELEASE_NAME="pipeline-mediator"
+LATEST_TAG="latest"
+IMAGE_NAME="docker.home.arpa/pipeline-mediator"
+
+CURRENT_VERSION_TAG=`git rev-parse HEAD`
+CURRENT_DATETIME=`date --utc +%Y%m%d-%H%M%S`
+CURRENT_BRANCH=`git branch --show`
+
+THIS_TAG="${CURRENT_BRANCH}-${CURRENT_DATETIME}-${CURRENT_VERSION_TAG}"
+
 #Links (Remote)
 _GERRIT_URL="ssh://admin@ssh.gerrit.home.arpa:29418"
 _DOCKER_URL="https://docker.home.arpa"
@@ -55,8 +66,7 @@ function prepare() {
 }
 
 function buildManager() {
-  buildLibraries
-  buildActions
+  npm ci
   npm run build
 }
 
@@ -78,7 +88,7 @@ function test() {
   fi
 
   if [[ "${REBUILD_MANAGER}" -eq "1" ]]; then
-    npm run build
+    buildManager
   fi
 
   if [[ "${REBUILD_CONTAINER}" -eq "1" ]]; then
@@ -131,11 +141,11 @@ function build() {
 }
 
 function publishContainer() {
-  # docker login "${_DOCKER_URL}"
+  docker login docker.home.arpa
   docker push "${RUNNER_IMAGE}"
 }
 
-function publish() {
+function full() {
   build
   publishContainer
 }

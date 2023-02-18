@@ -109,15 +109,17 @@ def prepareEnvFile(workflowFile, jobName) {
     // FIXME: Rewrite as withEnv
     //  With env is not working on docker node?
     writeFile file: "ci.env", text: [
-            "VPIPELINE_BUILD_ID"   : "${env.BUILD_ID}",
-            "VPIPELINE_GERRIT_URL" : "${params.GERRIT_URL}",
-            "VPIPELINE_JOB_NAME"   : "${jobName}",
-            "VPIPELINE_NEXUS_URL"  : "http://nexus-nexus-repository-manager.infrastructure:8081/repository/raw-hosted",
-            "VPIPELINE_SECRET_NAME": "infrastructure",
-            "VPIPELINE_VAULT_URL"  : "http://vault.infrastructure:8200/v1",
-            "VPIPELINE_DOCKER_URL" : "docker.home.arpa",
-            "VPIPELINE_WORKFLOW"   : "${workflowFile}",
-            "GIT_SSH_COMMAND"      : "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+            "PIPELINE_BUILD_ID"         : "${env.BUILD_ID}",
+            "PIPELINE_GERRIT_URL"       : "${params.GERRIT_URL}",
+            "PIPELINE_JOB_NAME"         : "${jobName}",
+            "PIPELINE_NEXUS_URL"        : "http://nexus-nexus-repository-manager.infrastructure:8081/repository/raw-hosted",
+            "PIPELINE_SECRET_NAME"      : "infrastructure",
+            "PIPELINE_VAULT_URL"        : "http://vault.infrastructure:8200/v1",
+            "PIPELINE_DOCKER_URL"       : "docker.home.arpa",
+            "PIPELINE_WORKFLOW"         : "${workflowFile}",
+            "PIPELINE_DOCKER_HOST"      : "tcp://docker.infrastructure:2375",
+            "GIT_SSH_COMMAND"           : "ssh -o StrictHostKeyChecking=no",
+            "RUNNER_WORKSPACE_DIRECTORY": "${env.WORKSPACE}"
     ].collect { "${it.key}=${it.value}" }
             .join('\n')
     sh "mv ci.env /runner/metadata/env"
@@ -142,11 +144,11 @@ def prepareWorkflow(workflowFile, input) {
                 runner(job['runs-on']) {
                     cleanWs()
                     unstash 'INPUT'
-                    prepareEnvFile(workflowFile.toString(), jobName)
-                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'gerrit',                    \
-                                                                        keyFileVariable: 'SSH_KEY_FOR_ABC',                    \
-                                                                        passphraseVariable: '',                    \
-                                                                        usernameVariable: '')]) {
+                    prepareEnvFile(workflowFile.toString().replace(".pipeline/workflows/", ""), jobName)
+                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'gerrit',                         \
+                                                                             keyFileVariable: 'SSH_KEY_FOR_ABC',                         \
+                                                                             passphraseVariable: '',                         \
+                                                                             usernameVariable: '')]) {
                         sh "mkdir -p /root/.ssh && cp ${SSH_KEY_FOR_ABC} /root/.ssh/id_rsa"
                     }
                     sh "chmod u=rwx,g=,o= ~/.ssh/*"

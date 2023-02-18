@@ -3,9 +3,10 @@ import { JobRunner, SingleJobResult } from '../jobs/jobRunner';
 import { ContextManager } from '../context/contextManager';
 import { loadYamlFile, normalizeEvent } from '../utilities';
 import { PipelineEnvironmentVariables, prepareDefaultEnvironmentVariables } from '../configuration/environment';
-import { shellMany } from '@pipeline/process';
+import {shell, shellMany} from '@pipeline/process';
 import { title } from '@pipeline/utilities';
 import { renderTemplate } from 'utilities/template';
+import {checkoutCommands} from "@pipeline/core";
 
 export class WorkflowOrchestrator {
   private readonly contextManager: ContextManager;
@@ -41,16 +42,19 @@ export class WorkflowOrchestrator {
   }
 
   private static async downloadPipelines(contextSnapshot: ContextSnapshot) {
-    const projectUrl = `${contextSnapshot.internal.gerritUrl}/${contextSnapshot.internal.event.change.project}`;
-    await shellMany([
-      `git init .`,
-      `git fetch --tags --force --depth=1 -- ${projectUrl} '+refs/heads/*:refs/remotes/origin/*' || true`,
-      `git config remote.origin.url ${projectUrl}`,
-      `git config --add remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'`,
-      `git fetch --quiet --tags --force --depth=1 -- ${projectUrl} '${contextSnapshot.internal.event.patchSet.ref}'`,
-      `git sparse-checkout set ".pipeline/" --no-cone`,
-      `git checkout FETCH_HEAD`
-    ], { cwd: contextSnapshot.internal.pipelinesDirectory });
+    const projectUrl = `${contextSnapshot.internal.gerritUrl}/${contextSnapshot.internal.event.metadata.projectName}`;
+    await shellMany(checkoutCommands(
+        {
+          repository: projectUrl,
+          revision: contextSnapshot.internal.event.metadata.revision,
+          options: {
+            branchName: contextSnapshot.internal.event.metadata.branchName,
+            depth: 1,
+            quiet: false,
+            sparseCheckout: [".pipeline/"]
+          }
+        }
+    ), { cwd: contextSnapshot.internal.pipelinesDirectory });
   }
 
   private static loadWorkflow = (contextSnapshot: ContextSnapshot) => (loadYamlFile<Workflow>(`${contextSnapshot.internal.pipelinesDirectory}/.pipeline/workflows/${contextSnapshot.internal.workflow}`));
@@ -63,7 +67,7 @@ export class WorkflowOrchestrator {
       switch (normalizeEvent(contextSnapshot.internal.eventName)) {
         case normalizeEvent('patchset-created'):
         case normalizeEvent('change-merged'):
-          return contextSnapshot.internal.event.change.commitMessage;
+          return contextSnapshot.internal.event.additionalProperties.commit.subject;
         default:
           return normalizeEvent(contextSnapshot.internal.eventName);
       }

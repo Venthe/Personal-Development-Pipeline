@@ -7,8 +7,8 @@ jobs:
       - uses: actions/checkout@main
       - uses: actions/upload-artifact@main
         with:
-          path: ./testfile
+          sourcePath: ./testfile
       - uses: actions/download-artifact@main
         with:
-          path: ./testfile
+          sourcePath: ./testfile
 

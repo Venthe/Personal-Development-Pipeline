@@ -1,0 +1,12 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/deploy@main
+        with:
+          environment: integration
+          path: "JLBC/ArgocdExampleService"
+          chartRevision: 0.1.2 # optional EITHER
+          

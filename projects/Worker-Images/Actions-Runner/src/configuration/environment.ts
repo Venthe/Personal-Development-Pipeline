@@ -37,7 +37,7 @@ export const prepareDefaultEnvironmentVariables = (): RunnerEnvironmentVariables
     RUNNER_PIPELINE_DIRECTORY: '/runner/pipeline',
     RUNNER_METADATA_DIRECTORY: '/runner/metadata',
     RUNNER_BINARIES_DIRECTORY: '/runner/bin',
-    RUNNER_WORKSPACE_DIRECTORY: '/workdir',
+    RUNNER_WORKSPACE_DIRECTORY: process.env.RUNNER_WORKSPACE_DIRECTORY ?? '/workdir',
     RUNNER_SECRETS_DIRECTORY: '/runner/metadata/secrets',
     RUNNER_ENV_DIRECTORY: '/runner/metadata/env',
     RUNNER_ACTIONS_DIRECTORY: '/runner/actions'

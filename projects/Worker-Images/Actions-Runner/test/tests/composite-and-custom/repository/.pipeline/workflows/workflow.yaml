@@ -7,9 +7,9 @@ jobs:
     runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
     steps:
       - uses: actions/checkout@main
-      - uses: ./.pipeline/actions/a
+      - uses: .pipeline/actions/a
         id: randomNumberGenerator
         with:
           whoToGreet: 'Mona the Octocat'
-      - uses: ./.pipeline/actions/b
+      - uses: .pipeline/actions/b
       - run: echo ${{ steps.randomNumberGenerator.outputs.randomNumber }}

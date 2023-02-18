@@ -51,3 +51,10 @@ export type AddEnvMessage = Message<MessageType.ADD_ENV, { env: string, value: s
 export type AddToPathMessage = Message<MessageType.ADD_TO_PATH, string>
 
 const message = <T extends Message<MessageType, any>>(message: T): string => (JSON.stringify(message));
+
+(() => {
+    if (process.env.PIPELINE_DEBUG !== '1') {
+        console.debug = () => {
+        };
+    }
+})();

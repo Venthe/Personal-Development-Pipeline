@@ -11,9 +11,9 @@ import * as process from 'process';
 import { SecretsManager } from '../secrets/secretsManager';
 import { throwThis } from '@pipeline/utilities';
 
-type Inputs = { [key: string]: string | number | undefined };
+type Inputs = { [key: string]: string | number | boolean | undefined };
 
-export class ContextManager<T extends GerritEventSnapshot | object = GerritEventSnapshot> {
+export class ContextManager<T extends GerritEventSnapshot & object = GerritEventSnapshot> {
   private readonly event: T;
   private readonly secretsManager: SecretsManager;
   private readonly environmentVariables: ContextEnvironmentVariables;
@@ -29,7 +29,7 @@ export class ContextManager<T extends GerritEventSnapshot | object = GerritEvent
     this.secretsManager = SecretsManager.create(this.environmentVariables.RUNNER_SECRETS_DIRECTORY);
 
     this.event = loadYamlFile<T>(`${environmentVariables.RUNNER_METADATA_DIRECTORY}/event.yaml`);
-    this.inputs = rest.inputs;
+    this.inputs = {...(rest.inputs || {}), ...(this.event?.additionalProperties?.inputs || {})};
   }
 
   private static updateProcessEnvironmentVariables(environmentVariables: ContextEnvironmentVariables) {

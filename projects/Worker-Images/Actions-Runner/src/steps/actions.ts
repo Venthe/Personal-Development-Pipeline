@@ -7,13 +7,13 @@ import {
   NodeActionDefinition,
   StepOutputs
 } from '@pipeline/types';
-import { ContextManager } from '../context/contextManager';
-import { AddEnvMessage, AddToPathMessage, checkout, SetOutputMessage } from '@pipeline/core';
-import { loadYamlFile } from '../utilities';
+import {ContextManager} from '../context/contextManager';
+import {AddEnvMessage, AddToPathMessage, checkout, SetOutputMessage} from '@pipeline/core';
+import {loadYamlFile} from '../utilities';
 import fs from 'fs';
-import { throwThis } from '@pipeline/utilities';
+import {throwThis} from '@pipeline/utilities';
 import * as childProcess from 'child_process';
-import { StepRunner, StepRunnerResult } from './stepRunner';
+import {StepRunner, StepRunnerResult} from './stepRunner';
 
 export interface ActionResult {
   outcome: FinalStatus,
@@ -74,7 +74,7 @@ export class Action {
         revision,
         cwd: context.contextSnapshot.internal.actionsDirectory,
         directory: project,
-        silent: true
+        silent: false
       }, context.contextSnapshot);
       return `${context.contextSnapshot.internal.actionsDirectory}/${project}`;
     } else {
@@ -84,7 +84,7 @@ export class Action {
   }
 
   private extractName(actionName: string): { remote?: string, project?: string, revision?: string, local?: string } {
-    return /^(?<remote>(?<project>.+)@(?<revision>.+))$|^(?<local>\.\/.+)$/i.exec(actionName)?.groups as any || {};
+    return /^(?<remote>(?<project>.+)@(?<revision>.+))$|^(?<local>.+)$/i.exec(actionName)?.groups as any || {};
   }
 
   private loadActionDefinition(actionsDirectory: string): any {

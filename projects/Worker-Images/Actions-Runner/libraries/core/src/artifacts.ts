@@ -51,7 +51,7 @@ export const upload = async ({
 const pathStrategy = (context: ContextSnapshot, sourcePath, type?: RepositoryType) => {
   const event: GerritEventSnapshot = context.internal.event;
   return type === RepositoryType.User
-    ? `${['pipeline', event.change.project, event.change.number, event.patchSet.number, sourcePath].join('/')}`
+    ? `${['pipeline', event.metadata.projectName, event.metadata.branchName, sourcePath].join('/')}`
     : `${sourcePath}`;
 };
 
