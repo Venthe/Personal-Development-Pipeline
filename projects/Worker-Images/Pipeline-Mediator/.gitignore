@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+/gradle/
+/gen/
+/gradlew
+/gradlew.bat
+
+.values.yaml

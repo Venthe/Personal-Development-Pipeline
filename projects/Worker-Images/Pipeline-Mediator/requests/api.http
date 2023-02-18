@@ -1,0 +1,20 @@
+PUT {{mediatorUrl}}/gerrit/handle-event
+Content-Type: application/x-yaml
+
+< ./patchset-created.event.yml
+
+###
+PUT {{mediatorUrl}}/event/queue
+Content-Type: application/x-yaml
+
+< ./workflow-dispatch.event.yml
+
+###
+POST {{mediatorUrl}}/event/retrigger
+Content-Type: text/plain
+
+7cbad83a-b81b-4110-9c8b-7a8208633492
+
+###
+
+GET {{mediatorUrl}}/event/all

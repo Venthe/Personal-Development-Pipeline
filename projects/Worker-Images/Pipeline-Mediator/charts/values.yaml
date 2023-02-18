@@ -44,6 +44,9 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+deployment:
+  annotations: {}
+
 nodeSelector: {}
 
 tolerations: []
@@ -52,3 +55,5 @@ affinity: {}
 
 args:
   - "--spring.config.additional-location=file:./configuration/"
+
+configMap: {}

@@ -1,4 +1,4 @@
-package eu.venthe.pipeline.pipeline_mediator.gerrit_hook_binding;
+package eu.venthe.pipeline.pipeline_mediator.dependencies.gerrit_hook_binding;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

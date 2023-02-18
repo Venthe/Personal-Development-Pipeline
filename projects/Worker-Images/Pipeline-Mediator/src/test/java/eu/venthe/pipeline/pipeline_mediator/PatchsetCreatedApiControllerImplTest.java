@@ -1,9 +1,10 @@
+/*
 package eu.venthe.pipeline.pipeline_mediator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.venthe.pipeline.pipeline_mediator.gerrit_hook_binding.GerritHookController;
+import eu.venthe.pipeline.pipeline_mediator.api.GerritHookController;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class PatchsetCreatedApiControllerImplTest {
     void name() throws JsonProcessingException {
         JsonNode event = readEvent("events/patchset-created.json");
 
-        log.info("{}", patchsetCreatedApiController.patchsetCreatedPost(event, null));
+        log.info("{}", patchsetCreatedApiController.patchsetCreatedPost(event));
     }
 
     private JsonNode readEvent(String name) throws JsonProcessingException {
@@ -54,3 +55,4 @@ class PatchsetCreatedApiControllerImplTest {
         }
     }
 }
+*/

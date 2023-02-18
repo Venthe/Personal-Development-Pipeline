@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.0.0"
+    id("org.springframework.boot") version "3.0.2"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.openapi.generator") version "6.2.1"
     id("io.freefair.lombok") version "6.6-rc1"
@@ -21,20 +21,33 @@ repositories {
     mavenCentral()
 }
 
+val versionsTestcontainers = "1.17.6";
+val versionsJackson = "2.14.2";
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation( "org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains:annotations:23.0.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
 
-    implementation("org.awaitility:awaitility:4.2.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1")
+    // Common tests
+    testImplementation("org.awaitility:awaitility:4.2.0")
+    testImplementation("org.mock-server:mockserver-client-java:5.15.0")
 
-    // kafka
+    // Mapping
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$versionsJackson")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$versionsJackson")
+    implementation("de.undercouch:bson4jackson:2.13.1")
+
+    // Observability
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+    // MongoDB
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+
+    // Kafka
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
@@ -51,7 +64,12 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-launcher:1.9.1")// https://mvnrepository.com/artifact/commons-codec/commons-codec
     implementation("commons-codec:commons-codec:1.15")
 
-
+    // Test containers
+    testImplementation("org.testcontainers:kafka:$versionsTestcontainers")
+    testImplementation("org.testcontainers:testcontainers:$versionsTestcontainers")
+    testImplementation("org.testcontainers:junit-jupiter:$versionsTestcontainers")
+    testImplementation("org.testcontainers:mongodb:$versionsTestcontainers")
+    testImplementation("org.testcontainers:mockserver:$versionsTestcontainers")
 }
 
 tasks.withType<Test> {

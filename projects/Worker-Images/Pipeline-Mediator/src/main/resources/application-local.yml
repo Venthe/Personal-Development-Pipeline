@@ -1,0 +1,27 @@
+server:
+  port: 80
+
+jenkins:
+  user: admin
+  jobName: Actions-Workflow
+  token: 11c010c59da1a3c885bbbba2c39bc5ca79
+  uri: https://jenkins.home.arpa
+
+gerrit:
+  username: admin
+  password: secret
+  url: https://gerrit.home.arpa
+  binding:
+    topic: "gerrit-dev"
+
+spring:
+  kafka:
+    bootstrap-servers:
+      - "http://localhost:29092"
+      - "http://localhost:39092"
+      - "http://localhost:49092"
+    consumer:
+      group-id: pipeline-mediator-dev
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/local

@@ -1,0 +1,10 @@
+# To manually trigger a workflow, use the workflow_dispatch event.
+type: "workflow-dispatch"
+projectName: "State-Repository"
+branchName: "main"
+workflow: update-property
+inputs:
+  namespace: integration
+  applicationName: argocd-example
+  propertyKey: test
+  propertyValue: test20

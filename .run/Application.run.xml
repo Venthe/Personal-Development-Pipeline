@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ACTIVE_PROFILES" value="local" />
+    <module name="gerrit_mediator.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="eu.venthe.pipeline.pipeline_mediator.Application" />
+    <option name="VM_PARAMETERS" value="-Djavax.net.ssl.trustStoreType=WINDOWS-ROOT" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="eu.venthe.pipeline.pipeline_mediator.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

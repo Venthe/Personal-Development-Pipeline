@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    {{- toYaml .Values.deployment.annotations | nindent 4 }}
   name: {{ include "pipeline-mediator.fullname" . }}
   labels:
     {{- include "pipeline-mediator.labels" . | nindent 4 }}

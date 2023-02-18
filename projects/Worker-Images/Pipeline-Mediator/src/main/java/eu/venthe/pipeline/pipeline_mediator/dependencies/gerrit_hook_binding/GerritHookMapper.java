@@ -1,4 +1,4 @@
-package eu.venthe.pipeline.pipeline_mediator.gerrit_hook_binding;
+package eu.venthe.pipeline.pipeline_mediator.dependencies.gerrit_hook_binding;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,8 +13,15 @@ public class GerritHookMapper {
     private final ObjectMapper objectMapper;
 
     public JsonNode mapToNodes(String body) throws JsonProcessingException {
+        validateBodyNotNull(body);
         String replacedBody = removeGerritMagicPrefix(body);
         return objectMapper.readTree(replacedBody);
+    }
+
+    private static void validateBodyNotNull(String body) {
+        if (body == null) {
+            throw new RuntimeException("Body cannot be null");
+        }
     }
 
     @NotNull

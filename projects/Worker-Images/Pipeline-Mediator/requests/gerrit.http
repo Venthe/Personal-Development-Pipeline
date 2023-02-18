@@ -2,92 +2,97 @@
 
 ### List Projects
 
-GET {{url}}/a/projects/?d
+GET {{gerritUrl}}/a/projects/?d
 Authorization: Basic {{username}} {{password}}
 
 ### Get Project
 
-GET {{url}}/a/projects/{{project}}
+GET {{gerritUrl}}/a/projects/{{project-name}}
 Authorization: Basic {{username}} {{password}}
 
 ### List Branches
 
-GET {{url}}/a/projects/{{project}}/branches
+GET {{gerritUrl}}/a/projects/{{project-name}}/branches
 Authorization: Basic {{username}} {{password}}
 
 ### Get Branch
 
-GET {{url}}/a/projects/{{project}}/branches/HEAD
+GET {{gerritUrl}}/a/projects/{{project-name}}/branches/HEAD
+Authorization: Basic {{username}} {{password}}
+
+### Get Branch
+
+GET {{gerritUrl}}/a/projects/{{project-name}}/branches/{{ commit-id }}
 Authorization: Basic {{username}} {{password}}
 
 ### List Tags
 ### TODO: Use with versioning
 
-GET {{url}}/a/projects/{{project}}/tags
+GET {{gerritUrl}}/a/projects/{{project-name}}/tags
 Authorization: Basic {{username}} {{password}}
 
 ### Limit(n)
 
-GET {{url}}/a/projects/{{project}}/tags?n=2
+GET {{gerritUrl}}/a/projects/{{project-name}}/tags?n=2
 Authorization: Basic {{username}} {{password}}
 
 ### Substring(m)
 
-GET {{url}}/a/projects/{{project}}/tags?m=v
+GET {{gerritUrl}}/a/projects/{{project-name}}/tags?m=v
 Authorization: Basic {{username}} {{password}}
 
 ### Regex(r)
 
-GET {{url}}/a/projects/{{project}}/tags?r=v.*
+GET {{gerritUrl}}/a/projects/{{project-name}}/tags?r=v.*
 Authorization: Basic {{username}} {{password}}
 
 ### Get Commit
 
-GET {{url}}/a/projects/{{project}}/commits/{{commit-id}}
+GET {{gerritUrl}}/a/projects/{{project-name}}/commits/{{commit-id}}
 Authorization: Basic {{username}} {{password}}
 
 ### List Files
 
-GET {{url}}/a/projects/{{project}}/commits/{{commit-id}}/files/
+GET {{gerritUrl}}/a/projects/{{project-name}}/commits/{{commit-id}}/files/
 Authorization: Basic {{username}} {{password}}
 
 ### Query Changes
 
-GET {{url}}/a/changes/
+GET {{gerritUrl}}/a/changes/
 Authorization: Basic {{username}} {{password}}
 
 ### Get Change
 ### TODO: !SSH
 
-GET {{url}}/a/changes/{{change-id}}?o=ALL_REVISIONS
+GET {{gerritUrl}}/a/changes/{{change-id}}?o=ALL_REVISIONS
 Authorization: Basic {{username}} {{password}}
 
 ### Get Change Detail
 
-GET {{url}}/a/changes/{{change-id}}/detail?o=ALL_REVISIONS
+GET {{gerritUrl}}/a/changes/{{change-id}}/detail?o=ALL_REVISIONS
 Authorization: Basic {{username}} {{password}}
 
 ### Get Commit
 ### TODO: !Author, commiter
 
-GET {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/commit
+GET {{gerritUrl}}/a/changes/{{change-id}}/revisions/{{revision-id}}/commit
 Authorization: Basic {{username}} {{password}}
 
 ### List Files
 ### TODO: !Use with events
 
-GET {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/files
+GET {{gerritUrl}}/a/changes/{{change-id}}/revisions/{{revision-id}}/files
 Authorization: Basic {{username}} {{password}}
 
 ### List Robot Comments
 
-GET {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/robotcomments
+GET {{gerritUrl}}/a/changes/{{change-id}}/revisions/{{revision-id}}/robotcomments
 Authorization: Basic {{username}} {{password}}
 Content-Type: application/json; charset=UTF-8
 
 ### Delete Comment
 
-DELETE {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/comments/{{comment-id}}
+DELETE {{gerritUrl}}/a/changes/{{change-id}}/revisions/{{revision-id}}/comments/{{comment-id}}
 Authorization: Basic {{username}} {{password}}
 Content-Type: application/json; charset=UTF-8
 
@@ -95,7 +100,7 @@ Content-Type: application/json; charset=UTF-8
 ### TODO: Use with actions, sarif
 ### TODO: Set reviews
 
-POST {{url}}/a/changes/{{change-id}}/revisions/{{revision-id}}/review
+POST {{gerritUrl}}/a/changes/{{change-id}}/revisions/{{revision-id}}/review
 Authorization: Basic {{username}} {{password}}
 Content-Type: application/json; charset=UTF-8
 
@@ -142,7 +147,7 @@ Content-Type: application/json; charset=UTF-8
         "message": "Test file comment",
         "robot_id": "PMD",
         "robot_run_id": "123",
-        "url": "http://sss"
+        "gerritUrl": "http://sss"
       }
     ]
   }
@@ -150,5 +155,5 @@ Content-Type: application/json; charset=UTF-8
 
 ### Get OAuth Access Token
 
-GET {{url}}/a/accounts/self/oauthtoken
+GET {{gerritUrl}}/a/accounts/self/oauthtoken
 Authorization: Basic {{username}} {{password}}

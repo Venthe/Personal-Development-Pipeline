@@ -1,5 +1,8 @@
-package eu.venthe.pipeline.pipeline_mediator.jenkins;
+package eu.venthe.pipeline.pipeline_mediator.dependencies.jenkins;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import eu.venthe.pipeline.gerrit_mediator.gerrit.api.DefaultApi;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +22,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class JenkinsApi {
     private final DefaultApi defaultApi;
     private final JenkinsConfiguration jenkinsConfiguration;
+    private final ObjectMapper objectMapper;
 
-    public ResponseEntity<Void> jobJobNameBuildWithParametersPostWithHttpInfo(String event) {
-        return prepareFileToSend(event, eventFile -> defaultApi.jobJobNameBuildWithParametersPostWithHttpInfo(jenkinsConfiguration.getJobName(), eventFile));
+    public ResponseEntity<Void> triggerPipeline(ObjectNode event) throws JsonProcessingException {
+        return prepareFileToSend(objectMapper.writeValueAsString(event), eventFile -> defaultApi.jobJobNameBuildWithParametersPostWithHttpInfo(jenkinsConfiguration.getJobName(), eventFile));
     }
 
     private ResponseEntity<Void> prepareFileToSend(String event, Function<File, ResponseEntity<Void>> action) {

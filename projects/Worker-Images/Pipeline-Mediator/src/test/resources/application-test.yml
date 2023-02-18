@@ -1,0 +1,10 @@
+logging:
+  level:
+    "org.apache.kafka": WARN
+gerrit:
+  binding:
+    topic: test
+spring:
+  kafka:
+    consumer:
+      group-id: test
