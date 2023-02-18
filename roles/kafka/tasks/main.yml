@@ -1,0 +1,33 @@
+#- name: Add repository
+#  kubernetes.core.helm_repository:
+#    name: bitnami
+#    repo_url: https://charts.bitnami.com/bitnami
+#- name: Deploy Kafka chart
+#  kubernetes.core.helm:
+#    chart_version: "20.0.6"
+#    create_namespace: true
+#    update_repo_cache: true
+#    name: kafka
+#    chart_ref: bitnami/kafka
+#    release_namespace: "{{ infrastructure.namespace }}"
+#    values: "{{ lookup('template', './values/kafka-values.yml') | from_yaml }}"
+- ansible.builtin.tempfile:
+    state: directory
+    suffix: certs
+  register: tempdir
+- name: Download Kafka UI chart
+  ansible.builtin.git:
+    repo: https://github.com/provectus/kafka-ui.git
+    dest: "{{tempdir.path}}"
+    depth: 1
+- name: Deploy Kafka UI
+  kubernetes.core.helm:
+    create_namespace: true
+    name: kafka-ui
+    chart_ref: "{{tempdir.path}}/charts/kafka-ui"
+    release_namespace: "infrastructure"
+    values: "{{ lookup('template', './values/kafka-ui-values.yml') | from_yaml }}"
+- ansible.builtin.file:
+    path: "{{ tempdir.path }}"
+    state: absent
+  when: tempdir.path is defined
