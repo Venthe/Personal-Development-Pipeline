@@ -58,10 +58,13 @@ const pathStrategy = (context: ContextSnapshot, sourcePath, type?: RepositoryTyp
 // For some reason, first curl fails with 401
 const hackLoginFail = async (context: ContextSnapshot) => {
   try {
+    console.debug("Hack start")
     let tmp: string = '';
     await shell('mktemp', { silent: true, callbacks: { stdout: (t) => tmp = t.chunk } });
     await upload({ sourcePath: tmp, context }, { silent: true, hack: false });
     await download({ sourcePath: tmp, targetPath: tmp, context }, { silent: true, hack: false });
+    console.debug("Hack End")
   } catch (e) {
+    console.debug("Hack worked!", JSON.stringify(e))
   }
 };
