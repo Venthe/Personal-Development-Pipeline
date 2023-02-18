@@ -31,6 +31,7 @@ def globalExecutor(body) {
 def runner(image, body) {
     runOn("kubernetes") {
         podTemplate(yaml: """\
+                    apiVersion: v1
                     kind: Pod
                     metadata:
                       annotations:
