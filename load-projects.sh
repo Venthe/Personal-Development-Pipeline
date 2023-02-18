@@ -68,7 +68,7 @@ if [[ ${#} -ne 0 ]]; then
     fi
 else
   install_update ./projects/Bootstrap-Repositories/Example-Service Example-Service
-  install_update ./projects/Bootstrap-Repositories/jenkins/libraries Jenkins-Libraries
+  install_update ./projects/Bootstrap-Repositories/jenkins Jenkins-Libraries
   install_update ./projects/Experiments/Deployment-Configuration/ArgocdExampleService ArgocdExampleService
   install_update ./projects/Experiments/Deployment-Configuration/State-Repository State-Repository
 fi

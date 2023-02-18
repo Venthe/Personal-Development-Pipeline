@@ -1,0 +1,54 @@
+{
+  "refUpdate": {
+    "oldRev": "8518f81fd5d0956c1ebae01159a6cdfee745e1de",
+    "newRev": "2af20b564dc51af20cbddd433eb54aaa24878305",
+    "refName": "refs/notes/review",
+    "project": "Example-Service"
+  },
+  "type": "ref-updated",
+  "eventCreatedOn": 1676159345,
+  "metadata": {
+    "projectName": "Example-Service",
+    "branchName": "refs/notes/review",
+    "revision": "2af20b564dc51af20cbddd433eb54aaa24878305"
+  },
+  "additionalProperties": {
+    "commit": {
+      "commit": "2af20b564dc51af20cbddd433eb54aaa24878305",
+      "parents": [
+        {
+          "commit": "8518f81fd5d0956c1ebae01159a6cdfee745e1de",
+          "subject": "Update notes for submitted changes"
+        }
+      ],
+      "author": {
+        "name": "Gerrit Code Review",
+        "email": "gerrit@home.arpa",
+        "date": "2023-02-11 23:49:05.000000000",
+        "tz": 0
+      },
+      "committer": {
+        "name": "Gerrit Code Review",
+        "email": "gerrit@home.arpa",
+        "date": "2023-02-11 23:49:05.000000000",
+        "tz": 0
+      },
+      "subject": "Update notes for submitted changes",
+      "message": "Update notes for submitted changes\n\n* yy\n"
+    },
+    "files": {
+      "/COMMIT_MSG": {
+        "status": "A",
+        "lines_inserted": 9,
+        "size_delta": 276,
+        "size": 276
+      },
+      "4382fbff4988dea0612ee6594a43182fdb514469": {
+        "status": "A",
+        "lines_inserted": 6,
+        "size_delta": 250,
+        "size": 250
+      }
+    }
+  }
+}
