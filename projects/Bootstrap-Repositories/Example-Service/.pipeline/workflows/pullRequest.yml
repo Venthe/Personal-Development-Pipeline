@@ -3,7 +3,7 @@ on:
   event: pull_request
 jobs:
   pipeline:
-    uses: ./.pipeline/workflows/partial/pipeline.yml
+    uses: .pipeline/workflows/partial/pipeline.yml
     with:
       build:
         publishApplication: false

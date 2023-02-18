@@ -23,7 +23,7 @@ jobs:
       - run: docker push docker.home.arpa/venthe/example:latest
       - uses: actions/upload-artifact@main
         with:
-          path: build/libs/local_cluster_example-0.0.1-SNAPSHOT.jar
+          sourcePath: build/libs/local_cluster_example-0.0.1-SNAPSHOT.jar
       - uses: actions/setup-kubectl@main
       - run: |
           cat <<EOF | kubectl apply -f -

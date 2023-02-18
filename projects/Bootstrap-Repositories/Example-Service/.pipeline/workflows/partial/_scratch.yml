@@ -67,11 +67,11 @@ jobs:
       - run: docker build .
       - uses: actions/upload-artifact@main
         with:
-          name: test/run.sh
-          path: run.sh
+          sourcePath: test/run.sh
+          targetPath: run.sh
       - uses: actions/download-artifact@main
         with:
-          name: test/run.sh
+          sourcePath: test/run.sh
       - run: echo "Should not run"
         if: "!always()"
       - run: echo "Should not run"
