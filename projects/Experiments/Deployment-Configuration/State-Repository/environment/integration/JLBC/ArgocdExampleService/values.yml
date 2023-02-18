@@ -1,2 +1,2 @@
 image:
-  tag: 20230205-190544-a467ad9
+  tag: "{{ app.properties.imageTag }}"

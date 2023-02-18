@@ -22,16 +22,12 @@ global:
 
 applications:
   helm:
-  {%- for app in helm %}
-    - name: {{app.name}}
+  {%- for key2, app in helm.items() %}
+    - name: {{key2}}
       path: {{app.path}}
       chartRevision: {{app.chartRevision}}
       chart: {{app.chart}}
       values:
-        global:
-          {%- filter indent(width=10) -%}
-          {{ to_yaml(global)}}
-          {%- endfilter %}
       {%- for valueFile in app.valueFiles %}
         {% filter indent(width=8) -%}
         {%- include "environment/"+global.namespace+'/'+app.path+'/'+valueFile -%}

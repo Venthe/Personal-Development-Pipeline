@@ -1,0 +1,11 @@
+name: 'Prepare dependencies'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-yq@main
+    - uses: actions/setup-python@main
+    - uses: actions/python-pip@main
+      with:
+        libraries:
+          - jinja2-cli
+    - uses: actions/setup-helm@main

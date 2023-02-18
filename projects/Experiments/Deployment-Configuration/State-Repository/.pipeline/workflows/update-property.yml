@@ -1,0 +1,28 @@
+name: Update properties
+on:
+  workflow-dispatch:
+    inputs:
+      namespace:
+        type: string
+        required: true
+      applicationName:
+        type: string
+        required: true
+      propertyKey:
+        type: string
+        required: true
+      propertyValue:
+        type: string
+        required: true
+jobs:
+  deploy:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    needs: prepare
+    steps:
+      - uses: actions/checkout@main
+      - uses: .pipeline/actions/prepare-dependencies
+      - name: Update properties
+        run: "bash ./manager.sh updateHelmProperty ${{inputs.namespace}} ${{inputs.applicationName}} ${{inputs.propertyKey}} ${{inputs.propertyValue}}"
+      - name: Push new version
+        run: "bash ./manager.sh push 'Updated ${{inputs.applicationName}} on ${{inputs.namespace}} property: ${{inputs.propertyKey}}=${{inputs.propertyValue}}' ${{internal.event.metadata.branchName}}"
+

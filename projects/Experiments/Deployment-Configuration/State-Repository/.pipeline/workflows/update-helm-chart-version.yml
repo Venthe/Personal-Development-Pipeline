@@ -1,0 +1,25 @@
+name: Update helm chart version
+on:
+  workflow-dispatch:
+    inputs:
+      namespace:
+        type: string
+        required: true
+      applicationName:
+        type: string
+        required: true
+      chartVersion:
+        type: string
+        required: true
+jobs:
+  deploy:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    needs: prepare
+    steps:
+      - uses: actions/checkout@main
+      - uses: .pipeline/actions/prepare-dependencies
+      - name: Update helm chart version
+        run: "bash ./manager.sh updateHelmChartVersion ${{inputs.namespace}} ${{inputs.applicationName}} ${{inputs.chartVersion}}"
+      - name: Push new version
+        run: "bash ./manager.sh push 'Updated ${{inputs.applicationName}} on ${{inputs.namespace}} chart version to ${{inputs.chartVersion}}' ${{internal.event.metadata.branchName}}"
+
