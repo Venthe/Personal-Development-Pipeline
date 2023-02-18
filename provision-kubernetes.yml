@@ -24,5 +24,6 @@
    - jenkins
    - argocd
    - vault
+   - mongodb
 
 ## CERTS=/opt/bitnami/etcd/certs/client; etcdctl --cacert=${CERTS}/ca.pem --key=${CERTS}/client-key.pem --cert=${CERTS}/client.pem get / --prefix
