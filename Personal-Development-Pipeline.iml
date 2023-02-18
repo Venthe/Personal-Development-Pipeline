@@ -25,6 +25,7 @@
       <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/types/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/types/dist" />
     </content>
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
