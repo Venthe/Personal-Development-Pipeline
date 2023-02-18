@@ -193,6 +193,7 @@ def checkoutProperties(project1, branch1, ref1) {
 
 properties([parameters([
         string(name: 'EXECUTION_ENVIRONMENT', defaultValue: 'kubernetes', description: ''),
+        string(name: 'MEDIATOR_URL', defaultValue: 'http://pipeline-mediator.infrastructure/event/status', description: ''),
         stashedFile(name: 'INPUT', default: null, description: ''),
         // text(name: 'INPUT_TEST', default: null, description: ''),
         string(name: 'GERRIT_URL', defaultValue: '{{ gerrit.sshUrl }}'),
@@ -205,30 +206,50 @@ if (params.SEED_JOB != null) {
 }
 
 globalExecutor {
-    def input
-    stage("Load input") {
-        cleanWs()
-        unstash 'INPUT'
-        input = readJSON file: "INPUT"
-    }
-    def workflows
-    stage("Prepare workflows") {
-        println "Checking out actions"
-        def branch1 = "${input['change']['branch']}"
-        def ref1 = "${input['patchSet']['ref']}"
-        def project1 = "${input['change']['project']}"
-        def type1 = "${input['type']}"
-        currentBuild.displayName = "#${BUILD_NUMBER} [${project1}] ${type1}: +${branch1}:${ref1}"
-        currentBuild.description = "The best description."
+    def referenceId
+    try {
+        def input
+        stage("Load input") {
+            cleanWs()
+            unstash 'INPUT'
+            sh('cat INPUT')
+            input = readJSON file: "INPUT"
+        }
+        def workflows
+        stage("Prepare workflows") {
+            println "Checking out actions"
+            def branch1 = "${input['metadata']['branchName']}"
+            def ref1 = "${input['metadata']['revision']}"
+            def project1 = "${input['metadata']['projectName']}"
+            def type1 = "${input['type']}"
+            referenceId = "${input['metadata']['referenceId']}"
+            currentBuild.displayName = "[${project1}|${branch1}]: ${type1}"
+            currentBuild.description = """\
+                                   #${BUILD_NUMBER}
+                                   Revision: ${ref1}
+                                   Reference ID: ${referenceId}
+                                   """.stripMargin().stripIndent()
 
-        checkout(checkoutProperties(project1, branch1, ref1))
-        workflows = findFiles(glob: '.pipeline/workflows/*.y*ml')
-                .collect { prepareWorkflow(it, input) }
-                .findAll { it != null }
-                .collectEntries { it }
-        workflows.failFast = false
-    }
-    stage("Run jobs") {
-        parallel workflows
+            checkout(checkoutProperties(project1, branch1, ref1))
+            workflows = findFiles(glob: '.pipeline/workflows/*.y*ml')
+                    .collect { prepareWorkflow(it, input) }
+                    .findAll { it != null }
+                    .collectEntries { it }
+            workflows.failFast = false
+        }
+        stage("Run jobs") {
+            parallel workflows
+        }
+    } catch (Exception e) {
+        error("${e.getMessage()}\n${printStackTrace(e)}")
+        throw e
+    } finally {
+        stage("Post build") {
+            def status = "PIPELINE_COMPLETED"
+            if (currentBuild.result == "FAILURE" || currentBuild.result == "UNSTABLE") {
+                status = "PIPELINE_FAILED";
+            }
+            sh """curl -X POST ${params.MEDIATOR_URL} -H \"Content-Type: application/json\"  -d '{\"referenceId\":\"${referenceId}\",\"status\":\"${status}\"}'"""
+        }
     }
 }
