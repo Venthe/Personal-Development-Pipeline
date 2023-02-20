@@ -1,0 +1,27 @@
+global:
+  links:
+    gerrit: https://gerrit.home.arpa
+  helm:
+    hosted: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-hosted/
+    argo: https://argoproj.github.io/argo-helm
+    bitnami: https://charts.bitnami.com/bitnami
+    cert-utils-operator: https://redhat-cop.github.io/cert-utils-operator
+    cetic: https://cetic.github.io/helm-charts
+    coredns: https://coredns.github.io/helm
+    cowboysysop: https://cowboysysop.github.io/charts/
+    democratic-csi: https://democratic-csi.github.io/charts/
+    grafana: https://grafana.github.io/helm-charts
+    hashicorp: https://helm.releases.hashicorp.com
+    helm-stable: https://charts.helm.sh/stable
+    ingress: -nginx https://kubernetes.github.io/ingress-nginx
+    jenkins:  https://charts.jenkins.io
+    jetstack:  https://charts.jetstack.io
+    kubernetes-dashboard: https://kubernetes.github.io/dashboard/
+    loki:  https://grafana.github.io/loki/charts
+    nexus:  https://nexus.home.arpa/repository/helm-hosted/
+    opensearch: https://opensearch-project.github.io/helm-charts
+    prometheus-community: https://prometheus-community.github.io/helm-charts
+    rook-release: https://charts.rook.io/release
+    sonatype: https://sonatype.github.io/helm3-charts/
+    stakater: https://stakater.github.io/stakater-charts
+    vmware-tanzu: https://vmware-tanzu.github.io/helm-charts

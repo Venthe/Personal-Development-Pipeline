@@ -3,7 +3,9 @@
 set -o errexit
 set -o pipefail
 
-function render() {
+ARGOCD_NAMESPACE=infrastructure
+
+function render_release_value_files() {
   local namespace="${1}"
 
   if [[ -z ${namespace} ]]; then
@@ -11,9 +13,9 @@ function render() {
     exit 1
   fi
 
-  cat "./environment/${namespace}/applications.yml" | \
-    yq -o=json ". | .global.namespace=\"${namespace}\"" | \
-    jinja2 "./values-template.yml"
+  cat "./environment/${namespace}/applications.yml" "./globals.yml" |
+    yq -o=json ". | .global.namespace=\"${namespace}\"" |
+    jinja2 --strict "./values-template.yml"
 }
 
 function deploy() {
@@ -21,24 +23,26 @@ function deploy() {
 
   helm upgrade \
     --install \
-    --namespace="infrastructure" \
-    --values=<(render "${namespace}" | yq) \
+    --namespace="${ARGOCD_NAMESPACE}" \
+    --values=<(render_release_value_files "${namespace}" | yq) \
     "argocd-${namespace}" \
     "./deployment"
 }
 
 function template() {
   local namespace="${1}"
+  echo >&2 "Templating for ${namespace}"
 
   if [[ -z ${namespace} ]]; then
     echo >&2 "Namespace is required for templating"
     exit 1
   fi
 
+  # --validate \
   helm template \
-    --namespace="infrastructure" \
+    --namespace="${ARGOCD_NAMESPACE}" \
     --debug \
-    --values=<(render "${namespace}" | yq) \
+    --values=<(render_release_value_files "${namespace}" | yq) \
     "argocd-${namespace}" \
     "./deployment"
 }
@@ -73,15 +77,22 @@ function updateHelmProperty() {
 }
 
 function deployAll() {
-  for d in ./environment/*/ ; do
-      deploy `basename $d`
+  for d in ./environment/*/; do
+    deploy $(basename $d)
   done
 }
 
 function push() {
-  git add --all && \
-  git commit -m "${1}" && \
-  git push --set-upstream origin ${2}
+  git add --all &&
+    git commit -m "${1}" &&
+    git push --set-upstream origin ${2}
+}
+
+function fix_managed_annotations() {
+  local namespace="${1}"
+  local resource="${2}"
+  shift 2
+  kubectl annotate --namespace="${namespace}" "${resource}" "${@}"
 }
 
 function updateHelmChartVersion() {

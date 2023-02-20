@@ -1,5 +1,5 @@
-{% macro to_yaml(item) -%}
-{%- for key, value in item.items() %}
+{%- macro to_yaml(item) -%}
+{%- for key, value in item.items() -%}
 {%- if value is mapping %}
 {{ key }}:
 {%- filter indent(width=2) -%}
@@ -7,19 +7,19 @@
 {%- endfilter %}
 {%- else %}
 {{ key }}: {{value}}
-{%- endif %}
-{%- endfor %}
-{%- endmacro %}
-
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
 global:
   argocd:
     destination:
       name: in-cluster
       server: ''
+  {%- if global is defined -%}
   {%- filter indent(width=2) -%}
   {{ to_yaml(global)}}
   {%- endfilter %}
-
+  {%- endif %}
 applications:
   helm:
   {%- for key2, app in helm.items() %}
@@ -27,10 +27,13 @@ applications:
       path: {{app.path}}
       chartRevision: {{app.chartRevision}}
       chart: {{app.chart}}
+      {%- if app.valueFiles is defined %}
       values:
       {%- for valueFile in app.valueFiles %}
-        {% filter indent(width=8) -%}
-        {%- include "environment/"+global.namespace+'/'+app.path+'/'+valueFile -%}
+        {% filter indent(width=8) %}
+        {%- include "environment/"+global.namespace+'/'+app.path+'/'+valueFile %}
         {%- endfilter %}
       {%- endfor %}
+      {%- endif %}
+      test: 1
   {%- endfor %}

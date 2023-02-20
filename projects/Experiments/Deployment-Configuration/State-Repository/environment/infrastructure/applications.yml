@@ -1,0 +1,5 @@
+helm:
+  reloader:
+    path: reloader
+    chart: stakater/reloader
+    chartRevision: v1.0.5

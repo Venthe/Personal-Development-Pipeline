@@ -4,23 +4,25 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ $node.name }}-{{ .Values.global.namespace }}
+  name: {{ $node.name | required "name of the helm chart is required." }}-{{ .Values.global.namespace | required "Namespace is required." }}
   labels:
     {{- include "state-repository.labels" . | nindent 4 }}
 spec:
   destination:
-    name: {{ .Values.global.argocd.destination.name }}
-    namespace: {{ .Values.global.namespace }}
+    name: {{ .Values.global.argocd.destination.name | quote }}
+    namespace: {{ .Values.global.namespace | quote }}
     server: ''
   source:
     repoURL: >-
-      {{ .Values.global.links.helm }}
-    targetRevision: {{ $node.chartRevision }}
+      {{ get .Values.global.helm ((split "/" $node.chart)._0) }}
+    targetRevision: {{ $node.chartRevision | required "Chart revision of the helm chart is required."  }}
     helm:
-      releaseName: {{ $node.name }}
+      releaseName: {{ $node.name | required "name of the helm chart is required." }}
+      {{ if $node.values -}}
       values: |
         {{- toYaml $node.values | nindent 8 }}
-    chart: {{ $node.chart }}
+      {{- end }}
+    chart: {{ (split "/" $node.chart)._1 | required "Chart name is required" }}
   project: default
   syncPolicy:
     automated:
