@@ -3,6 +3,9 @@ helm:
     path: reloader
     chart: stakater/reloader
     chartRevision: v1.0.5
+  docker:
+    chart: hosted/docker
+    chartRevision: 0.1.0
   opensearch:
     chart: opensearch/opensearch
     chartRevision: 2.10.0
