@@ -1,5 +1,5 @@
 {{- range $idx, $node := .Values.applications.helm }}
-{{- with $ -}}
+{{- with $ }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: >-
       {{ get .Values.global.helm ((split "/" $node.chart)._0) }}
-    targetRevision: {{ $node.chartRevision | required "Chart revision of the helm chart is required."  }}
+    targetRevision: {{ $node.chartRevision | required "Chart revision of the helm chart is required." }}
     helm:
       releaseName: {{ $node.name | required "name of the helm chart is required." }}
       {{ if $node.values -}}
