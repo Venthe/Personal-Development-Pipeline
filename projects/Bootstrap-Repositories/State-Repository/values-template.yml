@@ -24,8 +24,12 @@ applications:
   helm:
   {%- for key2, app in helm.items() %}
     - name: {{key2}}
+      {%- if app.path is defined %}
       path: {{app.path}}
+      {%- endif %}
+      {%- if app.chartRevision is defined %}
       chartRevision: {{app.chartRevision}}
+      {%- endif %}
       chart: {{app.chart}}
       {%- if app.valueFiles is defined %}
       values:

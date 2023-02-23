@@ -1,0 +1,3 @@
+[submodule "projects/Worker-Images/kiwigrid-helm-charts"]
+	path = projects/Worker-Images/kiwigrid-helm-charts
+	url = git@github.com:Venthe/kiwigrid-helm-charts.git

@@ -3,3 +3,21 @@ helm:
     path: reloader
     chart: stakater/reloader
     chartRevision: v1.0.5
+  opensearch:
+    chart: opensearch/opensearch
+    chartRevision: 2.10.0
+    path: opensearch
+    valueFiles:
+      - values.yml
+  opensearch-dashboards:
+    chart: opensearch/opensearch-dashboards
+    chartRevision: 2.8.0
+    path: opensearch-dashboards
+    valueFiles:
+      - values.yml
+  fluentd:
+    chart: hosted/fluentd-opensearch
+    chartRevision: 1.0.2
+    path: fluentd
+    valueFiles:
+      - values.yml

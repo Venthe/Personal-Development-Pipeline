@@ -1,8 +1,22 @@
 global:
+  ldap:
+    baseDn: dc=home,dc=arpa
+    userObjectClass: objectClass=inetOrgPerson
+    groupObjectClass: objectClass=organizationalUnit
+    usernameAttribute: uid
+    userOu: ou=People
+    groupsOu: ou=Groups
+    bind:
+      cn: cn=readonly
+      password: readonly
+    url:
+      port: 389
+      protocol: ldap
+      address: openldap
+  tld: home.arpa
   links:
     gerrit: https://gerrit.home.arpa
   helm:
-    hosted: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-hosted/
     argo: https://argoproj.github.io/argo-helm
     bitnami: https://charts.bitnami.com/bitnami
     cert-utils-operator: https://redhat-cop.github.io/cert-utils-operator
@@ -13,12 +27,13 @@ global:
     grafana: https://grafana.github.io/helm-charts
     hashicorp: https://helm.releases.hashicorp.com
     helm-stable: https://charts.helm.sh/stable
+    hosted: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-hosted/
     ingress: -nginx https://kubernetes.github.io/ingress-nginx
     jenkins:  https://charts.jenkins.io
     jetstack:  https://charts.jetstack.io
+    kokuwa: https://kokuwaio.github.io/helm-charts
     kubernetes-dashboard: https://kubernetes.github.io/dashboard/
     loki:  https://grafana.github.io/loki/charts
-    nexus:  https://nexus.home.arpa/repository/helm-hosted/
     opensearch: https://opensearch-project.github.io/helm-charts
     prometheus-community: https://prometheus-community.github.io/helm-charts
     rook-release: https://charts.rook.io/release

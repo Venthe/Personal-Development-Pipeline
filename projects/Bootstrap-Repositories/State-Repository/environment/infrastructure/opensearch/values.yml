@@ -1,0 +1,349 @@
+# https://opensearch.org/docs/latest/security/configuration/security-admin/#a-word-of-caution
+terminationGracePeriod: 30
+extraEnvs:
+  - name: DISABLE_INSTALL_DEMO_CONFIG
+    value: "true"
+
+extraVolumes:
+  - name: certs-output
+    emptyDir: {}
+  - name: opensearch-cluster
+    secret:
+      secretName: opensearch-cluster
+  - name: opensearch-scripts
+    configMap:
+      name: opensearch-scripts
+
+extraVolumeMounts:
+  - name: certs-output
+    mountPath: /usr/share/opensearch/config/crt/
+  - name: opensearch-scripts
+    mountPath: "/scripts"
+
+extraInitContainers:
+   - name: convert-certs-to-pkcs8
+     image: alpine/openssl
+     command:
+       - 'sh'
+       - '-c'
+       - >-
+         cp /certs-input/ca.crt /certs-output/ && 
+         cp /certs-input/tls.crt /certs-output/ && 
+         openssl pkcs8 -inform PEM -outform PEM -in /certs-input/tls.key -topk8 -nocrypt -v1 PBE-SHA1-3DES -out /certs-output/tls.key && 
+         awk '/-----BEGIN CERTIFICATE-----/ {
+                if (file) close (file)
+                file = sprintf("/certs-output/split%05i.crt", ++i)
+              }
+              file {print > file}' /certs-input/tls.crt
+     volumeMounts:
+       - name: opensearch-cluster
+         mountPath: "/certs-input"
+         readOnly: true
+       - name: certs-output
+         mountPath: "/certs-output"
+
+extraObjects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: opensearch-scripts
+    data:
+      update-security.sh: |-
+        #!/usr/bin/env bash
+        /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
+          -cd /usr/share/opensearch/config/opensearch-security/ \
+          -cacert /usr/share/opensearch/config/crt/ca.crt \
+          -cert /usr/share/opensearch/config/crt/tls.crt \
+          -key /usr/share/opensearch/config/crt/tls.key "${@}"
+  - apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: opensearch-cluster
+    spec:
+      secretName: opensearch-cluster
+      privateKey:
+        rotationPolicy: Always
+      commonName: opensearch-cluster-master
+      usages:
+        - server auth
+        - client auth
+      dnsNames:
+        - 'opensearch-cluster-master'
+        - opensearch-cluster-master-0
+        - opensearch-cluster-master-1
+        - opensearch-cluster-master-2
+        - opensearch-cluster-master-headless
+        - localhost
+      issuerRef:
+        name: ca-issuer
+        kind: ClusterIssuer
+
+secretMounts:
+  - name: opensearch-tls
+    secretName: opensearch-tls
+    path: /usr/share/opensearch/config/tls/
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: ca-issuer
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  path: /
+  hosts:
+    - "opensearch.{{ global.tld }}"
+  tls:
+    - hosts:
+        - "opensearch.{{ global.tld }}"
+      secretName: "opensearch-tls"
+
+labels:
+  configmap.reloader.stakater.com/reload: "opensearch-cluster-master-config"
+  # secret.reloader.stakater.com/reload: "opensearch-cluster-master-securityconfig,opensearch-tls"
+config:
+  # Values must be YAML literal style scalar / YAML multiline string.
+  # <filename>: |
+  #   <formatted-value(s)>
+  # log4j2.properties: |
+  #   status = error
+  #
+  #   appender.console.type = Console
+  #   appender.console.name = console
+  #   appender.console.layout.type = PatternLayout
+  #   appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+  #
+  #   rootLogger.level = trace
+  #   rootLogger.appenderRef.console.ref = console
+  opensearch.yml: |-
+    cluster.name: opensearch-cluster
+    # Bind to all interfaces because we don't know what IP address Docker will assign to us.
+    network.host: 0.0.0.0
+    transport.host: "0.0.0.0"
+    # Setting network.host to a non-loopback address enables the annoying bootstrap checks. "Single-node" mode disables them again.
+    # Implicitly done if ".singleNode" is set to "true".
+    # discovery.type: single-node
+    # Start OpenSearch Security Demo Configuration
+    # WARNING: revise all the lines below before you go into production
+    plugins:
+      security:
+         # disabled: true
+        nodes_dn:
+          - CN=opensearch-cluster-master
+        ssl:
+          transport:
+            # enabled: true
+            pemcert_filepath: crt/tls.crt
+            pemkey_filepath: crt/tls.key
+            pemtrustedcas_filepath: crt/ca.crt
+            enforce_hostname_verification: false
+            # resolve_hostname: false
+          http:
+            enabled: true
+            pemcert_filepath: crt/tls.crt
+            pemkey_filepath: crt/tls.key
+            pemtrustedcas_filepath: crt/ca.crt
+        allow_unsafe_democertificates: false
+        allow_default_init_securityindex: true
+        authcz:
+          admin_dn:
+            - CN=opensearch-cluster-master
+        audit.type: internal_opensearch
+        enable_snapshot_restore_privilege: true
+        check_snapshot_restore_write_privileges: true
+        restapi:
+          roles_enabled: ["all_access", "security_rest_api_access"]
+        system_indices:
+          enabled: true
+          indices:
+            [
+              ".opendistro-alerting-config",
+              ".opendistro-alerting-alert*",
+              ".opendistro-anomaly-results*",
+              ".opendistro-anomaly-detector*",
+              ".opendistro-anomaly-checkpoints",
+              ".opendistro-anomaly-detection-state",
+              ".opendistro-reports-*",
+              ".opendistro-notifications-*",
+              ".opendistro-notebooks",
+              ".opendistro-asynchronous-search-response*",
+            ]
+
+securityConfig:
+  config:
+    data:
+      "whitelist.yml": |-
+        _meta:
+          type: "allowlist"
+          config_version: 2
+      
+        # Description:
+        # enabled - feature flag.
+        # if enabled is false, all endpoints are accessible.
+        # if enabled is true, all users except the SuperAdmin can only submit the allowed requests to the specified endpoints.
+        # SuperAdmin can access all APIs.
+        # SuperAdmin is defined by the SuperAdmin certificate, which is configured with the opensearch.yml setting plugins.security.authcz.admin_dn:
+        # Refer to the example setting in opensearch.yml to learn more about configuring SuperAdmin.
+        #
+        # requests - map of allow listed endpoints and HTTP requests
+      
+        # this name must be config
+        #config:
+        #  enabled: false
+        #  requests:
+        #    /_cluster/settings:
+        #      - GET
+        #    /_cat/nodes:
+        #      - GET
+        #    #/_plugins/_security/api/roles:
+        #    #  - GET
+      "nodes_dn.yml": |-
+        _meta:
+          type: "nodesdn"
+          config_version: 2
+
+        # Define nodesdn mapping name and corresponding values
+        # opensearch-cluster:
+        #   # openssl x509 -in a.crt -noout -subject
+        #   # openssl x509 -subject -nameopt RFC2253 -noout -in node.pem
+        #   nodes_dn:
+        #     - CN = opensearch-cluster-master
+        #     - CN=opensearch-cluster-master
+        #     - CN=*
+        #     - '/CN=.*/'
+        #     - opensearch-cluster-master
+        #     - 'CN=node1.dns.a-record,OU=UNIT,O=ORG,L=TORONTO,ST=ONTARIO,C=CA'
+        #     - 'CN=node2.dns.a-record,OU=UNIT,O=ORG,L=TORONTO,ST=ONTARIO,C=CA'
+        #     - 'CN=node3.dns.a-record,OU=UNIT,O=ORG,L=TORONTO,ST=ONTARIO,C=CA'
+      "tenants.yml": |-
+        _meta:
+          type: "tenants"
+          config_version: 2
+      "action_groups.yml": |-
+        _meta:
+          type: "actiongroups"
+          config_version: 2
+      "internal_users.yml": |-
+        _meta:
+          type: "internalusers"
+          config_version: 2
+      roles.yml: |-
+        _meta:
+          type: "roles"
+          config_version: 2
+      config.yml: |-
+        _meta:
+          type: "config"
+          config_version: 2
+        config:
+          dynamic:
+            http:
+              anonymous_auth_enabled: false
+            authc:
+              ldap:
+                description: "Authenticate via LDAP"
+                http_enabled: true
+                transport_enabled: true
+                order: 1
+                http_authenticator:
+                  type: basic
+                  challenge: false
+                authentication_backend:
+                  # LDAP authentication backend (authenticate users against a LDAP or Active Directory)
+                  type: ldap
+                  config:
+                    # enable ldaps
+                    enable_ssl: false
+                    # enable start tls, enable_ssl should be false
+                    enable_start_tls: false
+                    # send client certificate
+                    enable_ssl_client_auth: false
+                    # verify ldap hostname
+                    verify_hostnames: true
+                    hosts:
+                      - "{{global.ldap.url.address}}:{{global.ldap.url.port}}"
+                    bind_dn: "{{global.ldap.bind.cn}},{{ global.ldap.baseDn }}"
+                    password: "{{global.ldap.bind.password}}"
+                    userbase: '{{global.ldap.userOu}},{{ global.ldap.baseDn }}'
+                    # Filter to search for users (currently in the whole subtree beneath userbase)
+                    # {0} is substituted with the username
+                    usersearch: '(&({{ global.ldap.userObjectClass }})(uid={0}))'
+                    # Use this attribute from the user as username (if not set then DN is used)
+                    username_attribute: "{{ global.ldap.usernameAttribute }}"
+            authz:
+              roles_from_openLdap:
+                description: "Authorize via LDAP"
+                http_enabled: true
+                transport_enabled: true
+                authorization_backend:
+                  # LDAP authorization backend (gather roles from a LDAP or Active Directory, you have to configure the above LDAP authentication backend settings too)
+                  type: ldap
+                  config:
+                    # enable ldaps
+                    enable_ssl: false
+                    # enable start tls, enable_ssl should be false
+                    enable_start_tls: false
+                    # send client certificate
+                    enable_ssl_client_auth: false
+                    # verify ldap hostname
+                    verify_hostnames: true
+                    hosts:
+                      - "{{global.ldap.url.address}}:{{global.ldap.url.port}}"
+                    bind_dn: "{{global.ldap.bind.cn}},{{ global.ldap.baseDn }}"
+                    password: "{{global.ldap.bind.password}}"
+                    rolebase: '{{global.ldap.groupsOu}},{{ global.ldap.baseDn }}'
+                    # Filter to search for roles (currently in the whole subtree beneath rolebase)
+                    # {0} is substituted with the DN of the user
+                    # {1} is substituted with the username
+                    # {2} is substituted with an attribute value from user's directory entry, of the authenticated user. Use userroleattribute to specify the name of the attribute
+                    rolesearch: '(memberUid={2})'
+                    # Specify the name of the attribute which value should be substituted with {2} above
+                    userroleattribute: uid
+                    # Roles as an attribute of the user entry
+                    userrolename: disabled
+                    #userrolename: memberOf
+                    # The attribute in a role entry containing the name of that role, Default is "name".
+                    # Can also be "dn" to use the full DN as rolename.
+                    rolename: cn
+                    # Resolve nested roles transitive (roles which are members of other roles and so on ...)
+                    resolve_nested_roles: false
+                    userbase: '{{global.ldap.userOu}},{{ global.ldap.baseDn }}'
+                    # Filter to search for users (currently in the whole subtree beneath userbase)
+                    # {0} is substituted with the username
+                    usersearch: '(&({{ global.ldap.userObjectClass }})(uid={0}))'
+                    # Skip users matching a user name, a wildcard or a regex pattern
+                    #skip_users:
+                    #  - 'cn=Michael Jackson,ou*people,o=TEST'
+                    #  - '/\S*/'
+      roles_mapping.yml: |-
+        _meta:
+          type: "rolesmapping"
+          config_version: 2
+        all_access:
+          reserved: false
+          backend_roles:
+            - "Administrators"
+          description: "Maps admin to all_access"
+        own_index:
+          reserved: false
+          users:
+            - "*"
+          description: "Allow full access to an index named like the username"
+        kibana_user:
+          reserved: false
+          backend_roles:
+            - "Non-Interactive Users"
+            - "Developers"
+          description: "Maps kibanauser to kibana_user"
+        readall:
+          reserved: false
+          backend_roles:
+            - "Developers"
+        manage_snapshots:
+          reserved: false
+          backend_roles:
+            - "Developers"
+        kibana_server:
+          reserved: true
+          backend_roles:
+            - "Non-Interactive Users"
+            - "Developers"
