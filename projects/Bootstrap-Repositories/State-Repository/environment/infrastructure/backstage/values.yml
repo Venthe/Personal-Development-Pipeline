@@ -1,0 +1,12 @@
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: ca-issuer
+  host: backstage.{{ global.tld }}
+  tls:
+    enabled: true
+    secretName: backstage-tls
+catalogInfo:
+  type: "url"
+  value: "https://gerrit.{{ global.tld }}/plugins/gitiles/State-Repository/+/refs/heads/main/environment/integration/JLBC/ArgocdExampleService/catalog-info.yaml"

@@ -1,0 +1,50 @@
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: ca-issuer
+  hosts:
+    - host: "pgadmin4.{{ global.tld }}"
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - "pgadmin4.{{ global.tld }}"
+      secretName: "pgadmin4-tls"
+serverDefinitions:
+  enabled: true
+  servers:
+    infrastructure:
+      Name: "Main server"
+      Group: "Servers"
+      Port: 5432
+      Username: "postgres"
+      Host: "postgresql"
+      SSLMode: "prefer"
+      MaintenanceDB: "postgres"
+      #yXWhyoJGPa
+env:
+  variables:
+    - name: PGADMIN_CONFIG_AUTHENTICATION_SOURCES
+      value: "['ldap', 'internal']"
+    - name: PGADMIN_CONFIG_LDAP_AUTO_CREATE_USER
+      value: "True"
+    - name: PGADMIN_CONFIG_LDAP_BIND_USER
+      value: "'cn=readonly,dc=home,dc=arpa'"
+    - name: PGADMIN_CONFIG_LDAP_BIND_PASSWORD
+      value: "'readonly'"
+    - name: PGADMIN_CONFIG_LDAP_SERVER_URI
+      value: "'ldap://openldap:389'"
+    - name: PGADMIN_CONFIG_LDAP_BASE_DN
+      value: "'dc=home,dc=arpa'"
+    - name: PGADMIN_CONFIG_LDAP_USERNAME_ATTRIBUTE
+      value: "'uid'"
+    - name: PGADMIN_CONFIG_LDAP_SEARCH_BASE_DN
+      value: "'ou=people,dc=home,dc=arpa'"
+    - name: PGADMIN_CONFIG_LDAP_SEARCH_FILTER
+      value: "'(objectClass=inetOrgPerson)'"
+persistentVolume:
+  enabled: false
+image:
+  registry: docker.{{ global.tld }}

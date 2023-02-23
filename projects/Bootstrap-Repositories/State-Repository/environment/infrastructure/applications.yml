@@ -1,4 +1,21 @@
 helm:
+  backstage:
+    chart: backstage/backstage
+    path: backstage
+    chartRevision: 0.16.0
+    valueFiles:
+      - values.yml
+  # Username postgres
+  postgresql:
+    chart: bitnami/postgresql
+    chartRevision: 12.2.1
+  # Username postgres
+  pgadmin4:
+    chart: runix/pgadmin4
+    path: pgadmin4
+    chartRevision: 1.14.4
+    valueFiles:
+      - values.yml
   reloader:
     path: reloader
     chart: stakater/reloader
