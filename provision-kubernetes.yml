@@ -15,15 +15,18 @@
    - externaldns
    - ingress
    - dns
-   - dashboard
    - ldap
-   - monitoring
    - certmanager
-   - gerrit
-   # TODO: Allow for replays
-   - jenkins
    - argocd
    - vault
+
+   # Via argo
+   - gerrit
+   # Load bootstrap projects
+   - dashboard
+   - monitoring
+   # TODO: Allow for replays
+   - jenkins
    - mongodb
    - kafka
 
