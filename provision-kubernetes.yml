@@ -17,6 +17,8 @@
    - dns
    - ldap
    - certmanager
+   # Nexus
+   #  Setup nexus here
    - argocd
    - vault
 
