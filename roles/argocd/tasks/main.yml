@@ -4,7 +4,7 @@
     repo_url: https://argoproj.github.io/argo-helm
 - name: Deploy chart
   kubernetes.core.helm:
-    chart_version: "5.13.9"
+    chart_version: "5.24.0"
     create_namespace: true
     update_repo_cache: true
     name: argocd
@@ -47,4 +47,4 @@
           g, Administrators, role:admin
         policy.default: role:none
         scopes: '[groups, uid]'
-        
+
