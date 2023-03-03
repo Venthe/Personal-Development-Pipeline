@@ -1,8 +1,8 @@
 {
-    "name" : "Ldap",    
+    "name" : "Ldap",
     "protocol" : "LDAP",
     "useTrustStore" : false,
-    "host" : "openldap.ldap",
+    "host" : "openldap.infrastructure",
     "port" : 389,
     "searchBase" : "dc=home,dc=arpa",
     "authScheme" : "SIMPLE",
