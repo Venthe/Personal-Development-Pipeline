@@ -16,3 +16,17 @@ server:
 configs:
   cm:
     url: "https://argo.home.arpa"
+
+repoServer:
+  extraContainers:
+    - name: kustomized-helm
+      command: [ "manager", "server" ]
+      image: docker.home.arpa/venthe/argocd-kustomized-helm-cmp:1.0.23
+      args:
+        - --loglevel
+        - debug
+      volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins

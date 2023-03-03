@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: example-argo-kustomized-helm
+  namespace: default
+spec:
+  destination:
+    name: in-cluster
+    namespace: test
+  project: default
+  source:
+    repoURL: http://nexus.home.arpa/repository/helm-hosted/
+    #repoURL: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-hosted/
+    targetRevision: 0.1.0
+    chart: docker
+    plugin:
+      name: kustomized-helm
+      parameters:
+        - name: helmReleaseName
+          string: docker-test
+        - name: additionalManifests
+          array:
+            - |
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: test-secret
+              data:
+                dex.ldap.bindPW: "YWJj"
+                dex.ldap.bindDN: "YWJj"
+        - name: patches
+          string: |
+            patches:
+              - target:
+                  kind: Service
+                patch: |-
+                  apiVersion: v1
+                  kind: Service
+                  metadata:
+                    name: "required-for-kustomize-but-not-used"
+                    labels:
+                      test: label
+                  spec:
+                    type: NodePort
+        - name: values
+          string: |
+            catalogInfo:
+              type: url
+              value: https://gerrit.home.arpa/plugins/gitiles/State-Repository/+/refs/heads/main/environment/integration/JLBC/ArgocdExampleService/catalog-info.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
