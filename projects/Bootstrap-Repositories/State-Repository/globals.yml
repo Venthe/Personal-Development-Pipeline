@@ -19,8 +19,6 @@ global:
   helm:
     # https://argoproj.github.io/argo-helm
     argo: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-argo
-    # https://backstage.github.io/charts
-    backstage: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-backstage
     # https://charts.bitnami.com/bitnami
     bitnami: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-bitnami
     # https://redhat-cop.github.io/cert-utils-operator

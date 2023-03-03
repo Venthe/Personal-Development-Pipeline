@@ -165,8 +165,9 @@ function POST_repository_maven_proxy() {
 }
 
 function POST_repository_helm_proxy() {
+    echo "Creating Helm repository ${1} : ${2}"
     POST_repositories helm/proxy "{
-        \"name\": \"helm-proxy-${1}\",
+        \"name\": \"${1}\",
         \"format\": \"helm\",
         \"online\": true,
         \"storage\": {
@@ -193,7 +194,7 @@ function POST_repository_helm_proxy() {
         },
         \"type\": \"proxy\"
     }" "${@:3}"
-} 
+}
 
 function GET_ldap() {
     _call GET /v1/security/ldap

@@ -103,43 +103,64 @@ POST_repositories nuget/group @manifests/repository-nuget-group.json
 
 # Helm
 DELETE_repositories helm-proxy-bitnami || true
-DELETE_repositories helm-proxy-runix || true
-DELETE_repositories helm-proxy-gitlab || true
-DELETE_repositories helm-proxy-oteemo || true
-DELETE_repositories helm-proxy-rook-release || true
-DELETE_repositories helm-proxy-democratic-csi || true
-DELETE_repositories helm-proxy-kubernetes-ingress-nginx || true
-DELETE_repositories helm-proxy-nginx-stable || true
-DELETE_repositories helm-proxy-kubernetes-dashboard || true
-DELETE_repositories helm-proxy-coredns || true
-DELETE_repositories helm-proxy-jetstack || true
-DELETE_repositories helm-proxy-jenkins || true
-DELETE_repositories helm-proxy-sonatype || true
-DELETE_repositories helm-proxy-grafana || true
-DELETE_repositories helm-proxy-loki || true
-DELETE_repositories helm-proxy-prometheus-community || true
-DELETE_repositories helm-proxy-stable || true
 DELETE_repositories helm-proxy-cetic || true
+DELETE_repositories helm-proxy-coredns || true
+DELETE_repositories helm-proxy-democratic-csi || true
+DELETE_repositories helm-proxy-gitlab || true
+DELETE_repositories helm-proxy-grafana || true
+DELETE_repositories helm-proxy-jenkins || true
+DELETE_repositories helm-proxy-jetstack || true
+DELETE_repositories helm-proxy-kubernetes-dashboard || true
+DELETE_repositories helm-proxy-kubernetes-ingress-nginx || true
+DELETE_repositories helm-proxy-loki || true
+DELETE_repositories helm-proxy-nginx-stable || true
+DELETE_repositories helm-proxy-oteemo || true
+DELETE_repositories helm-proxy-prometheus-community || true
+DELETE_repositories helm-proxy-rook-release || true
+DELETE_repositories helm-proxy-runix || true
+DELETE_repositories helm-proxy-sonatype || true
+DELETE_repositories helm-proxy-stable || true
+DELETE_repositories helm-proxy-argo || true
+DELETE_repositories helm-proxy-backstage || true
+DELETE_repositories helm-proxy-cert-utils-operator || true
+DELETE_repositories helm-proxy-hashicorp || true
+DELETE_repositories helm-proxy-helm-stable || true
+DELETE_repositories helm-proxy-kokuwa || true
+DELETE_repositories helm-proxy-kubernetes-dashboard || true
+DELETE_repositories helm-proxy-opensearch || true
+DELETE_repositories helm-proxy-stakater || true
+DELETE_repositories helm-proxy-vmware-tanzu || true
 DELETE_blobstores helm-default || true
 POST_blobstores_file helm-default
-POST_repository_helm_proxy bitnami https://charts.bitnami.com/bitnami
-POST_repository_helm_proxy runix https://helm.runix.net
-POST_repository_helm_proxy gitlab https://charts.gitlab.io
-POST_repository_helm_proxy oteemo https://oteemo.github.io/charts
-POST_repository_helm_proxy rook-release https://charts.rook.io/release
-POST_repository_helm_proxy democratic-csi https://democratic-csi.github.io/charts
-POST_repository_helm_proxy kubernetes-ingress-nginx https://kubernetes.github.io/ingress-nginx
-POST_repository_helm_proxy nginx-stable https://helm.nginx.com/stable
-POST_repository_helm_proxy kubernetes-dashboard https://kubernetes.github.io/dashboard
-POST_repository_helm_proxy coredns https://coredns.github.io/helm
-POST_repository_helm_proxy jetstack https://charts.jetstack.io/
-POST_repository_helm_proxy jenkins https://charts.jenkins.io/
-POST_repository_helm_proxy sonatype https://sonatype.github.io/helm3-charts/
-POST_repository_helm_proxy grafana https://grafana.github.io/helm-charts
-POST_repository_helm_proxy loki https://grafana.github.io/loki/charts
-POST_repository_helm_proxy prometheus-community https://prometheus-community.github.io/helm-charts
-POST_repository_helm_proxy stable https://charts.helm.sh/stable
-POST_repository_helm_proxy cetic https://cetic.github.io/helm-charts
+
+POST_repository_helm_proxy helm-proxy-argo https://argoproj.github.io/argo-helm
+POST_repository_helm_proxy helm-proxy-backstage https://backstage.github.io/charts
+POST_repository_helm_proxy helm-proxy-cert-utils-operator https://redhat-cop.github.io/cert-utils-operator
+POST_repository_helm_proxy helm-proxy-hashicorp https://helm.releases.hashicorp.com
+POST_repository_helm_proxy helm-proxy-helm-stable https://charts.helm.sh/stable
+POST_repository_helm_proxy helm-proxy-kokuwa https://kokuwaio.github.io/helm-charts
+POST_repository_helm_proxy helm-proxy-kubernetes-dashboard https://kubernetes.github.io/dashboard/
+POST_repository_helm_proxy helm-proxy-opensearch https://opensearch-project.github.io/helm-charts
+POST_repository_helm_proxy helm-proxy-stakater https://stakater.github.io/stakater-charts
+POST_repository_helm_proxy helm-proxy-vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+POST_repository_helm_proxy helm-proxy-bitnami https://charts.bitnami.com/bitnami
+POST_repository_helm_proxy helm-proxy-cetic https://cetic.github.io/helm-charts
+POST_repository_helm_proxy helm-proxy-coredns https://coredns.github.io/helm
+POST_repository_helm_proxy helm-proxy-democratic-csi https://democratic-csi.github.io/charts
+POST_repository_helm_proxy helm-proxy-gitlab https://charts.gitlab.io
+POST_repository_helm_proxy helm-proxy-grafana https://grafana.github.io/helm-charts
+POST_repository_helm_proxy helm-proxy-jenkins https://charts.jenkins.io/
+POST_repository_helm_proxy helm-proxy-jetstack https://charts.jetstack.io/
+POST_repository_helm_proxy helm-proxy-kubernetes-dashboard https://kubernetes.github.io/dashboard
+POST_repository_helm_proxy helm-proxy-kubernetes-ingress-nginx https://kubernetes.github.io/ingress-nginx
+POST_repository_helm_proxy helm-proxy-loki https://grafana.github.io/loki/charts
+POST_repository_helm_proxy helm-proxy-nginx-stable https://helm.nginx.com/stable
+POST_repository_helm_proxy helm-proxy-oteemo https://oteemo.github.io/charts
+POST_repository_helm_proxy helm-proxy-prometheus-community https://prometheus-community.github.io/helm-charts
+POST_repository_helm_proxy helm-proxy-rook-release https://charts.rook.io/release
+POST_repository_helm_proxy helm-proxy-runix https://helm.runix.net
+POST_repository_helm_proxy helm-proxy-sonatype https://sonatype.github.io/helm3-charts/
+POST_repository_helm_proxy helm-proxy-stable https://charts.helm.sh/stable
 DELETE_repositories helm-hosted || true
 DELETE_blobstores helm-hosted || true
 POST_blobstores_file helm-hosted
