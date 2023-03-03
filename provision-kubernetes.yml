@@ -26,7 +26,6 @@
    - gerrit
    # Load bootstrap projects
    - dashboard
-   - monitoring
    # TODO: Allow for replays
    - jenkins
    - mongodb

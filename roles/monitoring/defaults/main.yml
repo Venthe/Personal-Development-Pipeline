@@ -1,6 +1,0 @@
-monitoring:
-  namespace: infrastructure
-opensearch:
-  opensearch-dashboards:
-    name: opensearch
-tld_hostname: home.arpa

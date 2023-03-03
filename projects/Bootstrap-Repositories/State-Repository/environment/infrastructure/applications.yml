@@ -41,3 +41,13 @@ helm:
     path: fluentd
     valueFiles:
       - values.yml
+  observability:
+    chart: prometheus-community/kube-prometheus-stack
+    chartRevision: 45.7.1
+    path: observability
+    kustomizationFiles:
+      - patches.yml
+    valueFiles:
+      - alertmanager.yml
+      - grafana.yml
+      - prometheus.yml
