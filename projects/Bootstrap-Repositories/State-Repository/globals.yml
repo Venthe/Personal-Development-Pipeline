@@ -17,26 +17,52 @@ global:
   links:
     gerrit: https://gerrit.home.arpa
   helm:
-    argo: https://argoproj.github.io/argo-helm
-    bitnami: https://charts.bitnami.com/bitnami
-    cert-utils-operator: https://redhat-cop.github.io/cert-utils-operator
-    cetic: https://cetic.github.io/helm-charts
-    coredns: https://coredns.github.io/helm
-    cowboysysop: https://cowboysysop.github.io/charts/
-    democratic-csi: https://democratic-csi.github.io/charts/
-    grafana: https://grafana.github.io/helm-charts
-    hashicorp: https://helm.releases.hashicorp.com
-    helm-stable: https://charts.helm.sh/stable
+    # https://argoproj.github.io/argo-helm
+    argo: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-argo
+    # https://backstage.github.io/charts
+    backstage: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-backstage
+    # https://charts.bitnami.com/bitnami
+    bitnami: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-bitnami
+    # https://redhat-cop.github.io/cert-utils-operator
+    cert-utils-operator: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-cert-utils-operator
+    # https://cetic.github.io/helm-charts
+    cetic: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-cetic
+    # https://coredns.github.io/helm
+    coredns: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-coredns
+    # https://cowboysysop.github.io/charts/
+    cowboysysop: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-cowboysysop
+    # https://democratic-csi.github.io/charts/
+    democratic-csi: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-democratic-csi
+    # https://grafana.github.io/helm-charts
+    grafana: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-grafana
+    # https://helm.releases.hashicorp.com
+    hashicorp: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-hashicorp
+    # https://charts.helm.sh/stable
+    helm-stable: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-helm-stable
     hosted: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-hosted/
-    ingress: -nginx https://kubernetes.github.io/ingress-nginx
-    jenkins:  https://charts.jenkins.io
-    jetstack:  https://charts.jetstack.io
-    kokuwa: https://kokuwaio.github.io/helm-charts
-    kubernetes-dashboard: https://kubernetes.github.io/dashboard/
-    loki:  https://grafana.github.io/loki/charts
-    opensearch: https://opensearch-project.github.io/helm-charts
-    prometheus-community: https://prometheus-community.github.io/helm-charts
-    rook-release: https://charts.rook.io/release
-    sonatype: https://sonatype.github.io/helm3-charts/
-    stakater: https://stakater.github.io/stakater-charts
-    vmware-tanzu: https://vmware-tanzu.github.io/helm-charts
+    # ingress-nginx https://kubernetes.github.io/ingress-nginx
+    ingress: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-ingress
+    #  https://charts.jenkins.io
+    jenkins: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-jenkins
+    #  https://charts.jetstack.io
+    jetstack: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-jetstack
+    # https://kokuwaio.github.io/helm-charts
+    kokuwa: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-kokuwa
+    # https://kubernetes.github.io/dashboard/
+    kubernetes-dashboard: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-kubernetes-dashboard
+    #  https://grafana.github.io/loki/charts
+    loki: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-loki
+    # https://opensearch-project.github.io/helm-charts
+    opensearch: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-opensearch
+    # https://prometheus-community.github.io/helm-charts
+    prometheus-community: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-prometheus-community
+    # https://charts.rook.io/release
+    rook-release: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-rook-release
+    # https://helm.runix.net
+    runix: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-runix
+    # https://sonatype.github.io/helm3-charts/
+    sonatype: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-sonatype
+    # https://stakater.github.io/stakater-charts
+    stakater: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-stakater
+    # https://vmware-tanzu.github.io/helm-charts
+    vmware-tanzu: http://nexus-nexus-repository-manager.infrastructure:8081/repository/helm-proxy-vmware-tanzu
