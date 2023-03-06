@@ -6,6 +6,6 @@ export default {
         "^.+\\.[jt]sx?$": ["ts-jest", { tsconfig: `<rootDir>/tsconfig.spec.json` }],
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-    coverageDirectory: 'coverage/libraries/core',
+    coverageDirectory: 'src',
     setupFilesAfterEnv: ["./test/config.ts"]
 };
