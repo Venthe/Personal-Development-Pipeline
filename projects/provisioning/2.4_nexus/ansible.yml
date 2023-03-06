@@ -18,7 +18,7 @@
       default: "nexus"
       private: no
     - name: nexus_version
-      default: "46.0.0"
+      default: "48.0.0"
     - name: domain_name
       default: "home.arpa"
       prompt: Domain
