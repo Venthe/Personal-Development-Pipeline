@@ -1,0 +1,34 @@
+apiVersion: synchronizer/v1alpha
+kind: PostgreSQLState
+spec:
+  databases:
+    postgres: {}
+    integration:
+      schemas:
+        test: {}
+    production:
+      owner: postgres
+    local:
+      owner: postgres
+      schemas:
+        public:
+          owner: postgres
+        rife:
+          owner: rife_integration
+          authorizedFor:
+            rife_integration:
+              - CREATE
+              - USAGE
+            admin: ALL PRIVILEGES
+  roles:
+    admin:
+      options:
+        - option: IN ROLE
+          arguments:
+            - pg_write_all_data
+    rife_integration:
+      options:
+        - option: LOGIN
+        - option: IN ROLE
+          arguments:
+            - pg_read_all_data

@@ -1,0 +1,8 @@
+apiVersion: synchronizer/v1alpha
+kind: PostgreSQLConfiguration
+spec:
+  connection:
+    url: localhost:5432
+    username: postgres
+    password: postgres
+  resultEncryptionKey: "55d81db2e45645e6a67cf3f7710b271c"
