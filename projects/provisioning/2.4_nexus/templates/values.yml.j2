@@ -6,8 +6,14 @@
 #     nexusHttpHost: {{release_name}}.{{domain_name}}
 nexus:
   env:
-    #- name: INSTALL4J_ADD_VM_PARAMS
-    #  value: "-Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - name: INSTALL4J_ADD_VM_PARAMS
+      value: |-
+        -Xms2703M -Xmx2703M
+        -XX:MaxDirectMemorySize=2703M
+        -XX:+UnlockExperimentalVMOptions
+        -XX:+UseCGroupMemoryLimitForHeap
+        -Djava.util.prefs.userRoot=/nexus-data/javaprefs
+        -Dcom.sun.jndi.ldap.connect.pool.timeout=6000
     - name: NEXUS_SECURITY_RANDOMPASSWORD
       value: "false"
 persistence:

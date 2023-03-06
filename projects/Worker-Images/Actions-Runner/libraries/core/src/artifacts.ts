@@ -1,5 +1,5 @@
-import { password, shell, ShellCallbacks } from '@pipeline/process';
-import { ContextSnapshot, GerritEventSnapshot, SecretsSnapshot } from '@pipeline/types';
+import {password, shell} from '@pipeline/process';
+import {ContextSnapshot, GerritEventSnapshot, SecretsSnapshot} from '@pipeline/types';
 
 export enum RepositoryType {
   User,
@@ -25,9 +25,7 @@ export const download = async ({
                                  targetPath,
                                  context,
                                  type = RepositoryType.User
-                               }: DownloadParameters, { silent = false, hack = true }: Options = {}) => {
-  if (hack) await hackLoginFail(context);
-
+                               }: DownloadParameters, { silent = false}: Options = {}) => {
   const nexusPath = pathStrategy(context, sourcePath, type);
   const url = `${context.internal.nexusUrl}/${nexusPath}`;
   if (!silent) console.debug('Downloading artifact', nexusPath, 'to', targetPath);
@@ -39,9 +37,7 @@ export const upload = async ({
                                targetPath,
                                context,
                                type = RepositoryType.User
-                             }: UploadParameters, { silent = false, hack = false }: Options = {}) => {
-  if (hack) await hackLoginFail(context);
-
+                             }: UploadParameters, { silent = false}: Options = {}) => {
   const nexusPath = pathStrategy(context, targetPath ?? sourcePath, type);
   const url = `${context.internal.nexusUrl}/${nexusPath}`;
   if (!silent) console.debug('Uploading artifact', sourcePath, 'to', nexusPath);
@@ -53,18 +49,4 @@ const pathStrategy = (context: ContextSnapshot, sourcePath, type?: RepositoryTyp
   return type === RepositoryType.User
     ? `${['pipeline', event.metadata.projectName, event.metadata.branchName, sourcePath].join('/')}`
     : `${sourcePath}`;
-};
-
-// For some reason, first curl fails with 401
-const hackLoginFail = async (context: ContextSnapshot) => {
-  try {
-    console.debug("Hack start")
-    let tmp: string = '';
-    await shell('mktemp', { silent: true, callbacks: { stdout: (t) => tmp = t.chunk } });
-    await upload({ sourcePath: tmp, context }, { silent: true, hack: false });
-    await download({ sourcePath: tmp, targetPath: tmp, context }, { silent: true, hack: false });
-    console.debug("Hack End")
-  } catch (e) {
-    console.debug("Hack worked!", JSON.stringify(e))
-  }
 };
