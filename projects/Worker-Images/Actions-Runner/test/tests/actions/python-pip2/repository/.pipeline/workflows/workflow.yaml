@@ -1,0 +1,14 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-python@main
+      - uses: actions/python-pip@main
+        with:
+          requirements:
+            - requirements.txt
+      - run: jinja2 helloworld.j2 data.json --format=json
+
