@@ -157,7 +157,11 @@ prepareNPM() {
 }
 
 function testAll() {
-    bash -c "find ./test | grep -E 'event\.ya?ml' | xargs dirname | sed 's/^\.\/test\///' | xargs -I{} bash ./manager.sh test {}"
+    local test_files=`find ./test | grep -E 'event\.ya?ml' | xargs dirname | sed 's/^\.\/test\///'`
+    for single_test in ${test_files}; do
+      echo "Performing test: ${single_test}"
+      test "${single_test}"
+    done
 }
 
 if [[ ${#} -ne 0 ]]; then
