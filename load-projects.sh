@@ -35,7 +35,7 @@ function loadProject() {
   trap 'rm -rf -- "${temp_directory}"' EXIT
 
   echo >&2 "[${project_name}] Preparing repository from ${project_directory}"
-  rsync --recursive -P --exclude=node_modules "${project_directory}" "${temp_directory}"
+  rsync --recursive -P --exclude="node_modules" --exclude=".git" "${project_directory}" "${temp_directory}"
   cd ${temp_directory}
   git init
   git commit --allow-empty --message "Initial commit"
