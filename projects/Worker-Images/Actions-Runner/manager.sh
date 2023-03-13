@@ -82,6 +82,10 @@ function buildContainer() {
 function test() {
   local path="${1}"
   local absolutePath="${PWD}/test/${path}"
+  local repositoryPath="${REPOSITORY_PATH:-${absolutePath}/repository/}"
+  local envPath="${ENVIRONMENT_PATH:-${absolutePath}/env/}"
+  local eventFile="${EVENT_FILE:-${absolutePath}/event.yaml}"
+  local secretsPath="${SECRETS_PATH:-${absolutePath}/secrets/}"
 
   if [[ "${REBUILD_LIBRARIES}" -eq "1" ]]; then
     buildLibraries
@@ -104,7 +108,7 @@ function test() {
   }
 
   project deleteProject || true
-  project loadProject "${absolutePath}/repository/"
+  project loadProject "${repositoryPath}"
 
   # --interactive --tty
   docker run \
@@ -115,17 +119,17 @@ function test() {
     --volume "${PWD}/dist/index.js:/runner/index.js" \
     --volume "${PWD}/dist/sourcemap-register.js:/runner/sourcemap-register.js" \
     --volume "${PWD}/dist/index.js.map:/runner/index.js.map" \
-    --volume "${absolutePath}/env:/runner/metadata/env:ro" \
-    --volume "${absolutePath}/event.yaml:/runner/metadata/event.yaml" \
-    --volume "${absolutePath}/secrets:/runner/metadata/secrets:ro" \
+    --volume "${envPath}:/runner/metadata/env:ro" \
+    --volume "${eventFile}:/runner/metadata/event.yaml:ro" \
+    --volume "${secretsPath}:/runner/metadata/secrets:ro" \
     --volume "${PWD}/test/test.sh:/test.sh" \
     --volume "/var/run/docker.sock:/var/run/docker.sock" \
     --volume "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro" \
     \
-    --env PIPELINE_JOB_NAME="TestedJob" \
+    --env PIPELINE_JOB_NAME="${PIPELINE_JOB_NAME:-TestedJob}" \
     --env PIPELINE_BUILD_ID="1" \
-    --env PIPELINE_DEBUG="1" \
-    --env PIPELINE_WORKFLOW="workflow.yaml" \
+    --env PIPELINE_DEBUG="${PIPELINE_DEBUG:-1}" \
+    --env PIPELINE_WORKFLOW="${PIPELINE_WORKFLOW:-workflow.yaml}" \
     --env PIPELINE_NEXUS_URL="${_NEXUS_URL}" \
     --env PIPELINE_GERRIT_URL="${_GERRIT_URL}" \
     --env PIPELINE_DOCKER_URL="${_DOCKER_URL}" \
