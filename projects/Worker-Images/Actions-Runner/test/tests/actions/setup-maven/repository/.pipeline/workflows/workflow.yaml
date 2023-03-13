@@ -1,0 +1,11 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    name: "Action: setup-maven"
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/setup-java@main
+      - uses: actions/setup-maven@main
+      - run: mvn --version
+
