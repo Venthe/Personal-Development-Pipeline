@@ -1,0 +1,2 @@
+image:
+  tag2: "{{ app.properties.imageTag }}"

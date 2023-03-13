@@ -1,6 +1,6 @@
 {{- range $idx, $node := .Values.applications.helm }}
-{{- with $ }}
 ---
+{{- with $ }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -16,13 +16,29 @@ spec:
     repoURL: >-
       {{ get .Values.global.helm ((split "/" $node.chart)._0) }}
     targetRevision: {{ $node.chartRevision | required "Chart revision of the helm chart is required." }}
-    helm:
-      releaseName: {{ $node.name | required "name of the helm chart is required." }}
-      {{ if $node.values -}}
-      values: |
-        {{- toYaml $node.values | nindent 8 }}
-      {{- end }}
     chart: {{ (split "/" $node.chart)._1 | required "Chart name is required" }}
+    plugin:
+      name: kustomized-helm
+      parameters:
+        - name: helmReleaseName
+          string: {{ $node.name | required "name of the helm chart is required." }}
+        {{ if $node.additionalManifests -}}
+        - name: additionalManifests
+          array:
+            {{- range $idx, $adm := $node.additionalManifests }}
+            - {{ $adm | toYaml | quote}}
+            {{- end }}
+        {{- end }}
+        {{ if $node.patches -}}
+        - name: patches
+          string: |
+            {{- toYaml $node.patches | nindent 12 }}
+        {{- end }}
+        {{ if $node.values -}}
+        - name: values
+          string: |
+            {{- toYaml $node.values | nindent 12 }}
+        {{- end }}
   project: default
   syncPolicy:
     automated:

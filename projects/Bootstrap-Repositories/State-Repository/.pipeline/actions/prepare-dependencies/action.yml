@@ -6,6 +6,6 @@ runs:
     - uses: actions/setup-python@main
     - uses: actions/python-pip@main
       with:
-        libraries:
-          - jinja2-cli
+        requirements:
+          - requirements.txt
     - uses: actions/setup-helm@main

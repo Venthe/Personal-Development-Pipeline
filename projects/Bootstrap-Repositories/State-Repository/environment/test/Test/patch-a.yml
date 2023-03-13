@@ -1,0 +1,12 @@
+patches:
+  - target:
+      kind: Service
+    patch: |-
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: "required-for-kustomize-but-not-used"
+        labels:
+          test: label
+      spec:
+        type: NodePort

@@ -24,6 +24,19 @@
       <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/process/dist" />
       <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/types/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/types/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Experiments/dind/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/checkout/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/docker-login/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/download-artifact/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-docker/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-gradle/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-java/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-kubectl/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/setup-python/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/actions/upload-artifact/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/libraries/utilities/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/Worker-Images/Actions-Runner/.idea" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

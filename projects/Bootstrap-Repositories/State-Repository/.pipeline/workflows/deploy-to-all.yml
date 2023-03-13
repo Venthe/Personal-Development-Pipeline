@@ -7,7 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
-    needs: prepare
     steps:
       - uses: actions/checkout@main
       - uses: .pipeline/actions/prepare-dependencies

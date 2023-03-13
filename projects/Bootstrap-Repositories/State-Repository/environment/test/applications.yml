@@ -1,0 +1,44 @@
+helm:
+  test:
+    path: Test
+    chart: hosted/argocd-example-service
+    chartRevision: 0.1.0
+    properties:
+      imageTag: 20230205-190544-a467ad9
+    valueFiles:
+      - values.yml
+    kustomizationFiles:
+      - patch-a.yml
+      - patch-b.yml
+    additionalManifestFiles:
+      - additional.yml
+  test2:
+    path: Test
+    chart: hosted/argocd-example-service
+    chartRevision: 0.1.1
+    properties:
+      imageTag: x.1.1
+    valueFiles:
+      - values.yml
+      - values2.yml
+    kustomizationFiles:
+      - patch-a.yml
+      - patch-b.yml
+  test3:
+    path: Test
+    chart: hosted/argocd-example-service
+    chartRevision: 0.1.0
+    properties:
+      imageTag: 20230205-190544-a467ad9
+    kustomizationFiles:
+      - patch-a.yml
+      - patch-b.yml
+  test4:
+    path: Test
+    chart: hosted/argocd-example-service
+    chartRevision: 0.1.0
+    properties:
+      imageTag: 20230205-190544-a467ad9
+    additionalManifestFiles:
+      - additional.yml
+      - additional2.yml
