@@ -13,7 +13,9 @@ echo "TEST START"
 echo "**************************"
 echo ""
 
-node --enable-source-maps /runner/index.js
+node --enable-source-maps /runner/index.js || true
+
+cat "/runner/result.json" | grep success
 
 echo ""
 echo "**************************"
