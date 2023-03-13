@@ -1,4 +1,4 @@
-name: 'Hello World'
+name: 'Action A: Composite'
 description: 'Greet someone'
 inputs:
   whoToGreet: # id of input

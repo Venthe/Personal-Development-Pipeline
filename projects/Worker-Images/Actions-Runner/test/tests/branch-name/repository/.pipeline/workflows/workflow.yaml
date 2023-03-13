@@ -4,6 +4,7 @@ on:
     branches: "*/**/main"
 jobs:
   TestedJob:
+    name: "Limit per branch"
     runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
     steps:
       - run: echo "Works"

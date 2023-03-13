@@ -2,6 +2,7 @@ name: Deploy to cluster
 on: [ push ]
 jobs:
   TestedJob:
+    name: "Scripts: always"
     runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
     steps:
       - name: Should fail

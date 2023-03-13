@@ -60,7 +60,7 @@ export class StepRunner {
     return new StepRunner({
       stepDefinitions: stepDefinitions.steps,
       contextManager: contextManager,
-      managerName: contextManager.contextSnapshot.internal.job,
+      managerName: stepDefinitions.name ?? contextManager.contextSnapshot.internal.job,
       nextIndex: () => iter.value++,
       outputs: stepDefinitions.outputs
     });
