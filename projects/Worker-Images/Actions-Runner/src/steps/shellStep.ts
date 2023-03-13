@@ -26,6 +26,9 @@ export class ShellStep implements Step<ShellStepDefinition> {
     const workingDirectoryOption = this.step.workingDirectory ? { cwd: this.step.workingDirectory } : {};
     const shellOption = this.step.shell ? { shell: this.step.shell } : {};
     try {
+      if (typeof this.step.run !== 'string' || this.step.run.trim().length === 0) {
+        throw new Error("Shell commands must not be empty")
+      }
       const result: ShellOutput = await shell(renderTemplate(this.step.run, contextManager.contextSnapshot), { ...shellOption, ...workingDirectoryOption });
       console.debug(result);
 
