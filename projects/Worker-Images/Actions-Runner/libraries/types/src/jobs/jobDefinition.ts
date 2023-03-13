@@ -17,7 +17,7 @@ export type JobDefinition = {
     /**
      * Use jobs.<job_id>.name to set a name for the job, which is displayed in the GitHub UI.
      */
-    name: string
+    name?: string
     /**
      * For a specific job, you can use jobs.<job_id>.permissions to modify the default permissions granted to
      * the GITHUB_TOKEN, adding or removing access as required, so that you only allow the minimum required access.
