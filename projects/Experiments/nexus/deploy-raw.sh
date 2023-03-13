@@ -31,6 +31,7 @@ function uploadAll() {
   upload "helm-v3.11.0-linux-amd64.tar.gz" kubernetes
   upload "yq_linux_amd64.tar.gz" misc
   upload "apache-maven-3.9.0-bin.tar.gz" java/maven
+  upload "apache-maven-3.3.9-bin.tar.gz" java/maven
   upload "node-v18.15.0-linux-x64.tar.xz" node
 }
 
@@ -44,6 +45,7 @@ function downloadAll() {
   download "amazon-corretto-8.362.08.1-linux-x64.tar.gz" java/jdk
   download "helm-v3.11.0-linux-amd64.tar.gz" kubernetes
   download "apache-maven-3.9.0-bin.tar.gz" java/maven
+  download "apache-maven-3.3.9-bin.tar.gz" java/maven
   download "node-v18.15.0-linux-x64.tar.xz" node
 }
 
