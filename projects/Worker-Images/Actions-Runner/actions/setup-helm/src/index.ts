@@ -12,7 +12,6 @@ async function setup() {
   const binpath = `${context.internal.binariesDirectory}/helm`;
   await shell(`mkdir -p ${binpath}`);
   await untar(filename, binpath);
-  await shell(`ls ${filename}`);
   await shell(`rm ${filename} && mv ${binpath}/linux-amd64/helm ${binpath}/helm`);
   callbacks.addToPath(`${binpath}`);
 }
