@@ -1,0 +1,13 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    name: "Action: setup-java"
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/setup-java@main
+        with:
+          version: "8"
+          implementation: corretto
+      - run: java -version
+
