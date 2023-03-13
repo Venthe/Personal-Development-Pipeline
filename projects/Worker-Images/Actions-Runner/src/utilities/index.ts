@@ -14,4 +14,4 @@ export const configureGit = async () => {
   ]);
 };
 
-export const exceptionMapper = (exception) => `${exception?.error ?? exception?.message ?? 'unknown'}`;
+export const exceptionMapper = (exception: any) => `${exception?.error ?? exception?.message ?? 'unknown'}: ${exception.stack}`;

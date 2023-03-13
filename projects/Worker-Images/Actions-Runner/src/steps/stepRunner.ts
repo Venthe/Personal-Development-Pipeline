@@ -112,7 +112,7 @@ export class StepRunner {
         outputs: outputs
       };
     } catch (e: any) {
-      console.error(error(exceptionMapper(e)), error(e.stack));
+      console.error(error(exceptionMapper(e)));
       return {
         result: 'failure'
       };
