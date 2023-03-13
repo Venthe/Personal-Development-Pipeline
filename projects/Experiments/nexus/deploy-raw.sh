@@ -33,6 +33,7 @@ function uploadAll() {
   upload "apache-maven-3.9.0-bin.tar.gz" java/maven
   upload "apache-maven-3.3.9-bin.tar.gz" java/maven
   upload "node-v18.15.0-linux-x64.tar.xz" node
+  upload "node-v8.17.0-linux-x64.tar.gz" node
 }
 
 function downloadAll() {
@@ -47,6 +48,7 @@ function downloadAll() {
   download "apache-maven-3.9.0-bin.tar.gz" java/maven
   download "apache-maven-3.3.9-bin.tar.gz" java/maven
   download "node-v18.15.0-linux-x64.tar.xz" node
+  download "node-v8.17.0-linux-x64.tar.gz" node
 }
 
 ${@}
