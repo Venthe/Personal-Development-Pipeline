@@ -124,6 +124,7 @@ function test() {
     \
     --env PIPELINE_JOB_NAME="TestedJob" \
     --env PIPELINE_BUILD_ID="1" \
+    --env PIPELINE_DEBUG="1" \
     --env PIPELINE_WORKFLOW="workflow.yaml" \
     --env PIPELINE_NEXUS_URL="${_NEXUS_URL}" \
     --env PIPELINE_GERRIT_URL="${_GERRIT_URL}" \
