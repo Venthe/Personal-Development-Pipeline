@@ -188,7 +188,7 @@ POST_repositories npm/group @manifests/repository-npm-group.json
 # POST_blobstores_file apt-hosted
 # POST_blobstores_file apt
 
-# kubectl patch --namespace=nexus service/nexus-nexus-repository-manager  --patch='
+# kubectl patch --namespace=infrastructure service/nexus-nexus-repository-manager  --patch='
 # spec:
 #  ports:
 #  - name: docker-group
@@ -203,7 +203,7 @@ POST_repositories npm/group @manifests/repository-npm-group.json
 #    targetPort: 8081
 # '
 
-# kubectl patch --namespace=nexus deployment/nexus-nexus-repository-manager --patch='
+# kubectl patch --namespace=infrastructure deployment/nexus-nexus-repository-manager --patch='
 # spec:
 #  template:
 #    spec:
@@ -222,7 +222,7 @@ POST_repositories npm/group @manifests/repository-npm-group.json
 # '
 
 # # nexus-nexus-repository-manager
-# kubectl patch --namespace=nexus ingress/nexus-nexus-repository-manager --patch='
+# kubectl patch --namespace=infrastructure ingress/nexus-nexus-repository-manager --patch='
 # metadata:
 #  annotations:
 #    cert-manager.io/cluster-issuer: ca-issuer
