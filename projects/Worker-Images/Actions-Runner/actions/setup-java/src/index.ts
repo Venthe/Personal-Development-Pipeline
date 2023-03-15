@@ -1,5 +1,6 @@
 import {callbacks, context, download, RepositoryType, step, untar} from '@pipeline/core';
 import {ActionStepDefinition} from '@pipeline/types';
+import {shell} from "@pipeline/process";
 
 // TODO: Use nexus API to list java binaries
 
@@ -62,16 +63,27 @@ const mapAzulVersion = (type: string, version?: string) => {
         implementation = "corretto"
     }
 
+    let v;
     switch (implementation) {
         case "corretto":
-            const correttoVersion = mapCorrettoVersion(type, _with.version)
-            await setupJava(type, `amazon-corretto-${correttoVersion}-linux-x64.tar.gz`, `amazon-corretto-${correttoVersion}-linux-x64/bin`, `amazon-corretto-${correttoVersion}-linux-x64`);
+            v = mapCorrettoVersion(type, _with.version)
+            await setupJava(type, `amazon-corretto-${v}-linux-x64.tar.gz`, `amazon-corretto-${v}-linux-x64/bin`, `amazon-corretto-${v}-linux-x64`);
             break
         case "azul":
-            const azulVersion = mapAzulVersion(type, _with.version)
-            await setupJava(type, `zulu${azulVersion}-linux_x64.tar.gz`, `zulu${azulVersion}-linux_x64/bin`, `zulu${azulVersion}-linux_x64`);
+            v = mapAzulVersion(type, _with.version)
+            await setupJava(type, `zulu${v}-linux_x64.tar.gz`, `zulu${v}-linux_x64/bin`, `zulu${v}-linux_x64`);
             break
         default:
             throw new Error(`Unsupported implementation: ${type}/${implementation}`)
+    }
+
+    // TODO: Mask password; use from secrets
+    const {version: versionString} = v.match(/^(?<version>\d+)\D?.*$/)?.groups || {}
+    if (+versionString <= 5) {
+        await shell(`keytool -import -trustcacerts -noprompt -storepass changeit -file /certs/ca.crt -keystore ${process.env.JAVA_HOME}/jre/lib/security/cacerts -alias "K8s"`)
+    } else if (+versionString <= 8) {
+        await shell(`keytool -importcert -trustcacerts -noprompt -storepass changeit -file /certs/ca.crt -keystore ${process.env.JAVA_HOME}/jre/lib/security/cacerts -alias "K8s"`)
+    } else {
+        await shell('keytool -importcert -trustcacerts -noprompt -storepass changeit -cacerts -file /certs/ca.crt -alias "K8s"')
     }
 })();

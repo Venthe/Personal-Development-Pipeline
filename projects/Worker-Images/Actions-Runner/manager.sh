@@ -125,6 +125,7 @@ function test() {
     --volume "${PWD}/test/test.sh:/test.sh" \
     --volume "/var/run/docker.sock:/var/run/docker.sock" \
     --volume "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro" \
+    --volume "/usr/local/share/ca-certificates/k8s/ca.crt:/certs/ca.crt:ro" \
     \
     --env PIPELINE_JOB_NAME="${PIPELINE_JOB_NAME:-TestedJob}" \
     --env PIPELINE_BUILD_ID="1" \
