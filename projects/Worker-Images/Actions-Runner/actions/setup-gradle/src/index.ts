@@ -1,5 +1,6 @@
 import { shell } from '@pipeline/process';
 import { callbacks, context, download, RepositoryType, unzip } from '@pipeline/core';
+import fs from "fs";
 
 (async function() {
   const filename = `${context.internal.binariesDirectory}/gradle.zip`;
@@ -11,4 +12,23 @@ import { callbacks, context, download, RepositoryType, unzip } from '@pipeline/c
 
   // To remove welcome message
   await shell(`gradle --version 2>/dev/null >/dev/null`);
+
+
+  const initGradle = `
+allprojects {
+    buildscript {
+        repositories {
+            mavenLocal()
+            maven { url "https://nexus.home.arpa/repository/maven-group/" }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "https://nexus.home.arpa/repository/maven-group/" }
+    }
+}`
+
+  await shell(`mkdir .gradle`, {cwd: process.env.HOME})
+  fs.writeFileSync(`${process.env.HOME}/.gradle/init.gradle`, initGradle);
 })();
