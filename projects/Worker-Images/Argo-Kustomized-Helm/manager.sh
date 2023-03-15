@@ -46,6 +46,7 @@ function release_name() {
 function template() {
   1>&2 echo "Template"
   helm template \
+    --include-crds \
     --values="values-from-application.yml" \
     --release-name `release_name` \
     ./

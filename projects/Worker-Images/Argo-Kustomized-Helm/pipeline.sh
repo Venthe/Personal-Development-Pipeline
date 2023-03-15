@@ -3,7 +3,7 @@
 set -o errexit
 set -o pipefail
 
-IMAGE_VERSION=1.0.23
+IMAGE_VERSION=1.0.24
 NAMESPACE=infrastructure
 
 function tag() {
@@ -13,7 +13,11 @@ function tag() {
 TAG=`tag IMAGE_VERSION`
 
 function build_container() {
-  docker build . --tag="${TAG}" --tag="`tag latest`" --build-arg image_version=${IMAGE_VERSION}
+  docker build . \
+    --tag="${TAG}" \
+    --tag="`tag latest`" \
+    --build-arg image_version=${IMAGE_VERSION} \
+    --file Dockerfile
 }
 
 function deploy_container() {

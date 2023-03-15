@@ -21,7 +21,7 @@ repoServer:
   extraContainers:
     - name: kustomized-helm
       command: [ "manager", "server" ]
-      image: docker.home.arpa/venthe/argocd-kustomized-helm-cmp:1.0.23
+      image: docker.home.arpa/venthe/argocd-kustomized-helm-cmp:1.0.24
       args:
         - --loglevel
         - debug
