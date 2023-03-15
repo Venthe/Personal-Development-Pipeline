@@ -10,7 +10,7 @@ function tag() {
   printf docker.home.arpa/venthe/argocd-kustomized-helm-cmp:${1}
 }
 
-TAG=`tag IMAGE_VERSION`
+TAG=`tag ${IMAGE_VERSION}`
 
 function build_container() {
   docker build . \
