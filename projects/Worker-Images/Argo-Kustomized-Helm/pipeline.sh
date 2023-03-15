@@ -23,6 +23,7 @@ function build_container() {
 function deploy_container() {
   docker login docker.home.arpa
   docker push "${TAG}"
+  docker push "`tag latest`"
 }
 
 function load_test_parameters() {
