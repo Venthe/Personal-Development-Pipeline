@@ -1,5 +1,6 @@
 import {callbacks, context, download, RepositoryType, step, untar} from '@pipeline/core';
 import {ActionStepDefinition} from '@pipeline/types';
+import fs from "fs";
 
 type With = {
     version?: string,
@@ -46,4 +47,11 @@ function mapVersion(version?: number | string) {
     });
     await untar(filename, context.internal.binariesDirectory);
     callbacks.addToPath(`${context.internal.binariesDirectory}/${unpackedName}/bin`);
+
+    const npmRc = `
+strict-ssl=false
+//nexus.home.arpa/repository/npm-hosted/:_authToken=NpmToken.09d18dee-477e-380b-8205-fc0d16f54f0e
+registry=https://nexus.home.arpa/repository/npm-proxy-npmjs.org/`
+
+    fs.writeFileSync(`${process.env.HOME}/.npmrc`, npmRc);
 })();
