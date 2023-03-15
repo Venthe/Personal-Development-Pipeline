@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 
 import yaml
@@ -86,5 +88,6 @@ if args.command == "update_helm_property":
 if args.command == "update_helm_chart_version":
     update_helm_chart_version(args.namespace, args.application_name, args.chart_version)
 
-# ./main.py updateHelmChartVersion integration argocd-example 1.0.1
-# ./main.py updateHelmProperty integration argocd-example imageTag 20230205-190544-a467a10
+# ./main.py update_helm_chart_version integration argocd-example 1.0.1
+# ./main.py update_helm_property integration argocd-example imageTag 20230205-190544-a467a10
+# ./main.py deploy integration

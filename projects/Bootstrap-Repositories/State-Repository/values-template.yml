@@ -20,8 +20,8 @@ applications:
     {%- endif %}
     chart: {{app.chart}}
     {% filter indent(width=4) %}
-{{ app.values | render_key("values") }}
-{{ app.additionalManifests | render_key("additionalManifests") }}
-{{ app.kustomizations | render_key("patches") }}
+{{ app["values"] | render_key("values") }}
+{{ app["additionalManifests"] | render_key("additionalManifests") }}
+{{ app["kustomizations"] | render_key("patches") }}
     {% endfilter %}
   {% endfor %}

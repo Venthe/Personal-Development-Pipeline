@@ -95,8 +95,8 @@ def __merge_dynamic_and_static_values__(dynamic_values, static_values):
     merged_values = yaml_load(merge_values())
     for key in merged_values["helm"]:
         current = merged_values["helm"][key]
-        render = __template_environment__.from_string(yaml_dump(current)).render(
-            {"app": current})
+        render = __template_environment__.from_string(yaml_dump(current))\
+            .render({"app": current, "global": merged_values["global"]})
         merged_values["helm"][key] = yaml_load(render)
     return merged_values
 
