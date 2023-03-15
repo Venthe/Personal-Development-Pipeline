@@ -31,7 +31,6 @@ def add_application_name(parser):
 # render_merged_value_files
 parser_render_merged_value_files = subparsers.add_parser("render_merged_value_files",
                                                          help='render_merged_value_files help')
-parser_render_merged_value_files.add_argument("namespace", help='namespace help')
 add_namespace(parser_render_merged_value_files)
 
 # render_release_value_files
