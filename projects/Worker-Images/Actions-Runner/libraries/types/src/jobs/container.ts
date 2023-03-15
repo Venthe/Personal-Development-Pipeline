@@ -1,5 +1,5 @@
 export type Container = {
-    image?: string
+    image: string
     env?: { [key: string]: string }
     ports?: (number | string)[]
     volumes?: string[]

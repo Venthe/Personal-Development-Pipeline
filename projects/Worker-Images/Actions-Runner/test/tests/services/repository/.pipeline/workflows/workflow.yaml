@@ -1,0 +1,13 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    name: "Additional service"
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    services:
+      redis:
+        image: vad1mo/hello-world-rest
+        ports:
+          - 5050:5050
+    steps:
+      - run: curl localhost:5050/foo/bar
