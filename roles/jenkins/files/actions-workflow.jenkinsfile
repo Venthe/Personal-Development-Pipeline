@@ -117,7 +117,6 @@ def prepareEnvFile(workflowFile, jobName) {
             "PIPELINE_VAULT_URL"        : "http://vault.infrastructure:8200/v1",
             "PIPELINE_DOCKER_URL"       : "docker.home.arpa",
             "PIPELINE_WORKFLOW"         : "${workflowFile}",
-            "PIPELINE_DOCKER_HOST"      : "tcp://docker.infrastructure:2375",
             "GIT_SSH_COMMAND"           : "ssh -o StrictHostKeyChecking=no",
             "RUNNER_WORKSPACE_DIRECTORY": "${env.WORKSPACE}"
     ].collect { "${it.key}=${it.value}" }

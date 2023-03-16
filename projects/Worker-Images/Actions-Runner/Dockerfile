@@ -1,12 +1,14 @@
-FROM "${RUNNER_BASE_IMAGE:-docker.io/library/ubuntu:22.04}"
+FROM "${RUNNER_BASE_IMAGE:-docker.io/library/ubuntu:22.10}"
 
 RUN apt-get update \
-    && apt-get install --assume-yes curl software-properties-common apt-utils \
-    && curl --fail --silent --show-error --location "${NODE_VERSION:-https://deb.nodesource.com/setup_19.x}" | bash - \
-    && add-apt-repository ppa:git-core/ppa \
-    && apt-get update \
-    && apt-get install --assume-yes git nodejs unzip \
-    && apt-get install \
+    && apt-get install --assume-yes software-properties-common \
+    && add-apt-repository ppa:git-core/ppa && apt-get update \
+    && apt-get install --assume-yes curl git nodejs unzip vim iptables \
+    && apt-get clean
+
+RUN curl --fail --silent --show-error --location "${NODE_VERSION:-https://deb.nodesource.com/setup_19.x}" | bash -
+
+RUN apt-get install \
            ca-certificates \
            curl \
            gnupg \
@@ -20,7 +22,8 @@ RUN apt-get update \
     && apt-get install --assume-yes docker-ce docker-ce-cli containerd.io docker-compose-plugin \
     && apt-get clean
 
-ADD . "/runner"
+ADD "./dist" "/runner"
+ADD "./runner.sh" "/runner/runner.sh"
 
 WORKDIR "/workdir"
 
@@ -35,5 +38,5 @@ RUN mkdir -p \
     "/runner/metadata/secrets" \
     "/workdir"
 
-ENTRYPOINT ["node"]
-CMD ["--enable-source-maps", "/runner/index.ts"]
+ENTRYPOINT ["/runner/runner.sh"]
+CMD ["run", "--enable-source-maps"]

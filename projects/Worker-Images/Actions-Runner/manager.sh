@@ -27,7 +27,7 @@ _NEXUS_URL="https://nexus.home.arpa/repository/raw-hosted"
 _DOCKER_TAG="docker.home.arpa"
 
 # Docker image details
-RUNNER_BASE_IMAGE="docker.io/library/ubuntu:22.04"
+RUNNER_BASE_IMAGE="docker.io/library/ubuntu:22.10"
 NODE_VERSION=19
 
 # Other
@@ -75,7 +75,7 @@ function buildContainer() {
     --progress=plain \
     --tag="${RUNNER_IMAGE}" \
     --file=Dockerfile \
-    ./dist
+    ./
 }
 
 # REBUILD_MANAGER=1 ./manager.sh test tests/remote-actions
@@ -110,10 +110,8 @@ function test() {
   project deleteProject || true
   project loadProject "${repositoryPath}"
 
-  # --interactive --tty
   docker run \
-    --rm \
-    --entrypoint bash \
+    --rm --interactive --tty \
     --volume "${HOME}/.kube/config:/root/.kube_test/config:ro" \
     --volume "${HOME}/.ssh/:/root/.ssh_test:ro" \
     --volume "${PWD}/dist/index.js:/runner/index.js" \
@@ -123,9 +121,10 @@ function test() {
     --volume "${eventFile}:/runner/metadata/event.yaml:ro" \
     --volume "${secretsPath}:/runner/metadata/secrets:ro" \
     --volume "${PWD}/test/test.sh:/test.sh" \
-    --volume "/var/run/docker.sock:/var/run/docker.sock" \
     --volume "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro" \
     --volume "/usr/local/share/ca-certificates/k8s/ca.crt:/certs/ca.crt:ro" \
+    \
+    --privileged \
     \
     --env PIPELINE_JOB_NAME="${PIPELINE_JOB_NAME:-TestedJob}" \
     --env PIPELINE_BUILD_ID="1" \
@@ -137,7 +136,7 @@ function test() {
     \
     --env GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" \
     "${RUNNER_IMAGE}" \
-    /test.sh
+    "${2:-/test.sh}"
 
   project deleteProject
 }

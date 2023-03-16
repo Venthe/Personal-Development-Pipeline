@@ -25,7 +25,6 @@ export interface PipelineEnvironmentVariables {
   PIPELINE_NEXUS_URL: string;
   PIPELINE_GERRIT_URL: string;
   PIPELINE_DOCKER_URL: string;
-  PIPELINE_DOCKER_HOST: string;
 }
 
 export type ContextEnvironmentVariables = RunnerEnvironmentVariables & PipelineEnvironmentVariables
