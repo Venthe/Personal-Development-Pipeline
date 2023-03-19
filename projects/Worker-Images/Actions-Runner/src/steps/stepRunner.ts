@@ -89,10 +89,12 @@ export class StepRunner {
 
         if (!this.isAnyStepConclusionFailure() || this.shouldRunFromScript(mappedStep)) {
           const result: ActionResult = await mappedStep.run(this, this.contextManager);
-          const res: StepResult = { ...result, conclusion: result.outcome };
+          // FIXME: Name added for convenience
+          const res: StepResult  = { ...result, conclusion: result.outcome, name: mappedStep.name } as StepResult;
           this.contextManager.setResult(mappedStep.id, res);
         } else {
-          this.contextManager.setResult(mappedStep.id, { outcome: 'skipped', conclusion: 'skipped' });
+          // FIXME: Name added for convenience
+          this.contextManager.setResult(mappedStep.id, { outcome: 'skipped', conclusion: 'skipped', name: mappedStep.name } as StepResult);
         }
 
         console.debug(
