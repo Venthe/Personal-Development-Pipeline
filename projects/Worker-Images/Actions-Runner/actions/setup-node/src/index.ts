@@ -58,6 +58,7 @@ function mapVersion(version?: number | string) {
 unsafe-perm=true
 allow-root=true
 strict-ssl=false
+sass-binary-site=https://nexus.home.arpa/repository/raw-hosted/npm/sass/node-sass/releases/download
 //nexus.home.arpa/repository/npm-hosted/:_authToken=NpmToken.09d18dee-477e-380b-8205-fc0d16f54f0e
 registry=https://nexus.home.arpa/repository/npm-group/`
 
