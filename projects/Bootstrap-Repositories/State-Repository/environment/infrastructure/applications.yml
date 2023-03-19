@@ -37,7 +37,7 @@ helm:
       - values.yml
   fluentd:
     chart: hosted/fluentd-opensearch
-    chartRevision: 1.0.2
+    chartRevision: 1.1.0
     path: fluentd
     valueFiles:
       - values.yml
