@@ -15,8 +15,12 @@ export class ActionStep<T extends object = {}> implements Step<ActionStepDefinit
 
   async run(parentStepRunner: StepRunner,
             contextManager: ContextManager): Promise<ActionResult> {
-    const action = await Action.load(this.step, contextManager, parentStepRunner);
-    return action.run();
+    try {
+      const action = await Action.load(this.step, contextManager, parentStepRunner);
+      return action.run();
+    } catch (e) {
+      return { outcome: "failure" }
+    }
   }
 
   get uses(): string {
