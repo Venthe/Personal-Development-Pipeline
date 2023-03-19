@@ -53,7 +53,7 @@ unsafe-perm=true
 allow-root=true
 strict-ssl=false
 //nexus.home.arpa/repository/npm-hosted/:_authToken=NpmToken.09d18dee-477e-380b-8205-fc0d16f54f0e
-registry=https://nexus.home.arpa/repository/npm-proxy-npmjs.org/`
+registry=https://nexus.home.arpa/repository/npm-group/`
 
     fs.writeFileSync(`${process.env.HOME}/.npmrc`, npmRc);
 })();
