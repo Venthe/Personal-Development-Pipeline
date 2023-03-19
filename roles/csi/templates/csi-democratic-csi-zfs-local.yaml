@@ -29,6 +29,8 @@ storageClasses:
   #    snapshotter-secret:
 
 controller:
+  driver:
+    logLevel: warn
   enabled: true
   strategy: node
   externalProvisioner:
@@ -50,6 +52,10 @@ controller:
     extraArgs:
     - --leader-election=false
     - --node-deployment=true
+
+node:
+  driver:
+    logLevel: warn
 
 driver:
   config:

@@ -9,9 +9,5 @@ auth:
     certKeyFilename: client-key.pem
     caFilename: ca.pem
     existingSecret: etcd-client-tls
-# image.debug: true
-extraEnvVars:
-  - name: ETCD_LOG_LEVEL
-    value: debug
 persistence:
   enabled: false
