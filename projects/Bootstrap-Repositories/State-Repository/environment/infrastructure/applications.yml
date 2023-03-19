@@ -31,7 +31,7 @@ helm:
       - values.yml
   opensearch-dashboards:
     chart: opensearch/opensearch-dashboards
-    chartRevision: 2.8.0
+    chartRevision: 2.9.0
     path: opensearch-dashboards
     valueFiles:
       - values.yml
