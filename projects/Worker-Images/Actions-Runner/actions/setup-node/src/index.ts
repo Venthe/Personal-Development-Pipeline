@@ -23,6 +23,12 @@ function mapVersion(version?: number | string) {
             source: "node-v18.15.0-linux-x64.tar.xz",
             unpackedName: "node-v18.15.0-linux-x64"
         }
+    } else if (_version.startsWith("10")) {
+      return {
+          targetArchive: "node.tar.xz",
+          source: "node-v10.18.0-linux-x64.tar.xz",
+          unpackedName: "node-v10.18.0-linux-x64"
+      }
     } else if (_version.startsWith("8")) {
         return {
             targetArchive: "node.tar.gz",
