@@ -25,7 +25,7 @@ helm:
     chartRevision: 0.1.0
   opensearch:
     chart: opensearch/opensearch
-    chartRevision: 2.10.0
+    chartRevision: 2.11.1
     path: opensearch
     valueFiles:
       - values.yml
