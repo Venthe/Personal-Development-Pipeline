@@ -1,4 +1,5 @@
 fluentd:
+  logFormat: json
   opensearch:
     buffer:
       flushInterval: 20s
