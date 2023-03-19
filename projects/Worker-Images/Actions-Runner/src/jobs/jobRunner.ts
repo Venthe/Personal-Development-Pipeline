@@ -42,6 +42,9 @@ class LocalJobManager implements JobManager {
 
   constructor(private readonly jobDefinition: JobDefinition,
               private readonly contextManager: ContextManager) {
+    // FIXME: This pollutes env variables for any subsequent job - including nested ones.
+    //  verify if this is a problem
+    this.contextManager.appendEnvironmentVariables(this.jobDefinition.env);
     this.stepRunner = StepRunner.forJob(this.jobDefinition, contextManager);
   }
 
