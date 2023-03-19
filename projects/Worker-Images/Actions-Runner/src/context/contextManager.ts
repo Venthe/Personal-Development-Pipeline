@@ -49,6 +49,7 @@ export class ContextManager<T extends GerritEventSnapshot & object = GerritEvent
       internal: {
         event: this.event,
         workspace: this.environmentVariables.RUNNER_WORKSPACE_DIRECTORY,
+        projectUrl: (this.event as any)?.metadata?.url ?? this.environmentVariables.PIPELINE_GERRIT_URL,
         gerritUrl: this.environmentVariables.PIPELINE_GERRIT_URL,
         dockerUrl: this.environmentVariables.PIPELINE_DOCKER_URL,
         nexusUrl: this.environmentVariables.PIPELINE_NEXUS_URL,

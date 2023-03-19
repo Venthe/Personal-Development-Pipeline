@@ -42,7 +42,7 @@ export class WorkflowOrchestrator {
   }
 
   private static async downloadPipelines(contextSnapshot: ContextSnapshot) {
-    const projectUrl = `${contextSnapshot.internal.gerritUrl}/${contextSnapshot.internal.event.metadata.projectName}`;
+    const projectUrl = `${contextSnapshot.internal.projectUrl}/${contextSnapshot.internal.event.metadata.projectName}`;
     await shellMany(checkoutCommands(
         {
           repository: projectUrl,

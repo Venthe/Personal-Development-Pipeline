@@ -6,6 +6,10 @@ export interface GerritEventSnapshot {
         revision: string
         referenceId: string
         originId?: string
+        /**
+         * alternative URL for the project (I.e. not gerrit but a test directory)
+         */
+        url?: string
     }
     additionalProperties: {
         workflow?: string

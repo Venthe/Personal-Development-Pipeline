@@ -279,6 +279,7 @@ export type InternalSnapshot<T extends object = GerritEventSnapshot> = {
      * The URL of the <SYSTEM> REST API.
      **/
     gerritUrl: string
+    projectUrl: string
     nexusUrl: string
     dockerUrl: string
     jenkinsUrl: string
