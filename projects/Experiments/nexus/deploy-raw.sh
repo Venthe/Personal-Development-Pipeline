@@ -34,6 +34,7 @@ function upload_all() {
   upload "apache-maven-3.3.9-bin.tar.gz" java/maven
   upload "node-v18.15.0-linux-x64.tar.xz" node
   upload "node-v8.17.0-linux-x64.tar.gz" node
+  upload "chrome64_59.0.3071.86.deb" deb
 }
 
 function download_all() {
@@ -49,6 +50,7 @@ function download_all() {
   download "apache-maven-3.3.9-bin.tar.gz" java/maven
   download "node-v18.15.0-linux-x64.tar.xz" node
   download "node-v8.17.0-linux-x64.tar.gz" node
+  download "chrome64_59.0.3071.86.deb" deb
 }
 
 ${@}
