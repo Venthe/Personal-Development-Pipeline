@@ -22,6 +22,10 @@ RUN apt-get install \
     && apt-get install --assume-yes docker-ce docker-ce-cli containerd.io docker-compose-plugin \
     && apt-get clean
 
+RUN apt-get update \
+    && apt-get install --assume-yes build-essential zlib1g-dev libffi-dev libssl-dev libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev \
+    && apt-get clean
+
 ADD "./dist" "/runner"
 ADD "./runner.sh" "/runner/runner.sh"
 
