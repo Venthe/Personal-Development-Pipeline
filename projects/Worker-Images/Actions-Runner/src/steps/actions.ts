@@ -117,7 +117,7 @@ export class Action {
       let outputs: StepOutputs | undefined;
 
       script.on('error', err => {
-        throw new Error(`${err}`);
+        throw new Error(`Script error: ${err}`);
       });
 
       script.on('message', (m: string) => {
@@ -147,7 +147,7 @@ export class Action {
         if (+code === 0) {
           resolveSuccess({ outcome: 'success' });
         } else {
-          resolveFailure({ code: +code });
+          resolveSuccess({ outcome: 'failure' });
         }
       });
     });
