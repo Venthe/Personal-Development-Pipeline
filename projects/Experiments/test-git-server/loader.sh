@@ -48,33 +48,23 @@ function prepare_original_repo() {
 }
 
 function server() {
-  prepare_original_repo
-
   cd "/usr/share/nginx/html/"
   mkdir "repository.git"
   cd "repository.git"
   git init . --bare --shared
   git update-server-info
-  echo "[core]
-                repositoryformatversion = 0
-                filemode = true
-                bare = true
-                sharedrepository = 1
-        [receive]
-                denyNonFastforwards = true
-        [http]
-            receivepack = true" > /usr/share/nginx/html/repository.git/config
-  cd "/test_project"
-  git push /usr/share/nginx/html/repository.git main
+  echo "
+[core]
+  repositoryformatversion = 0
+  filemode = true
+  bare = true
+  sharedrepository = 1
+[receive]
+  denyNonFastforwards = true
+[http]
+  receivepack = true" > /usr/share/nginx/html/repository.git/config
   spawn-fcgi -s /var/run/fcgiwrap.socket -M 766 /usr/sbin/fcgiwrap
   nginx
 }
-#
-#function load_project() {
-#
-#  #local project_directory="${1}"
-#  #cd "${project_directory}"
-#  #git push http://localhost:8080/repository.git
-#}
 
 ${@}
