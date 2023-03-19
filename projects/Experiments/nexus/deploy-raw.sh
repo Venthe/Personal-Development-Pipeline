@@ -20,7 +20,7 @@ function upload() {
         "https://nexus.home.arpa/repository/raw-hosted/${2}/${1}"
 }
 
-function uploadAll() {
+function upload_all() {
   upload "buildkit-v0.11.2.linux-amd64.tar.gz" docker
   upload "docker-20.10.22.tgz" docker
   upload "nerdctl-1.1.0-linux-amd64.tar.gz" docker
@@ -36,7 +36,7 @@ function uploadAll() {
   upload "node-v8.17.0-linux-x64.tar.gz" node
 }
 
-function downloadAll() {
+function download_all() {
   download "buildkit-v0.11.2.linux-amd64.tar.gz" docker
   download "docker-20.10.22.tgz" docker
   download "nerdctl-1.1.0-linux-amd64.tar.gz" docker
