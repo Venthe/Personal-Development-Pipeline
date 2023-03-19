@@ -1,13 +1,37 @@
-import { shellMany } from '@pipeline/process';
+import {ActionStepDefinition} from '@pipeline/types';
+import {shellMany} from '@pipeline/process'
+import {callbacks, context, download, RepositoryType, step, untar} from '@pipeline/core';
 
-async function run() {
+type With = {
+  version?: string,
+};
+
+(async function () {
+  const _with = (step as ActionStepDefinition<With>)?.with ?? {};
+  const version = _with?.version ?? "3.8.0";
+
   process.env['DEBIAN_FRONTEND'] = 'noninteractive';
-  await shellMany([
-    `apt-get -qq install software-properties-common --assume-yes`,
-    `add-apt-repository ppa:deadsnakes/ppa`,
-    `apt-get -qq update`,
-    `apt-get -qq install python3.8 python3-pip --assume-yes`
-  ]);
-}
+  callbacks.addToPath(`${process.env.HOME}/.pyenv/bin`);
+  callbacks.addEnv('PYENV_ROOT', `${process.env.HOME}/.pyenv`);
 
-run();
+  if (version.startsWith("2")) {
+    await shellMany([
+      'apt-get remove --assume-yes libssl-dev',
+      'apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32',
+      'add-apt-repository deb http://security.ubuntu.com/ubuntu bionic-security main',
+      'apt-get update',
+      'apt-get install --assume-yes libssl1.0-dev'
+    ])
+  }
+
+  await shellMany([
+    `curl https://pyenv.run | bash`,
+    `pyenv init --path`,
+    `pyenv install ${version}`,
+    // `pyenv shell ${version}`,
+    `pyenv global ${version}`,
+    "ln -s `which python2.7` /usr/bin/python"
+  ]);
+
+  callbacks.addToPath(`${process.env.HOME}/.pyenv/shims`);
+})();
