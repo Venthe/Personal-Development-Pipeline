@@ -1,0 +1,16 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    name: "Action: upload-artifact"
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@main
+        id: cache
+        with:
+          path: path/to/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: /install.sh

@@ -1,0 +1,13 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    name: "Action: cache - hashFiles"
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/cache@main
+        with:
+          path: |
+            path/to/dependencies
+            some/other/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
