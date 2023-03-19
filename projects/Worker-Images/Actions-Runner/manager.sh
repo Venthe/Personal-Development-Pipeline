@@ -107,8 +107,10 @@ function test() {
     (cd ../../../ && bash ./load-projects.sh "${@}" Test/ActionRunnerTestService)
   }
 
-  project deleteProject || true
-  project loadProject "${repositoryPath}"
+  if [[ "${EXPERIMENTAL_LOADER}" -ne "1" ]]; then
+    project deleteProject || true
+    project loadProject "${repositoryPath}"
+  fi
 
   docker run \
     --rm --interactive --tty \
@@ -138,7 +140,9 @@ function test() {
     "${RUNNER_IMAGE}" \
     "${2:-/test.sh}"
 
-  project deleteProject
+  if [[ "${EXPERIMENTAL_LOADER}" -ne "1" ]]; then
+    project deleteProject
+  fi
 }
 
 function build() {

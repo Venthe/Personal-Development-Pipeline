@@ -1,0 +1,6 @@
+type: "PatchsetCreated"
+metadata:
+  projectName: repository.git
+  branchName: main
+  revision: main
+  url: http://host.docker.internal:8080
