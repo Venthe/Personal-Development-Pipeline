@@ -1,3 +1,6 @@
+image:
+  repository: docker.home.arpa/fluent/fluentd-kubernetes-daemonset
+
 fluentd:
   logFormat: json
   opensearch:
