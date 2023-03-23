@@ -5,4 +5,5 @@ export type Container = {
     volumes?: string[]
     credentials?: { [key: string]: string }
     command?: string[]
+    entrypoint?: string[]
 };

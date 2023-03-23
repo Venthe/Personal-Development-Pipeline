@@ -32,6 +32,11 @@ export const toContainer = (containerDefinition: Container, name: string): Gener
         container.withCommand(containerDefinition.command)
     }
 
+    if (containerDefinition.entrypoint) {
+        console.debug(`Setting entrypoint to ${name}`, containerDefinition.entrypoint)
+        container.withEntrypoint(containerDefinition.entrypoint)
+    }
+
     return container
 }
 
