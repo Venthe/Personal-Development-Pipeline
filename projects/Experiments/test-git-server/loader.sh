@@ -24,10 +24,8 @@ function start_container() {
     --volume="${HOME}/.gitconfig:/root/.gitconfig:ro" \
     --volume="${project_directory}:/original_project:ro" \
      -p "8080:80" \
-    --entrypoint="loader.sh" \
     --name="git-server" \
-    "${TAG}" \
-    server
+    "${TAG}"
 }
 
 function update_repo() {
@@ -60,11 +58,11 @@ function server() {
   bare = true
   sharedrepository = 1
 [receive]
-  denyNonFastforwards = true
+  denyNonFastforwards = false
 [http]
   receivepack = true" > /usr/share/nginx/html/repository.git/config
   spawn-fcgi -s /var/run/fcgiwrap.socket -M 766 /usr/sbin/fcgiwrap
-  nginx
+  nginx ${@}
 }
 
 ${@}

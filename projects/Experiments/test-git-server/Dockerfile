@@ -7,3 +7,8 @@ RUN apt update \
       rsync \
     && apt clean
 RUN chown -R www-data. /usr/share/nginx/html
+COPY loader.sh /loader.sh
+COPY git.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["/loader.sh", "server"]
