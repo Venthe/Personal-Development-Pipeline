@@ -32,7 +32,7 @@ function loadProject() {
 
   echo >&2 "[${project_name}] Copy code to temporary directory"
   local temp_directory="$(mktemp -d)"
-  trap 'rm -rf -- "${temp_directory}"' EXIT
+  trap 'rm -rf -- "${temp_directory}"' EXIT INT
 
   echo >&2 "[${project_name}] Preparing repository from ${project_directory}"
   rsync --recursive -P --exclude="node_modules" --exclude=".git" "${project_directory}" "${temp_directory}"
