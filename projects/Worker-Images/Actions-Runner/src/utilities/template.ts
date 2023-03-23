@@ -1,5 +1,5 @@
 import * as nunjucks from 'nunjucks';
-import { ContextSnapshot, NeedsSnapshot, StepsResultSnapshot } from '@pipeline/types';
+import {ContextSnapshot, NeedsSnapshot, StepsResultSnapshot} from '@pipeline/types';
 
 const env = new nunjucks.Environment(undefined, {
   autoescape: true,
@@ -47,6 +47,7 @@ export const renderTemplate = (text: string, context: ContextSnapshot): any => {
         return !!text.match(stringToRegex(searchedText))
       }
     });
+    env.addFilter('stringify', (text) => (env as any).filters.safe(JSON.stringify(text)));
     env.addGlobal('success', () => {
       const steps: StepsResultSnapshot = context.steps || {};
       return (Object.keys(steps).map(a => steps[a]).map(a => a.conclusion).filter(a => ['failure', 'cancelled'].includes(a)).length === 0);

@@ -164,6 +164,16 @@ describe('Custom functions', () => {
     });
   });
 
+  describe('stringify', () => {
+    it('1', () => {
+      const base = '${{ job | stringify }}';
+      const result = renderTemplate(base, { job: {status: 'cancelled' } } as any as ContextSnapshot);
+
+      expect(result)
+          .toEqual("{\"status\":\"cancelled\"}");
+    });
+  })
+
   describe('contains', () => {
     it('contains', () => {
       const base = '${{ job.status | contains(\'cancelled\', {test: \'a\'}) }}';
