@@ -27,6 +27,11 @@ export const toContainer = (containerDefinition: Container, name: string): Gener
         console.error("Unsupported option: Container credential")
     }
 
+    if (containerDefinition.command) {
+        console.debug(`Setting cmd to ${name}`, containerDefinition.command)
+        container.withCommand(containerDefinition.command)
+    }
+
     return container
 }
 

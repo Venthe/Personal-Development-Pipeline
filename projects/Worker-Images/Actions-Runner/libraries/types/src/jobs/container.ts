@@ -4,4 +4,5 @@ export type Container = {
     ports?: (number | string)[]
     volumes?: string[]
     credentials?: { [key: string]: string }
+    command?: string[]
 };
