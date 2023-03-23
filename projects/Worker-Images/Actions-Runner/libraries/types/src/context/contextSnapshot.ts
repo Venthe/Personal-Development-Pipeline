@@ -327,6 +327,8 @@ export type InternalSnapshot<T extends object = GerritEventSnapshot> = {
      * Path on the runner to the file that sets environment variables from workflow.ts commands. This file is unique to
      * the current step and is a different file for each step in a job. For more information, see "Workflow commands
      * for <SYSTEM> Actions."
+     *
+     * @Deprecated
      **/
     env: string
     /**

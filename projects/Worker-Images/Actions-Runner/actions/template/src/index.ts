@@ -3,7 +3,6 @@ import { callbacks, context, step } from '@pipeline/core';
 
 (async function() {
   console.log('Console.log: Hello world!', step);
-  console.log(context.internal.env);
   await shell('ls && pwd');
 
   callbacks.sendOutput('sample', { a: 1, b: 2 });
