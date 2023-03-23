@@ -29,7 +29,7 @@ export const download = async ({
   const nexusPath = pathStrategy(context, sourcePath, type);
   const url = `${context.internal.nexusUrl}/${nexusPath}`;
   if (!silent) console.debug('Downloading artifact', nexusPath, 'to', targetPath);
-  return shell(`curl ${silent ? '--silent' : ''} --fail --user ${(nexusBasicAuth(context.secrets))} ${url} --output ${targetPath}`, { silent, ...curlPasswordMask() });
+  return shell(`curl ${silent ? '--silent' : ''} --no-progress-meter --fail --user ${(nexusBasicAuth(context.secrets))} ${url} --output ${targetPath}`, { silent, ...curlPasswordMask() });
 };
 
 export const upload = async ({
@@ -41,7 +41,7 @@ export const upload = async ({
   const nexusPath = pathStrategy(context, targetPath ?? sourcePath, type);
   const url = `${context.internal.nexusUrl}/${nexusPath}`;
   if (!silent) console.debug('Uploading artifact', sourcePath, 'to', nexusPath);
-  return shell(`curl ${silent ? '--silent' : ''} --fail --user ${(nexusBasicAuth(context.secrets))} --upload-file "${sourcePath}" "${url}"`, { silent, ...curlPasswordMask() });
+  return shell(`curl ${silent ? '--silent' : ''} --no-progress-meter --fail --user ${(nexusBasicAuth(context.secrets))} --upload-file "${sourcePath}" "${url}"`, { silent, ...curlPasswordMask() });
 };
 
 const pathStrategy = (context: ContextSnapshot, sourcePath, type?: RepositoryType) => {

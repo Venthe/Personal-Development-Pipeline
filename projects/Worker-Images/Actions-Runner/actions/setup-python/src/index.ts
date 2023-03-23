@@ -25,7 +25,7 @@ type With = {
   }
 
   await shellMany([
-    `curl https://pyenv.run | bash`,
+    `curl --no-progress-meter https://pyenv.run | bash`,
     `pyenv init --path`,
     `pyenv install ${version}`,
     // `pyenv shell ${version}`,
