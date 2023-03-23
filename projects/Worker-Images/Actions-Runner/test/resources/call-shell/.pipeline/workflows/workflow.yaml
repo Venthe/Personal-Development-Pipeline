@@ -1,0 +1,11 @@
+name: Deploy to cluster
+on: [ push ]
+jobs:
+  TestedJob:
+    name: "Deploy facsimile"
+    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
+    steps:
+      - uses: actions/checkout@main
+      - name: Deploy environments
+        run: bash ./manager.sh deploy integration
+

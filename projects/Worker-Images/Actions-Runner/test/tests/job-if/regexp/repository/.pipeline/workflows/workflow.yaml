@@ -1,9 +1,0 @@
-name: Deploy to cluster
-on: [ push ]
-jobs:
-  TestedJob:
-    name: "Scripts: if-regexp"
-    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
-    if: "${{ not (internal.event.additionalProperties.commit.commit | contains('/Should tri..er A/')) }}"
-    steps:
-      - run: "exit 1"

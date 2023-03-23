@@ -7,5 +7,5 @@ export default {
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
     coverageDirectory: 'src',
-    setupFilesAfterEnv: ["./test/config.ts"]
+    setupFilesAfterEnv: ["./test/unit.config.ts"]
 };

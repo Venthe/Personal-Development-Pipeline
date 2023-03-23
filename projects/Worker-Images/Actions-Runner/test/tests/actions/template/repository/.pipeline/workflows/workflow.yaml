@@ -1,8 +1,0 @@
-name: Build
-on: [ push ]
-jobs:
-  TestedJob:
-    name: "Action: template"
-    runs-on: docker.home.arpa/venthe/ubuntu-runner:22.10
-    steps:
-      - uses: actions/template@main

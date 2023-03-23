@@ -20,7 +20,6 @@ function test() {
 
 function cleanPipeline() {
   rm -rf ./node_modules/@pipeline
-  npm install
 }
 
 function buildLibraries() {

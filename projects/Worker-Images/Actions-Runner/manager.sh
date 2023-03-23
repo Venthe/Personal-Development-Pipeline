@@ -10,9 +10,7 @@ set -o pipefail
 #_DOCKER_TAG="host.docker.internal:5000"
 
 NAMESPACE="infrastructure"
-RELEASE_NAME="pipeline-mediator"
 LATEST_TAG="latest"
-IMAGE_NAME="docker.home.arpa/pipeline-mediator"
 
 CURRENT_VERSION_TAG=`git rev-parse HEAD`
 CURRENT_DATETIME=`date --utc +%Y%m%d-%H%M%S`
@@ -35,7 +33,6 @@ RUNNER_IMAGE="${_DOCKER_TAG}/venthe/ubuntu-runner:22.10"
 
 function cleanPipeline() {
   rm -rf ./node_modules/@pipeline
-  npm install
 }
 
 function buildActions() {
@@ -62,11 +59,11 @@ function prepare() {
   if [[ "${REBUILD_LIBRARIES}" -eq "1" ]]; then
     buildLibraries
   fi
-  npm ci
+  npm install
 }
 
 function buildManager() {
-  npm ci
+  npm install
   npm run build
 }
 
@@ -79,38 +76,45 @@ function buildContainer() {
 }
 
 # REBUILD_MANAGER=1 ./manager.sh test tests/remote-actions
-function test() {
-  local path="${1}"
-  local absolutePath="${PWD}/test/${path}"
-  local repositoryPath="${REPOSITORY_PATH:-${absolutePath}/repository/}"
-  local envPath="${ENVIRONMENT_PATH:-${absolutePath}/env/}"
-  local eventFile="${EVENT_FILE:-${absolutePath}/event.yaml}"
-  local secretsPath="${SECRETS_PATH:-${absolutePath}/secrets/}"
-
-  if [[ "${REBUILD_LIBRARIES}" -eq "1" ]]; then
-    buildLibraries
-  fi
-
-  if [[ "${REBUILD_MANAGER}" -eq "1" ]]; then
-    buildManager
-  fi
-
-  if [[ "${REBUILD_CONTAINER}" -eq "1" ]]; then
-    buildContainer
-  fi
-
-  if [[ "${REBUILD_ACTIONS}" -eq "1" ]]; then
-    buildActions
-  fi
+function execute() {
+  local repositoryPath="${1}"
+  local envPath="${ENVIRONMENT_PATH:-${PWD}/env/}"
+  local eventFile="${EVENT_FILE:-${PWD}/event.yaml}"
+  local secretsPath="${SECRETS_PATH:-${PWD}/secrets/}"
 
   function project() {
-    (cd ../../../ && bash ./load-projects.sh "${@}" Test/ActionRunnerTestService)
+    if [[ "${ENVIRONMENT}" != "localhost" ]]; then
+      (cd ../../../ && bash ./load-projects.sh "${@}" Test/ActionRunnerTestService)
+    else
+      function loadProject() {
+        docker run --rm -it \
+            --volume="${HOME}/.gitconfig:/root/.gitconfig:ro" \
+             -p "8080:80" \
+            --name="git-server" \
+            --detach \
+            docker.home.arpa/venthe/git-server:latest
+        sleep 2
+
+        local temp_directory="$(mktemp -d)"
+        trap 'rm -rf -- "${temp_directory}"' EXIT INT
+        rsync --recursive --exclude="node_modules" --exclude=".git" "${repositoryPath}" "${temp_directory}"
+        (cd ${temp_directory} \
+          && git init \
+          && git add --all 2>/dev/null \
+          && git commit -m "Initial commit" \
+          && git push http://localhost:8080/repository.git main)
+      }
+
+      function deleteProject() {
+        docker stop git-server
+      }
+
+      ${@}
+    fi
   }
 
-  if [[ "${EXPERIMENTAL_LOADER}" -ne "1" ]]; then
-    project deleteProject || true
-    project loadProject "${repositoryPath}"
-  fi
+  project deleteProject || true
+  project loadProject "${repositoryPath}"
 
   docker run \
     --rm --interactive --tty \
@@ -140,9 +144,7 @@ function test() {
     "${RUNNER_IMAGE}" \
     "${2:-/test.sh}"
 
-  if [[ "${EXPERIMENTAL_LOADER}" -ne "1" ]]; then
-    project deleteProject
-  fi
+  project deleteProject
 }
 
 function build() {
@@ -164,13 +166,25 @@ prepareNPM() {
   npm adduser --auth-type=legacy --registry https://nexus.home.arpa/repository/npm-hosted/
 }
 
-function testAll() {
-    local test_files=`find ./test | grep -E 'event\.ya?ml' | xargs dirname | sed 's/^\.\/test\///'`
-    for single_test in ${test_files}; do
-      echo "Performing test: ${single_test}"
-      test "${single_test}"
-    done
+function test_all() {
+  npm run test ${@} --prefix=test
 }
+
+if [[ "${REBUILD_LIBRARIES}" -eq "1" ]]; then
+  buildLibraries
+fi
+
+if [[ "${REBUILD_MANAGER}" -eq "1" ]]; then
+  buildManager
+fi
+
+if [[ "${REBUILD_CONTAINER}" -eq "1" ]]; then
+  buildContainer
+fi
+
+if [[ "${REBUILD_ACTIONS}" -eq "1" ]]; then
+  buildActions
+fi
 
 if [[ ${#} -ne 0 ]]; then
   if declare -f "$1" >/dev/null; then
