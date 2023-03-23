@@ -29,6 +29,6 @@ allprojects {
     }
 }`
 
-  await shell(`mkdir .gradle`, {cwd: process.env.HOME})
+  await shell(`mkdir .gradle || true`, {cwd: process.env.HOME})
   fs.writeFileSync(`${process.env.HOME}/.gradle/init.gradle`, initGradle);
 })();
