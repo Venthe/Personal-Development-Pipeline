@@ -74,7 +74,7 @@ export class Action {
         revision,
         cwd: context.contextSnapshot.internal.actionsDirectory,
         directory: project,
-        silent: false
+        silent: true
       }, context.contextSnapshot);
       return `${context.contextSnapshot.internal.actionsDirectory}/${project}`;
     } else {
