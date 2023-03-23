@@ -6,6 +6,8 @@ type With = {
   version?: string,
 };
 
+// TODO: Swap pyenv to something faster
+//  it takes a minute to configure a Python version
 (async function () {
   const _with = (step as ActionStepDefinition<With>)?.with ?? {};
   const version = _with?.version ?? "3.8.0";
