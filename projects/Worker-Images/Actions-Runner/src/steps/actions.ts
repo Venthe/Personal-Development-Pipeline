@@ -135,7 +135,7 @@ export class Action {
           case 'setOutput':
             outputs = outputs ?? {};
             let typedMessage3 = message as SetOutputMessage;
-            outputs[typedMessage3.content.key] = typedMessage3.content.value;
+            outputs[typedMessage3.content.key] = typeof typedMessage3.content.value === 'string' || typeof typedMessage3.content.value === 'number' ? typedMessage3.content.value : JSON.stringify(typedMessage3.content.value);
             return;
           default:
             throw new Error(`Unsupported message: ${JSON.stringify(message)}`);
@@ -145,9 +145,9 @@ export class Action {
       script.on('exit', (code: string) => {
         console.debug(`child process exited with code ${code}`);
         if (+code === 0) {
-          resolveSuccess({ outcome: 'success' });
+          resolveSuccess({ outcome: 'success', outputs });
         } else {
-          resolveSuccess({ outcome: 'failure' });
+          resolveSuccess({ outcome: 'failure', outputs });
         }
       });
     });
