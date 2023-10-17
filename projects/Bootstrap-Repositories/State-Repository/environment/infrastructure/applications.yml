@@ -1,4 +1,9 @@
 helm:
+  truenas-zfs-csi:
+    logging:
+      remap:
+        - level::u
+        - level::(INFO->)
   backstage:
     chart: backstage/backstage
     path: backstage
