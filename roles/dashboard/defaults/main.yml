@@ -1,4 +1,0 @@
-dashboard:
-  namespace: infrastructure
-  name: dashboard
-tld_hostname: home.arpa

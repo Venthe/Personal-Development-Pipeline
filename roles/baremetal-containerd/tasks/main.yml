@@ -1,8 +1,0 @@
-- name: "Install and configure prerequisites for containerd CRI: Forwarding IPv4 and letting iptables see bridged traffic"
-  import_tasks: prerequisites.yml
-- name: "Install containerd CRI"
-  import_tasks: containerd.yml
-- name: "Set containerd snapshotter to work with ZFS"
-  import_tasks: zfs.yml
-  tags:
-    - zfs

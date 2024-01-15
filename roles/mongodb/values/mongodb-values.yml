@@ -1,8 +1,0 @@
-auth:
-  rootPassword: rxrxiOB9jj
-  usernames:
-    - infrastructure
-  passwords:
-    - secret
-  databases:
-    - infrastructure

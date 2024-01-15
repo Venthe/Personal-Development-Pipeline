@@ -1,0 +1,16 @@
+server:
+  shutdown: graceful
+
+openapi:
+  gerrit:
+    base-path: /
+
+gerrit:
+  ignoredEvents:
+    - project-created
+    - project-head-updated
+    - dropped-output
+
+spring:
+  main:
+    banner-mode: off

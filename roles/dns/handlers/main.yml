@@ -1,8 +1,0 @@
-- name: "Restart SystemD services"
-  become: true
-  service:
-    name: systemd-resolved
-    state: restarted
-- name: Apply netplan
-  become: true
-  command: netplan apply

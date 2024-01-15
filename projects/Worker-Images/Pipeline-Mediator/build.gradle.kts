@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.0.2"
+    id("org.springframework.boot") version "3.1.0"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.openapi.generator") version "6.2.1"
     id("io.freefair.lombok") version "6.6-rc1"
@@ -45,11 +45,12 @@ dependencies {
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     // MongoDB
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+//    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
     // Kafka
-    implementation("org.springframework.kafka:spring-kafka")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
+//    implementation("org.springframework.kafka:spring-kafka")
+//    testImplementation("org.springframework.kafka:spring-kafka-test")
+// https://mvnrepository.com/artifact/org.freemarker/freemarker
 
     // Swagger
     implementation("com.google.code.findbugs:jsr305:3.0.2")
@@ -65,22 +66,37 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
 
     // Test containers
-    testImplementation("org.testcontainers:kafka:$versionsTestcontainers")
+//    testImplementation("org.testcontainers:kafka:$versionsTestcontainers")
     testImplementation("org.testcontainers:testcontainers:$versionsTestcontainers")
     testImplementation("org.testcontainers:junit-jupiter:$versionsTestcontainers")
-    testImplementation("org.testcontainers:mongodb:$versionsTestcontainers")
-    testImplementation("org.testcontainers:mockserver:$versionsTestcontainers")
+//    testImplementation("org.testcontainers:mongodb:$versionsTestcontainers")
+//    testImplementation("org.testcontainers:mockserver:$versionsTestcontainers")
+
+    // Executors: Docker
+    implementation("com.github.docker-java:docker-java:3.3.4")
+    implementation("com.github.docker-java:docker-java-transport-zerodep:3.3.4")
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-text
+    implementation("org.apache.commons:commons-text:1.11.0")
+
+    implementation ("io.vertx:vertx-json-schema:4.5.1")// https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation("com.google.guava:guava:33.0.0-jre")
+    implementation("org.jgrapht:jgrapht-core:1.5.2")
+
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-val commonProps = mapOf(
-        "licenseName" to "MIT",
-        "licenseUrl" to "https://opensource.org/licenses/MIT")
-
-//val gerritApi by tasks.register("generateGerritWebhookApi", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
+//val commonProps = mapOf(
+//        "licenseName" to "MIT",
+//        "licenseUrl" to "https://opensource.org/licenses/MIT")
+//
+//val gerritApi by tasks.register(
+//        name = "generateGerrit",
+//        type = org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class,
+//) {
+//    group = "openapi"
 //    outputDir.set("$buildDir/generated")
 //    apiPackage.set("eu.venthe.pipeline.gerrit_mediator.gerrit.api")
 //    invokerPackage.set("eu.venthe.pipeline.gerrit_mediator.jenkins.invoker")
@@ -88,12 +104,12 @@ val commonProps = mapOf(
 //    templateDir.set("$projectDir/src/main/resources/template/")
 //
 //    generatorName.set("spring")
-//    inputSpec.set("$rootDir/specs/gerrit-event-stream.openapi.yaml")
+//    inputSpec.set("$rootDir/.specs/gerrit-event-stream.openapi.yaml")
 //    configOptions.set(
 //            mapOf(
 //                    "library" to "spring-boot",
+//                    "reactive" to "false",
 //                    "useOptional" to "true",
-//                    "reactive" to "true",
 //                    "useSwaggerUI" to "false",
 //                    "interfaceOnly" to "true"
 //            ) + commonProps
@@ -107,37 +123,39 @@ val commonProps = mapOf(
 //    }
 //}
 
-val jenkinsApi by tasks.register("generateJenkinsWebhookApi", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
-    outputDir.set("$buildDir/generated")
-    apiPackage.set("eu.venthe.pipeline.gerrit_mediator.gerrit.api")
-    invokerPackage.set("eu.venthe.pipeline.gerrit_mediator.jenkins.invoker")
-    modelPackage.set("eu.venthe.pipeline.gerrit_mediator.jenkins.model")
-    templateDir.set("$projectDir/src/main/resources/template/")
-
-    generatorName.set("java")
-    inputSpec.set("$rootDir/specs/jenkins.openapi.yaml")
-    configOptions.set(
-            mapOf(
-                    "library" to "resttemplate",
-                    "openApiNullable" to "false"
-            ) + commonProps
-    )
-
-    doLast {
-        delete(
-                "${project.buildDir}/build/generated/src/main/java/org/openapitools/configuration",
-        )
-    }
-}
-
-tasks.withType<JavaCompile>().configureEach {
-    dependsOn(/*gerritApi, */jenkinsApi)
-    mustRunAfter(/*gerritApi, */jenkinsApi)
-}
-
-openApiValidate {
-    inputSpec.set("$rootDir/specs/gerrit-event-stream.openapi.yaml")
-}
+//val jenkinsApi by tasks.register("generateJenkinsWebhookApi", org.openapitools.generator.gradle.plugin.tasks.GenerateTask::class) {
+//    outputDir.set("$buildDir/generated")
+//    apiPackage.set("eu.venthe.pipeline.gerrit_mediator.gerrit.api")
+//    invokerPackage.set("eu.venthe.pipeline.gerrit_mediator.jenkins.invoker")
+//    modelPackage.set("eu.venthe.pipeline.gerrit_mediator.jenkins.model")
+//    templateDir.set("$projectDir/src/main/resources/template/")
+//
+//    generatorName.set("java")
+//    inputSpec.set("$rootDir/specs/jenkins.openapi.yaml")
+//    configOptions.set(
+//            mapOf(
+//                    "library" to "resttemplate",
+//                    "openApiNullable" to "false"
+//            ) + commonProps
+//    )
+//
+//    doLast {
+//        delete(
+//                "${project.buildDir}/build/generated/src/main/java/org/openapitools/configuration",
+//        )
+//    }
+//}
+//
+//tasks.withType<JavaCompile>().configureEach {
+////    dependsOn(/*gerritApi, */jenkinsApi)
+////    mustRunAfter(/*gerritApi, */jenkinsApi)
+//    dependsOn(gerritApi)
+//    mustRunAfter(gerritApi)
+//}
+//
+//openApiValidate {
+//    inputSpec.set("$rootDir/specs/gerrit-event-stream.openapi.yaml")
+//}
 
 java.sourceSets["main"].java {
     srcDir("build/generated/src/main/java")

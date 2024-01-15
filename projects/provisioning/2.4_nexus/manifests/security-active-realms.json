@@ -1,7 +1,0 @@
-[
-    "DockerToken",
-    "LdapRealm",
-    "NpmToken",
-    "NexusAuthenticatingRealm",
-    "NexusAuthorizingRealm"
-]

@@ -1,0 +1,9 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+id: "context/env.jsonschema.yaml"
+title: Vars context
+description: The vars context contains custom configuration variables set at the organization, repository, and environment levels. For more information about defining configuration variables for use in multiple workflows, see "Variables".
+type: object
+additionalProperties: false
+patternProperties:
+  "^[a-zA-Z_]+[a-zA-Z0-9_]*$":
+    type: string

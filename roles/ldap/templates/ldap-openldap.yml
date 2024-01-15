@@ -1,8 +1,0 @@
-adminPassword: "{{ admin_password }}"
-env:
-  LDAP_DOMAIN: "{{ tld_hostname }}"
-  LDAP_ORGANISATION: "{{ ldap.organization }}"
-  LDAP_READONLY_USER: "true"
-customLdifFiles:
-  export.ldif: |
-    {% filter indent(width=4,blank=True) %}{{ ldap.ldif }}{% endfilter %}

@@ -1,1 +1,0 @@
-ssh-keygen -p -N "" -m pem -f ./private_key

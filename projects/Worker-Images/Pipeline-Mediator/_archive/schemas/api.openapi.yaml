@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Sample API
+  description: A sample API to illustrate OpenAPI concepts
+paths:
+  /:
+    post:
+      responses: {}
+      parameters:
+        - $ref: '#/components/parameters/X-GitHub-Hook-ID'
+        - $ref: '#/components/parameters/X-GitHub-Event'
+        - $ref: '#/components/parameters/X-GitHub-Delivery'
+        - $ref: '#/components/parameters/X-Hub-Signature'
+        - $ref: '#/components/parameters/X-Hub-Signature-256'
+        - $ref: '#/components/parameters/User-Agent'
+        - $ref: '#/components/parameters/X-GitHub-Hook-Installation-Target-Type'
+        - $ref: '#/components/parameters/X-GitHub-Hook-Installation-Target-ID'
+
+components:
+  parameters:
+    X-GitHub-Hook-ID:
+      name: X-GitHub-Hook-ID
+      in: header
+      example: 292430182
+      schema:
+        type: integer
+      description: >
+        The unique identifier of the webhook.
+    X-GitHub-Event:
+      name: X-GitHub-Event
+      in: header
+      example: issues
+      description: >
+        The name of the event that triggered the delivery.
+    X-GitHub-Delivery:
+      name: X-GitHub-Delivery
+      in: header
+      example: 72d3162e-cc78-11e3-81ab-4c9367dc0958
+      description: >
+        A globally unique identifier (GUID) to identify the delivery.
+    X-Hub-Signature:
+      name: X-Hub-Signature
+      in: header
+      example: sha1=7d38cdd689735b008b3c702edd92eea23791c5f6
+      description: >
+        This header is sent if the webhook is configured with a secret. This is the HMAC hex digest of the request body, and is generated using the SHA-1 hash function and the secret as the HMAC key. X-Hub-Signature is provided for compatibility with existing integrations. We recommend that you use the more secure X-Hub-Signature-256 instead.
+    X-Hub-Signature-256:
+      name: X-Hub-Signature-256
+      in: header
+      example: sha256=d57c68ca6f92289e6987922ff26938930f6e66a2d161ef06abdf1859230aa23c
+      description: >
+        This header is sent if the webhook is configured with a secret. This is the HMAC hex digest of the request body, and is generated using the SHA-256 hash function and the secret as the HMAC key. For more information, see "Validating webhook deliveries."
+    User-Agent:
+      name: User-Agent
+      example: GitHub-Hookshot/044aadd
+      in: header
+      description: >
+        This header will always have the prefix GitHub-Hookshot/.
+    X-GitHub-Hook-Installation-Target-Type:
+      name: X-GitHub-Hook-Installation-Target-Type
+      in: header
+      example: repository
+      description: >
+        The type of resource where the webhook was created.
+    X-GitHub-Hook-Installation-Target-ID:
+      name: X-GitHub-Hook-Installation-Target-ID
+      in: header
+      example: 79929171
+      description: >
+        The unique identifier of the resource where the webhook was created.

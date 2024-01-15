@@ -1,1 +1,0 @@
-argocd_namespace = "infrastructure"

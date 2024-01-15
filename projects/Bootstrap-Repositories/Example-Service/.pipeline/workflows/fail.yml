@@ -1,8 +1,0 @@
-name: Echo
-on: [push]
-jobs:
-  Explore-GitHub-Actions:
-    runs-on: docker.home.arpa/ubuntu-runner:22.10
-    steps:
-      - run: echo "🎉 The job was automatically triggered by a ${EVENT_NAME} event."
-      - run: ls

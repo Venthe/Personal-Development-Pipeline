@@ -1,9 +1,0 @@
-helm:
-  argocd-example:
-    path: JLBC/ArgocdExampleService
-    chart: hosted/argocd-example-service
-    chartRevision: 0.1.0
-    properties:
-      imageTag: 20230205-190544-a467ad9
-    valueFiles:
-      - values.yml

@@ -1,10 +1,4 @@
-logging:
-  level:
-    "org.apache.kafka": WARN
 gerrit:
-  binding:
-    topic: test
-spring:
-  kafka:
-    consumer:
-      group-id: test
+  url: http://localhost:1555
+  username: admin
+  password: secret

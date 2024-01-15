@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  gerrit:
+    container_name: gerrit
+    image: docker.io/gerritcodereview/gerrit:3.9.1
+    ports:
+      - "1555:8080"
+      - "1556:29418"

@@ -1,0 +1,7 @@
+projects:
+  Sample-Project:
+    refs:
+      main:
+        workflows:
+          - name: workflow.yaml
+            path: workflows/workflow-dispatchable.yaml

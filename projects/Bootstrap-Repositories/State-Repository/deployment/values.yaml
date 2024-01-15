@@ -1,5 +1,0 @@
-replicaCount: 1
-nameOverride: ""
-fullnameOverride: ""
-applications:
-  helm: []

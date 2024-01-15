@@ -1,0 +1,27 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+id: "context/env.jsonschema.yaml"
+title: inputs context
+description: >
+  The inputs context contains input properties passed to an action, to a reusable workflow, or to a manually triggered workflow. For reusable workflows, the input names and types are defined in the workflow_call event configuration of a reusable workflow, and the input values are passed from jobs.<job_id>.with in an external workflow that calls the reusable workflow. For manually triggered workflows, the inputs are defined in the workflow_dispatch event configuration of a workflow.
+
+  The properties in the inputs context are defined in the workflow file. They are only available in a reusable workflow or in a workflow triggered by the workflow_dispatch event
+  
+  	This context is only available in a reusable workflow or in a workflow triggered by the workflow_dispatch event. You can access this context from any job or step in a workflow. This object contains the properties listed below.
+type: object
+additionalProperties: false
+patternProperties:
+  "^[a-zA-Z_]+[a-zA-Z0-9_]*$":
+    describe: Each input value passed from an external workflow.
+    type: object
+    required:
+      - type
+    properties:
+      required:
+        type: boolean
+      type:
+        type: string
+        enum:
+          - boolean
+          - choice
+          - number
+          - string

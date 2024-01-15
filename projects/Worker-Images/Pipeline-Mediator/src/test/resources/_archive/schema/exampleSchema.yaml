@@ -1,0 +1,6 @@
+$id: test
+type: object
+additionalProperties: false
+properties:
+  test:
+    type: string

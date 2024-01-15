@@ -1,3 +1,0 @@
-externaldns:
-  namespace: infrastructure
-tld_hostname: home.arpa

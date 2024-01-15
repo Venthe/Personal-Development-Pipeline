@@ -1,0 +1,7 @@
+on:
+  workflow_dispatch: ~
+jobs:
+  test:
+    steps:
+      - name: Test
+        run: echo works!

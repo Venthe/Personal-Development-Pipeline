@@ -1,6 +1,0 @@
-[submodule "projects/Worker-Images/kiwigrid-helm-charts"]
-	path = projects/Worker-Images/kiwigrid-helm-charts
-	url = git@github.com:Venthe/kiwigrid-helm-charts.git
-[submodule "projects/Worker-Images/Actions-Runner"]
-	path = projects/Worker-Images/Actions-Runner
-	url = git@github.com:Venthe/Pipeline-Action-Runner.git

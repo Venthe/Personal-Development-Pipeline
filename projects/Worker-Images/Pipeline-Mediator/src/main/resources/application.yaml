@@ -1,16 +1,10 @@
 server:
   shutdown: graceful
-
-openapi:
-  gerrit:
-    base-path: /
-
-gerrit:
-  ignoredEvents:
-    - project-created
-    - project-head-updated
-    - dropped-output
-
+  port: 80
 spring:
   main:
     banner-mode: off
+  mustache:
+    check-template-location: false
+versionControlSystem: gerrit
+jobExecutor: docker

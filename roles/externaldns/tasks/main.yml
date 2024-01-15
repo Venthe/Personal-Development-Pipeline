@@ -1,9 +1,0 @@
-
-- name: "Install ExternalDNS: mDNS"
-  tags:
-    - mdns
-  import_tasks: mdns.yml
-- name: "Install ExternalDNS: CoreDNS"
-  tags:
-    - coredns
-  import_tasks: coredns.yml
