@@ -4,3 +4,6 @@
 [submodule "projects/Worker-Images/Actions-Runner"]
 	path = projects/Worker-Images/Actions-Runner
 	url = git@github.com:Venthe/Pipeline-Action-Runner.git
+[submodule "projects/Worker-Images/Pipeline-Mediator"]
+	path = projects/Worker-Images/Pipeline-Mediator
+	url = git@github.com:Venthe/Pipeline-Orchestrator.git
