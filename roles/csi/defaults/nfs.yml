@@ -1,5 +1,0 @@
-nfsServer:
-  ssh:
-    username: root
-  namespace: infrastructure
-  username: root

@@ -1,4 +1,0 @@
-- name: Install Helm
-  import_tasks: helm.yml
-- name: Install jq
-  import_tasks: jq.yml

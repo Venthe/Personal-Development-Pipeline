@@ -13,3 +13,8 @@ join-command
 facts.json
 dist/
 node_modules/
+*.local.*
+venv/
+.ansible/
+.temp/
+ansible.cfg

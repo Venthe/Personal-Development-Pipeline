@@ -1,0 +1,47 @@
+- name: Install CIFS utils
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items:
+    - nfs-common
+    - open-iscsi
+    - multipath-tools
+    - scsitools
+    - lsscsi
+
+- name: Configure crictl to use containerd
+  become: true
+  ansible.builtin.copy:
+    mode: '0777'
+    dest: "/etc/multipath.conf"
+    content: |
+      defaults {
+          user_friendly_names yes
+          find_multipaths yes
+      }
+
+- name: Setup Democratic-CSI storage pool
+  kubernetes.core.helm_repository:
+    name: democratic-csi
+    repo_url: https://democratic-csi.github.io/charts/
+
+- name: Setup NFS storage pool
+  kubernetes.core.helm:
+    create_namespace: true
+    update_repo_cache: true
+    name: democratic-csi-nfs
+    chart_ref: democratic-csi/democratic-csi
+    release_namespace: "{{ csi_namespace }}"
+    values: "{{ lookup('ansible.builtin.template', './truenas-api-nfs.yaml') | from_yaml }}"
+
+- name: Setup iSCSI storage pool
+  kubernetes.core.helm:
+    create_namespace: true
+    update_repo_cache: true
+    name: democratic-csi-iscsi
+    chart_ref: democratic-csi/democratic-csi
+    release_namespace: "{{ csi_namespace }}"
+    values: "{{ lookup('ansible.builtin.template', './truenas-api-iscsi.yaml') | from_yaml }}"
+    

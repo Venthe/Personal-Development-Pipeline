@@ -1,0 +1,6 @@
+- name: "CRI"
+  include_tasks: setup_containerd.yml
+- include_tasks: install_crictl.yml
+- name: "Set containerd snapshotter to work with ZFS"
+  include_tasks: setup_containerd_zfs.yml
+  when: use_zfs | bool

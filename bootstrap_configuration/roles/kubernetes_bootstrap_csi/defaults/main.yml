@@ -1,0 +1,5 @@
+csi_namespace: democratic-csi
+driver_connection_host: 'localhost'
+driver_connection_http_api_key: '~'
+driver_connection_http_port: 443
+driver_connection_http_protocol: https

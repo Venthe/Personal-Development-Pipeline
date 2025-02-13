@@ -1,0 +1,22 @@
+- name: Add helm repo using key from URL.
+  become: true
+  ansible.builtin.deb822_repository:
+    name: "helm"
+    types: [deb]
+    uris: "https://baltocdn.com/helm/stable/debian/"
+    components: [main]
+    signed_by: https://baltocdn.com/helm/signing.asc
+    state: present
+    suites: [all]
+    enabled: true
+
+- name: Install Helm
+  become: true
+  ansible.builtin.apt:
+    name: "helm={{ helm_version }}"
+    update_cache: true
+
+- name: Install Helm diff plugin
+  kubernetes.core.helm_plugin:
+    plugin_path: https://github.com/databus23/helm-diff
+    state: present

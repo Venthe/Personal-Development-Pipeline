@@ -1,0 +1,76 @@
+csiDriver:
+  name: "org.democratic-csi.iscsi"
+controller:
+  driver:
+    logLevel: debug
+    image:
+      tag: next
+node:
+  driver:
+    logLevel: debug
+    #iscsiDirHostPath: /var/iscsi
+storageClasses:
+- name: iscsi
+  defaultClass: false
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  allowVolumeExpansion: true
+  parameters:
+    fsType: ext4
+    detachedVolumesFromSnapshots: "false"
+  mountOptions: []
+  # secrets:
+  #   provisioner-secret:
+  #   controller-publish-secret:
+  #   node-stage-secret:
+  #   node-publish-secret:
+  #   controller-expand-secret:
+
+# volumeSnapshotClasses:
+# - name: iscsi
+#   parameters:
+#     detachedSnapshots: "true"
+driver:
+  image:
+    tag: next
+  config:
+    driver: freenas-api-iscsi
+    instance_id: abcd-efgh2
+    httpConnection:
+      protocol: "{{ driver_connection_http_protocol }}"
+      host: "{{ driver_connection_host }}"
+      port: {{ driver_connection_http_port }}
+      # use only 1 of apiKey or username/password
+      # if both are present, apiKey is preferred
+      # apiKey is only available starting in TrueNAS-12
+      apiKey: "{{ driver_connection_http_api_key }}"
+      #username: "\{\{nfsServer.username\}\}"
+      ## password:
+      allowInsecure: true
+      # use apiVersion 2 for TrueNAS-12 and up (will work on 11.x in some scenarios as well)
+      # leave unset for auto-detection
+      # apiVersion: 2
+    zfs:
+      datasetParentName: main/k8s/iscsi/volumes
+      detachedSnapshotsDatasetParentName: main/k8s/iscsi/snapshots
+      # zvolCompression:
+      # zvolDedup:
+      # zvolEnableReservation: false
+      # zvolBlocksize:
+    iscsi:
+      targetPortal: "{{ driver_connection_host }}:3260"
+      targetPortals: [] 
+      # interface:
+      namePrefix: csi-
+      nameSuffix: "-clustera"
+      targetGroups:
+        - targetGroupPortalGroup: 1
+          targetGroupInitiatorGroup: 2
+          targetGroupAuthType: None
+          # targetGroupAuthGroup:
+      extentInsecureTpc: true
+      extentXenCompat: false
+      extentDisablePhysicalBlocksize: true
+      extentBlocksize: 512
+      extentRpm: "7200"
+      extentAvailThreshold: 0

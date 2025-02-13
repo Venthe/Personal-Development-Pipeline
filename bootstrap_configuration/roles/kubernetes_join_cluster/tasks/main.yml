@@ -1,0 +1,77 @@
+# TODO: Fix for non-control nodes
+- fail:
+    msg: "Intentional crash"
+  when: role == 'worker_node'
+
+- name: Check if node is initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: cluster_init_done
+
+- name: Copy Kubernetes config archive to remote nodes
+  copy:
+    src: '{{ join_configuration_directory }}/{{ join_configuration_filename }}'
+    dest: /tmp/{{ join_configuration_filename }}
+
+- file:
+    path: "/tmp/k8s-unpack"
+    state: directory
+    mode: '0700'
+    owner: "{{ ansible_user }}"
+
+- name: Unpack configuration
+  ansible.builtin.unarchive:
+    src: /tmp/{{ join_configuration_filename }}
+    dest: /tmp/k8s-unpack
+    remote_src: yes
+
+- name: Move configuration files
+  when: not cluster_init_done.stat.exists
+  become: true
+  shell: |
+    cp /tmp/k8s-unpack/etc/kubernetes/admin.conf /etc/kubernetes/admin.conf
+    cp /tmp/k8s-unpack/var/lib/kubelet/config.yaml /var/lib/kubelet/config.yaml
+
+- name: Copy PKI files
+  when: not cluster_init_done.stat.exists
+  become: true
+  shell: |
+    rm -rf /etc/kubernetes/pki/
+    mkdir -p /etc/kubernetes/pki/etcd
+    cp /tmp/k8s-unpack/etc/kubernetes/pki/*ca* /etc/kubernetes/pki/
+    cp /tmp/k8s-unpack/etc/kubernetes/pki/*sa* /etc/kubernetes/pki/
+    cp /tmp/k8s-unpack/etc/kubernetes/pki/etcd/*ca* /etc/kubernetes/pki/etcd/
+
+- name: Set correct kubelet config permissions
+  become: true
+  when: not cluster_init_done.stat.exists
+  file:
+    path: /etc/kubernetes/admin.conf
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Read join command from file
+  when: not cluster_init_done.stat.exists
+  become: true
+  slurp:
+    src: /tmp/k8s-unpack/tmp/join-command
+  register: join_cmd_file
+
+- name: 'Join node to cluster: {{role}}'
+  when: (not cluster_init_done.stat.exists) and (role == 'control_node')
+  become: true
+  command: "{{ (join_cmd_file.content | b64decode).strip() }} --control-plane --node-name={{ ansible_hostname }}"
+
+- name: Restart kubelet
+  when: not cluster_init_done.stat.exists
+  become: true
+  systemd:
+    name: kubelet
+    state: restarted
+
+- name: Cleanup temp dir after PKI copy
+  become: true
+  file:
+    path: /tmp/k8s-unpack
+    state: absent

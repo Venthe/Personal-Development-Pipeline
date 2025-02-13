@@ -1,0 +1,11 @@
+- name: Download k9s .deb package
+  get_url:
+    url: https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
+    dest: /tmp/k9s.deb
+    mode: '0644'
+
+- name: Install k9s
+  become: true
+  apt:
+    deb: /tmp/k9s.deb
+    state: present

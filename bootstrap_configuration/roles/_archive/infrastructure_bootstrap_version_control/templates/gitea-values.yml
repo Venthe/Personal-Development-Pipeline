@@ -1,0 +1,30 @@
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: ca-issuer
+  hosts:
+    - host: gitea.home.arpa
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: gitea-tls
+      hosts:
+        - gitea.home.arpa
+gitea:
+  fullname: gitea
+postgresql-ha:
+  enabled: false
+postgresql:
+  enabled: true
+redis-cluster:
+  enabled: false
+redis:
+  enabled: true
+metrics:
+  enabled: true
+actions:
+  enabled: true
+  provisioning:
+    enabled: true

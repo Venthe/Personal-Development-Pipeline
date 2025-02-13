@@ -1,0 +1,32 @@
+namespace: "{{ bootstrap_namespace }}"
+clusterDomain: "{{cluster_domain}}"
+service:
+  http:
+    type: LoadBalancer
+    port: 80
+  ssh:
+    type: LoadBalancer
+gitea:
+  admin:
+    username: admin
+    password: secret
+  config:
+    database:
+      DB_TYPE: sqlite3
+    session:
+      PROVIDER: memory
+    cache:
+      ADAPTER: memory
+    queue:
+      TYPE: level
+valkey-cluster:
+  enabled: false
+valkey:
+  enabled: false
+postgresql:
+  enabled: false
+postgresql-ha:
+  enabled: false
+
+persistence:
+  enabled: false

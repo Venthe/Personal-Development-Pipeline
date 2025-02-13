@@ -1,0 +1,23 @@
+- name: Check and remove taints if present
+  set_fact:
+    taints_to_remove:
+      - node-role.kubernetes.io/control-plane:NoSchedule
+      - node-role.kubernetes.io/master:NoSchedule
+
+- name: Check if taint {{ item }} exists
+  ansible.builtin.shell: |
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf get node {{ inventory_hostname }} -o jsonpath='{.spec.taints[*].key}:{.spec.taints[*].effect}' | grep -q '^{{ item }}$'
+  register: taint_check
+  failed_when: false
+  changed_when: false
+  when: untaint
+  loop: "{{ taints_to_remove }}"
+    
+- name: Remove taint {{ item }}
+  ansible.builtin.shell: |
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf taint node {{ inventory_hostname }} {{ item }}-
+  when: taint_check.results[idx].rc == 0 and untaint
+  loop: "{{ taints_to_remove }}"
+  loop_control:
+    loop_var: item
+    index_var: idx

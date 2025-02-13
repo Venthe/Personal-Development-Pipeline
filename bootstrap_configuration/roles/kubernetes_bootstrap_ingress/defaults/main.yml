@@ -1,0 +1,5 @@
+ingress_namespace: ingress-nginx
+ingress_deployment_name: ingress
+ingress_repository_name: ingress-nginx
+ingress_repository_url: https://kubernetes.github.io/ingress-nginx
+cluster_domain: home.arpa

@@ -1,0 +1,4 @@
+- name: "Gitea"
+  import_tasks: gitea.yml
+  tags:
+    - gitea

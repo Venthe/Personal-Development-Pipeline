@@ -1,0 +1,58 @@
+- name: Check if node is initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: cluster_init_done
+
+- name: Prepare init configuration
+  become: true
+  ansible.builtin.blockinfile:
+    create: yes
+    backup: yes
+    dest: /var/lib/kubelet/config.init.yaml
+    block: |
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      memorySwap:
+        swapBehavior: NoSwap
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: InitConfiguration
+      localAPIEndpoint:
+        advertiseAddress: {{ ansible_host }}
+        bindPort: 6443
+      nodeRegistration:
+        criSocket: unix:///var/run/containerd/containerd.sock
+        name: {{ ansible_hostname }}
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta4
+      kind: ClusterConfiguration
+      controlPlaneEndpoint: {{ ansible_host }}:6443
+      networking:
+        podSubnet: "10.244.0.0/16"
+        dnsDomain: "{{ cluster_domain }}"
+  when: not cluster_init_done.stat.exists
+
+- name: Restart kubelet
+  become: true
+  when: not cluster_init_done.stat.exists
+  ansible.builtin.service:
+    enabled: true
+    name: kubelet
+    daemon_reload: true
+    state: restarted
+
+# Fixme: Run this only when necessary
+#  Store available images as a fact?
+- name: Pull config images
+  become: true
+  ansible.builtin.command: kubeadm config images pull
+  when: 'false and (not cluster_init_done.stat.exists)'
+
+- name: Initialize the Kubernetes cluster using kubeadm
+  when: not cluster_init_done.stat.exists
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      kubeadm init \
+          --config=/var/lib/kubelet/config.init.yaml \
+          --skip-token-print

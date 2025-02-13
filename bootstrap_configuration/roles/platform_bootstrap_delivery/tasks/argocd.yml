@@ -1,0 +1,75 @@
+- name: Add repository
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: https://argoproj.github.io/argo-helm
+
+- name: Deploy chart
+  kubernetes.core.helm:
+    create_namespace: true
+    update_repo_cache: true
+    name: argocd
+    chart_ref: argo/argo-cd
+    release_namespace: "{{ bootstrap_namespace }}"
+    values: "{{ lookup('template', './argocd.yml') | from_yaml }}"
+
+- name: Set pregenerated bcrypt password
+  ansible.builtin.set_fact:
+    bcrypt_pwd: "{{ bootstrap_password }}"
+
+- name: Get current timestamp
+  ansible.builtin.command: date +%FT%T%Z
+  register: timestamp
+
+- name: Patch ArgoCD password
+  ansible.builtin.command: >
+    kubectl -n bootstrap patch secret argocd-secret
+    -p '{{ payload }}'
+  vars:
+    payload: >
+      {{
+        {
+          "stringData": {
+            "admin.password": bcrypt_pwd,
+            "admin.passwordMtime": timestamp.stdout
+          }
+        } | to_json
+      }}
+
+- name: Create ArgoCD repo secret
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitea-repo-credentials
+        namespace: "{{ bootstrap_namespace }}"
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      stringData:
+        url: gitea-http.service
+        username: admin
+        password: secret
+
+- name: Create ArgoCD app-of-apps
+  k8s:
+    state: present
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: test
+        namespace: "{{ bootstrap_namespace }}"
+      spec:
+        project: infrastructure
+        source:
+          repoURL: gitea-http.service
+          targetRevision: HEAD
+          path: "{{ app_path }}"
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: test
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true

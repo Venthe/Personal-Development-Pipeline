@@ -1,0 +1,78 @@
+- name: Get kube-proxy ConfigMap
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: kube-proxy
+    namespace: kube-system
+  register: kube_proxy_cm
+
+- name: Enable strictARP in kube-proxy ConfigMap
+  kubernetes.core.k8s:
+    state: present
+    definition: >
+      {{
+        kube_proxy_cm.resources[0] |
+        combine({'data': kube_proxy_cm.resources[0].data |
+          combine({'config.conf': (kube_proxy_cm.resources[0].data['config.conf'] |
+            regex_replace('strictARP: false', 'strictARP: true')
+          )})
+        })
+      }}
+  diff: true
+
+- kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ load_balancer_namespace }}"
+        # The speaker pod requires elevated permission in order to perform its network functionalities.
+        # 
+        # If you are using MetalLB with a kubernetes version that enforces pod security admission (which is beta in k8s 1.23), the namespace MetalLB is deployed to must be labelled with:
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
+          pod-security.kubernetes.io/audit: privileged
+          pod-security.kubernetes.io/enforce-version: latest
+          pod-security.kubernetes.io/warn: privileged
+
+- kubernetes.core.helm_repository:
+    name: bitnami
+    repo_url: https://metallb.github.io/metallb
+
+- name: Install metallb 
+  kubernetes.core.helm:
+    name: metallb
+    chart_ref: bitnami/metallb
+    release_namespace: "{{ load_balancer_namespace }}"
+    update_repo_cache: true
+    values:
+      speaker:
+        frr:
+          enabled: true
+        ignoreExcludeLB: true
+
+- name: Provide IP Pool
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: first-pool
+        namespace: "{{ load_balancer_namespace }}"
+      spec:
+        addresses:
+          - "{{ address_range_from }}-{{ address_range_to }}"
+
+- kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        name: advertisement
+        namespace: "{{ load_balancer_namespace }}"
+      spec:
+        ipAddressPools:
+        - first-pool

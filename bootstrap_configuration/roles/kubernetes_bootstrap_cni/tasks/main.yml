@@ -1,0 +1,40 @@
+- name: Create temporary directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: temporary
+  register: temporary
+
+- name: Define Calico manifests
+  set_fact:
+    calico_manifests:
+      - file: "{{ temporary.path }}/operator-crds.yaml"
+        url: https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/operator-crds.yaml
+      - file: "{{ temporary.path }}/tigera-operator.yaml"
+        url: https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/tigera-operator.yaml
+
+- name: Download Tigera Calico manifest to the cluster.
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.file }}"
+    mode: '0664'
+  loop: "{{ calico_manifests }}"
+
+# Fixme: Run this only when necessary
+- name: Install calico pod network
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item.file }}"
+  loop: "{{ calico_manifests }}"
+
+# Fixme: Run this only when necessary
+- name: Install calico pod network 2
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ item }}"
+  loop: "{{ lookup('ansible.builtin.template', './custom-resources.yaml') | from_yaml_all }}"
+
+- name: Use the registered var and the file module to remove the temporary file
+  ansible.builtin.file:
+    path: "{{ temporary.path }}"
+    state: absent
+  when: temporary.path is defined

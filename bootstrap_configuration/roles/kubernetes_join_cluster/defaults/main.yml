@@ -1,0 +1,3 @@
+join_configuration_filename: k8s-init-config.tar.gz
+join_configuration_directory: /tmp/
+role: control_node

@@ -1,0 +1,12 @@
+# - name: Git clone stable repo on HEAD
+#   ansible.builtin.git:
+#     repo: "https://github.com/Venthe/gitea-helm-chart.git"
+#     dest: /tmp/helm_repo
+- kubernetes.core.helm:
+    create_namespace: true
+    update_repo_cache: true
+    name: gitea
+    chart_ref: https://github.com/Venthe/gitea-helm-chart/releases/download/2364ce/gitea-0.0.0.tgz
+    release_namespace: "{{ version_control.namespace }}"
+    values: "{{ lookup('ansible.builtin.template', './gitea-values.yml') | from_yaml }}"
+  register: result

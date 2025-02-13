@@ -1,0 +1,123 @@
+# ansible-galaxy collection install community.general ansible.posix kubernetes.core
+---
+# - name: Set up host configuration
+#   hosts: all
+#   tasks:
+#     - include_role:
+#         name: host_configure_filesystem
+#     - include_role:
+#         name: host_disable_swap
+#     - include_role:
+#         name: host_setup_containerd
+#     - include_role:
+#         name: host_setup_network
+#     - include_role:
+#         name: kubernetes_setup_binaries
+
+# - name: Bootstrap kubernetes control plane
+#   run_once: true
+#   vars:
+#     join_configuration_directory: '{{ cwd }}/.temp/'
+#     untaint: true
+#   hosts:
+#     - control_plane_bootstrap_nodes
+#   tasks:
+#     - include_role:
+#         name: kubernetes_bootstrap_control_plane
+#     - include_role:
+#         name: kubernetes_store_join_configuration
+#     - include_role:
+#         name: kubernetes_setup_untaint
+
+# # TODO: Setup localhost to connect to the cluster
+
+# - name: Join control plane nodes
+#   vars:
+#     join_configuration_directory: '{{ cwd }}/.temp/'
+#     untaint: true
+#   hosts:
+#     - control_plane_collaborator_nodes
+#   tasks:
+#     - include_role:
+#         name: kubernetes_join_cluster
+#       vars:
+#         role: control_node
+#     - include_role:
+#         name: kubernetes_setup_untaint
+
+# - name: Join worker nodes
+#   vars:
+#     join_configuration_directory: '{{ cwd }}/.temp/'
+#   hosts:
+#     - worker_nodes
+#   tasks:
+#     - include_role:
+#         name: kubernetes_join_worker_node
+#       vars:
+#         role: worker_node
+
+# - name: Set up host tooling
+#   hosts: all
+    # vars:
+    #   install_helm: true
+    #   install_jq: true
+    #   install_k9s: true
+    #   install_python: true
+#   tasks:
+#     - include_role:
+#         name: kubernetes_setup_user_kubeconfig
+#     - include_role:
+#         name: host_setup_tools
+
+# - name: Bootstrap core kubernetes infrastructure
+#   hosts: all
+#   run_once: true
+#   tasks:
+# #     - include_role:
+#         name: kubernetes_bootstrap_cni
+#     - include_role:
+#         name: kubernetes_bootstrap_csi
+#     - include_role:
+#         name: kubernetes_bootstrap_ingress
+    # - include_role:
+    #     name: kubernetes_bootstrap_loadbalancer
+
+- name: Bootstrap platform infrastructure
+  hosts: all
+  run_once: true
+  tasks:
+    - include_role:
+        name: platform_bootstrap_delivery
+
+# - name: Download kubeconfig from k8s master
+#   run_once: true
+#   hosts: control_plane_bootstrap_nodes
+#   tasks:
+#     - name: Read remote kubeconfig
+#       become: yes
+#       slurp:
+#         src: /etc/kubernetes/admin.conf
+#       register: kubeconfig_b64
+
+# - name: Install kubeconfig and k9s locally
+#   hosts: localhost
+#   connection: local
+#   vars:
+#     kubeconfig_local_path: "{{ ansible_env.HOME }}/.kube/config"
+#   tasks:
+#     - name: Ensure .kube directory exists
+#       file:
+#         path: "{{ kubeconfig_local_path | dirname }}"
+#         state: directory
+#         mode: '0700'
+
+#     - name: Write kubeconfig locally
+#       copy:
+#         content: "{{ hostvars[groups['control_plane_bootstrap_nodes'][0]].kubeconfig_b64.content | b64decode }}"
+#         dest: "{{ kubeconfig_local_path }}"
+#         mode: '0600'
+
+#     - include_role:
+#         name: host_setup_tools
+#       vars:
+#         install_k9s: true

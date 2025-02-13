@@ -1,0 +1,5 @@
+- name: Install jq
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: "jq"

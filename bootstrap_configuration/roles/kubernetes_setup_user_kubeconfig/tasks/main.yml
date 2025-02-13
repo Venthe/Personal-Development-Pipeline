@@ -1,0 +1,16 @@
+- name: Create .kube directory for user
+  become: true
+  file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    mode: '0700'
+    owner: "{{ ansible_user }}"
+
+- name: Setup kubeconfig for user
+  become: true
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    remote_src: true
+    mode: '0700'

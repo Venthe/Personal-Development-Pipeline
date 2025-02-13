@@ -1,0 +1,8 @@
+- include_tasks: helm.yml
+  when: install_helm
+- include_tasks: jq.yml
+  when: install_jq
+- include_tasks: python.yml
+  when: install_python
+- include_tasks: k9s.yml
+  when: install_k9s

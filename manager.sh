@@ -11,11 +11,16 @@ list_tags() {
 
 function provision() {
   ansible-playbook \
-    ./provision-kubernetes.yml \
-    --inventory-file ./kubernetes.inventory.yml \
+    ./bootstrap_configuration/provision-kubernetes.yml \
+    --inventory-file ./.ansible/ \
     --user ${PLAY_USERNAME} \
-    --ask-become \
+    -e "cwd=$(pwd)" \
+    --vault-password-file .ansible/vault_password.txt \
     "${@}"
+}
+
+function install_dependencies() {
+  ansible-galaxy collection install -r ./bootstrap_configuration/requirements.yml
 }
 
 function ansible_lint() {
