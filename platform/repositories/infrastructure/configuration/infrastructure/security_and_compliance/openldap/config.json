@@ -1,0 +1,10 @@
+{
+  "name": "openldap",
+  "targetRevision": "2.4.58-4",
+  "namespace": "infrastructure-test",
+  "repoURL": "https://roertel.github.io/helm-charts",
+  "chart": "openldap",
+  "valueFiles": [
+    "$values/configuration/infrastructure/security_and_compliance/openldap/values.yml"
+  ]
+}

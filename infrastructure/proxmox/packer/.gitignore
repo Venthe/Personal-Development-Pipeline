@@ -1,0 +1,4 @@
+*pkrvars.hcl
+downloaded_iso_path/
+*.log
+packer_cache/

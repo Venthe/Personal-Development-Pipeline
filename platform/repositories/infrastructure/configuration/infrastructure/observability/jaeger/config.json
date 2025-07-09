@@ -1,0 +1,8 @@
+{
+  "name": "jaeger",
+  "targetRevision": "7.1.9",
+  "namespace": "infrastructure-test",
+  "repoURL": "oci://registry-1.docker.io/bitnamicharts",
+  "chart": "fluentd",
+  "valueFiles": []
+}

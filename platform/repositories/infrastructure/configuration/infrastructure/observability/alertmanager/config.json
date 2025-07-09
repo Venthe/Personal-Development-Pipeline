@@ -1,0 +1,8 @@
+{
+  "name": "alertmanager",
+  "targetRevision": "1.21.0",
+  "namespace": "infrastructure-test",
+  "repoURL": "https://prometheus-community.github.io/helm-charts",
+  "chart": "alertmanager",
+  "valueFiles": []
+}

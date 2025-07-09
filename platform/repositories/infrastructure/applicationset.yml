@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: root
+  namespace: bootstrap
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: http://172.22.6.4/admin/test.git
+              revision: HEAD
+              files:
+                - path: "configuration/**/config.json"
+          - list:
+              elements:
+              - dummy: ''
+  templatePatch: |
+    spec:
+      sources:
+        - chart: '{{ .chart }}'
+          repoURL: '{{ .repoURL }}'
+          targetRevision: {{ .targetRevision }}
+          helm:
+            releaseName: {{ .name }}
+    {{- if .valueFiles }}
+            valueFiles:
+    {{- range .valueFiles }}
+            - {{ . }}
+    {{- end }}
+    {{- end }}
+        - repoURL: http://172.22.6.4/admin/test.git
+          targetRevision: HEAD
+          ref: values
+  template:
+    metadata:
+      name: '{{ .name }}'
+      namespace: bootstrap
+    spec:
+      project: default
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ .namespace }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

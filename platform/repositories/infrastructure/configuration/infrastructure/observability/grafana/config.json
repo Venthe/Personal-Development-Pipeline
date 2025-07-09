@@ -1,0 +1,8 @@
+{
+  "name": "grafana",
+  "targetRevision": "9.2.10",
+  "namespace": "infrastructure-test",
+  "repoURL": "https://grafana.github.io/helm-charts",
+  "chart": "grafana",
+  "valueFiles": []
+}

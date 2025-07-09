@@ -1,0 +1,22 @@
+persistence:
+  enabled: true
+  storageClass: nfs
+ldapDomain: home.arpa
+securityContext:
+  readOnlyRootFilesystem: false
+ingress:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: home.arpa
+      paths:
+      - path: /
+        backend:
+          serviceName: openldap
+          servicePort: 389
+phpldapadmin:
+  enabled: true
+  image:
+    tag: 0.9.0

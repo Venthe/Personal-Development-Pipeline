@@ -1,0 +1,86 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+folder root as "ROOT" <<App of Apps>> #AACCFF
+
+folder managed_root as "Managed root" <<App of Apps>>
+folder domain_a as "Domain A" <<App of Apps>>
+folder domain_b as "Domain B" <<App of Apps>>
+folder infrastructure as "Infrastructure" <<App of Apps>>
+
+root <-- managed_root
+managed_root <-- domain_a
+managed_root <-- domain_b
+managed_root <-- infrastructure
+
+frame infrastructure_namespace as "Infrastructure" <<Namespace>> {
+  folder observability as "Observability" <<App of Apps>> {
+    entity Jaeger <<Tracing>>
+    entity Grafana <<Dashboard>>
+    entity Fluentd <<Log Aggregation>>
+    entity "OpenSearch Dashboards" <<Dashboard>>
+    entity Prometheus <<Metrics>>
+    entity Alertmanager <<Alerting>>
+  }
+  
+  folder security_and_compliance as "Security & Compliance" <<App of Apps>> {
+    entity OpenLDAP <<Directory Service>>
+    entity Keycloak <<Identity Provider>>
+    entity "HashiCorp Vault" <<Secrets Management>>
+    entity "cert-manager" <<Certificate Management>>
+    entity "OPA Gatekeeper" <<Policy Enforcement>>
+  }
+
+  folder networking as "Networking" <<App of Apps>> {
+    entity "Istio" <<Service Mesh>>
+  }
+  
+  folder platform_services as "Platform Services" <<App of Apps>> {
+    entity Artifactory <<Artifact repository>>
+    entity Backstage <<Developer Portal>>
+    entity Knative <<Serverless>>
+  }
+  
+  folder platform as "Platform" <<App of Apps>> {
+    entity ArgoCD <<Continuous Deployment>>
+    entity Gerrit <<Version Control System>>
+    entity Jenkins <<Continuous Integration>>
+    entity SonarQube <<Static Analysis>>
+  }
+  
+  folder resilience as "Resilience" <<App of Apps>> {
+    entity Velero <<Cluster backup>>
+  }
+  
+  folder data as "Data" <<App of Apps>> {
+    entity Valkey <<Object Storage>>
+    entity PostgreSQL <<Relational database, Document store>>
+    entity OpenSearch <<Search & Analytics>>
+    entity MinIO <<Object Storage, S3>>
+    entity Kafka <<Event Streaming>>
+  }
+
+  frame collaboration as "Collaboration" {
+    entity XWiki <<Wiki>>
+    entity "Taiga" <<Issue Tracker>>
+    entity Kroki <<Diagrams server>>
+    entity "Diagrams.net" <<Diagrams server>>
+    entity "Penpot" <<Design Tool>>
+    entity "Rocket.Chat" <<Chat>>
+    entity "Collabora Online" <<Office Editor>>
+    entity "Nextcloud" <<Groupware>>
+    entity Mailu <<Email server>>
+  }
+
+  infrastructure <-- data
+  infrastructure <-- resilience
+  infrastructure <-- platform_services
+  infrastructure <-- platform
+  infrastructure <-- networking
+  infrastructure <-- security_and_compliance
+  infrastructure <-- observability
+  infrastructure <-- collaboration
+}
+
+@enduml
