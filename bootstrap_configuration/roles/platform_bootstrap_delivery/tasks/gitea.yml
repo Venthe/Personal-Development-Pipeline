@@ -1,10 +1,9 @@
-- name: Add repository
+- name: Add Gitea repository
   kubernetes.core.helm_repository:
     name: gitea
     repo_url: https://dl.gitea.com/charts/
 
-
-- name: Deploy chart
+- name: Deploy Gitea chart
   kubernetes.core.helm:
     create_namespace: true
     update_repo_cache: true

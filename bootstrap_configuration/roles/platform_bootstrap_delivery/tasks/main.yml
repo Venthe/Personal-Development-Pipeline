@@ -1,2 +1,2 @@
-- include_tasks: argocd.yml
 - include_tasks: gitea.yml
+- include_tasks: argocd.yml

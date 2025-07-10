@@ -1,4 +1,6 @@
 bootstrap_namespace: bootstrap
+infrastructure_namespace: infrastructure
 # htpasswd -bnBC 10 "" "secret" | tr -d ':\n' | sed 's/\$2y/\$2a/'
-bootstrap_password: $2a$10$6QB1iSKADvvChkgyf3GbSuSUpbjLL4kigup2m7jBivAQK4oT70L6u
+argocd_hashed_password: $2a$10$6QB1iSKADvvChkgyf3GbSuSUpbjLL4kigup2m7jBivAQK4oT70L6u
+gitea_password: $2a$10$6QB1iSKADvvChkgyf3GbSuSUpbjLL4kigup2m7jBivAQK4oT70L6u
 cluster_domain: home.arpa

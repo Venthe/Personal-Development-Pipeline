@@ -1,20 +1,20 @@
-- name: Add repository
+- name: Add ArgoCD repository
   kubernetes.core.helm_repository:
     name: argo
     repo_url: https://argoproj.github.io/argo-helm
 
-- name: Deploy chart
+- name: Deploy ArgoCD chart
   kubernetes.core.helm:
     create_namespace: true
     update_repo_cache: true
     name: argocd
     chart_ref: argo/argo-cd
-    release_namespace: "{{ bootstrap_namespace }}"
+    release_namespace: "{{ infrastructure_namespace }}"
     values: "{{ lookup('template', './argocd.yml') | from_yaml }}"
 
-- name: Set pregenerated bcrypt password
+- name: Set pregenerated password
   ansible.builtin.set_fact:
-    bcrypt_pwd: "{{ bootstrap_password }}"
+    bcrypt_pwd: "{{ argocd_hashed_password }}"
 
 - name: Get current timestamp
   ansible.builtin.command: date +%FT%T%Z
@@ -22,7 +22,7 @@
 
 - name: Patch ArgoCD password
   ansible.builtin.command: >
-    kubectl -n bootstrap patch secret argocd-secret
+    kubectl --namespace {{ infrastructure_namespace }} patch secret argocd-secret
     -p '{{ payload }}'
   vars:
     payload: >
@@ -43,10 +43,12 @@
       kind: Secret
       metadata:
         name: gitea-repo-credentials
-        namespace: "{{ bootstrap_namespace }}"
+        namespace: "{{ infrastructure_namespace }}"
         labels:
+          bootstrap: 'true'
           argocd.argoproj.io/secret-type: repository
       stringData:
+        type: git
         url: gitea-http.service
         username: admin
         password: secret
@@ -56,20 +58,52 @@
     state: present
     definition:
       apiVersion: argoproj.io/v1alpha1
-      kind: Application
+      kind: ApplicationSet
       metadata:
-        name: test
-        namespace: "{{ bootstrap_namespace }}"
+        name: root
+        namespace: "{{ infrastructure_namespace }}"
       spec:
-        project: infrastructure
-        source:
-          repoURL: gitea-http.service
-          targetRevision: HEAD
-          path: "{{ app_path }}"
-        destination:
-          server: https://kubernetes.default.svc
-          namespace: test
-        syncPolicy:
-          automated:
-            prune: true
-            selfHeal: true
+        goTemplate: true
+        goTemplateOptions: ["missingkey=error"]
+        generators:
+          - matrix:
+              generators:
+                - git:
+                    repoURL: http://gitea-http.service/admin/infrastructure.git
+                    revision: HEAD
+                    files:
+                      - path: "configuration/**/config.json"
+                - list:
+                    elements:
+                    - dummy: ''
+        templatePatch: |
+          spec:
+            sources:
+              - chart: '{{ "{{ .chart }}" }}'
+                repoURL: '{{ "{{ .repoURL }}" }}'
+                targetRevision: {{ "{{ .targetRevision }}" }}
+                helm:
+                  releaseName: {{ "{{ .name }}" }}
+          {{ "{{- if .valueFiles }}" }}
+                  valueFiles:
+          {{ "{{- range .valueFiles }}" }}
+                  - {{ "{{ . }}" }}
+          {{ "{{- end }}" }}
+          {{ "{{- end }}" }}
+              - repoURL: http://gitea-http.service/admin/infrastructure.git
+                targetRevision: HEAD
+                ref: values
+        template:
+          metadata:
+            name: '{{ "{{ .name }}" }}'
+            namespace: "{{ infrastructure_namespace }}"
+          spec:
+            project: default
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: '{{ "{{ .namespace }}" }}'
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+      

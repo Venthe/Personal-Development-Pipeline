@@ -1,7 +1,9 @@
 # TODO
 
 ## Immediate TODO
-
+- velero
+- initial cert
+- removal of bootstrap resources
 - Add waiting for host being present in ansible
 - Review security in terms of
   - secrets
