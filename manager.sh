@@ -3,7 +3,7 @@
 set -o pipefail
 set -o errexit
 
-. ./.env
+. ./.env || true
 
 list_tags() {
   ansible-playbook ./provision-kubernetes.yml --list-tags
@@ -13,7 +13,6 @@ function provision() {
   ansible-playbook \
     ./bootstrap_configuration/provision-kubernetes.yml \
     --inventory-file ./.ansible/ \
-    --user ${PLAY_USERNAME} \
     -e "cwd=$(pwd)" \
     --vault-password-file .ansible/vault_password.txt \
     "${@}"
